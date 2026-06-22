@@ -4,7 +4,12 @@
 
 **Can coding agents match the published SOTA of Nature-family papers?**
 
-[🤗](https://huggingface.co/datasets/FrontisAI/NatureBench "Hugging Face Dataset") &nbsp;&nbsp;&nbsp; [🏆](https://frontisai.github.io/NatureBench/ "Leaderboard")
+<table align="center">
+<tr>
+<td align="center"><a href="https://huggingface.co/datasets/FrontisAI/NatureBench">🤗&nbsp; Hugging Face Dataset</a></td>
+<td align="center"><a href="https://frontisai.github.io/NatureBench/">🏆&nbsp; Leaderboard</a></td>
+</tr>
+</table>
 
 [📖 Overview](#overview) • [🔧 Installation](#installation) • [⚙️ Configuration](#model-and-network-configuration) • [🚀 Run Examples](#run-examples) • [🎛️ Parameters](#parameter-usage) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
