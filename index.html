@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NatureBench Leaderboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-content">
+        <a class="logo" href="#top" aria-label="NatureBench home">Nature<span>Bench</span></a>
+        <button class="hamburger" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-right" id="nav-right">
+          <a href="#leaderboard">Leaderboard</a>
+          <a href="#featured-cases">Featured Cases</a>
+          <a href="#domains">Domains</a>
+          <a href="#cases">Cases</a>
+          <!-- RESTORE_METHOD_SECTION: uncomment this nav item when the Method section is ready.
+          <a href="#method">Method</a>
+          -->
+          <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+            <span class="theme-sun">☼</span>
+            <span class="theme-moon">●</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="container">
+      <div class="eyebrow">Scientific ML Agent Benchmark</div>
+      <h1>Nature<span>Bench</span></h1>
+      <p>Can coding agents match the published SOTA of Nature-family papers?</p>
+      <p class="hero-setting">We evaluate 10 coding-agent configurations on 90 Nature-family scientific ML tasks in isolated containers, with web search disabled and a 4-hour budget per task.</p>
+      <div class="hero-actions">
+        <a class="btn resource-btn" href="about:blank" target="_blank" rel="noopener">
+          <img class="resource-logo arxiv-logo" src="assets/logos/arxiv.svg" alt="" aria-hidden="true">
+          <span>arXiv</span>
+        </a>
+        <a class="btn resource-btn" href="about:blank" target="_blank" rel="noopener">
+          <img class="resource-logo github-logo" src="assets/logos/github.svg" alt="" aria-hidden="true">
+          <span>GitHub</span>
+        </a>
+        <a class="btn resource-btn" href="about:blank" target="_blank" rel="noopener">
+          <img class="resource-logo huggingface-logo" src="assets/logos/huggingface.svg" alt="" aria-hidden="true">
+          <span>Hugging Face</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="leaderboard" class="band">
+      <div class="container">
+        <h2 class="section-title">Leaderboard</h2>
+        <p class="section-description metric-primer">
+          <span><strong>g:</strong> SOTA-normalized relative gap, <code>g = dir * (m - m_sota) / |m_sota|</code>; <code>dir</code> handles metric direction.</span>
+          <span><strong>Surpass-SOTA:</strong> share of judge-valid tasks with <code>g &gt; 0.1</code>.</span>
+          <span><strong>Match-SOTA:</strong> share of judge-valid tasks with <code>g &gt;= 0</code>; <code>g = 0</code> matches paper SOTA.</span>
+          <span><strong>CR:</strong> Completion Rate, the valid-score rate.</span>
+          <span><strong>SR:</strong> Score Rate, the any-score rate.</span>
+        </p>
+
+        <div class="metrics-strip leaderboard-summary" id="summary-metrics" aria-label="Benchmark summary">
+          <div class="metric summary-card">
+            <div class="metric-value">90</div>
+            <div class="metric-label">Tasks</div>
+          </div>
+          <div class="metric summary-card">
+            <div class="metric-value">10</div>
+            <div class="metric-label">Agent-model configurations</div>
+          </div>
+          <div class="metric summary-card">
+            <div class="metric-value">6</div>
+            <div class="metric-label">Scientific domains</div>
+          </div>
+          <div class="metric summary-card">
+            <div class="metric-value">17.8%</div>
+            <div class="metric-label">Best Surpass-SOTA</div>
+          </div>
+          <div class="metric summary-card">
+            <div class="metric-value">47.8%</div>
+            <div class="metric-label">Best Match-SOTA</div>
+          </div>
+          <div class="metric summary-card">
+            <div class="metric-value">100.0%</div>
+            <div class="metric-label">Top completion</div>
+          </div>
+        </div>
+
+        <div class="panel table-panel numeric-board-panel" id="numeric-main-board" aria-labelledby="numeric-leaderboard-title">
+          <div class="panel-head">
+            <div>
+              <h3 id="numeric-leaderboard-title">Main Leaderboard</h3>
+              <p>Numeric ranking of agent-model configurations by Surpass-SOTA.</p>
+            </div>
+          </div>
+          <div class="numeric-board-wrap">
+            <table class="numeric-board-table" id="numeric-leaderboard">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Model</th>
+                  <th>Harness</th>
+                  <th>Surpass-SOTA</th>
+                  <th>Match-SOTA</th>
+                  <th>Median g (all)</th>
+                  <th>CR</th>
+                  <th>SR</th>
+                  <th>Invalid</th>
+                </tr>
+              </thead>
+              <tbody id="numeric-leaderboard-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RESTORE_CONFIGURATION_RANKING: uncomment this secondary bar leaderboard if needed.
+        <div class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Configuration Ranking</h3>
+              <p id="chart-subtitle">Sorted by Surpass-SOTA</p>
+            </div>
+            <div class="controls compact">
+              <label for="rank-metric">Rank by</label>
+              <select id="rank-metric">
+                <option value="surpassSota">Surpass-SOTA</option>
+                <option value="matchSota">Match-SOTA</option>
+                <option value="strongSurpassSota">Strong Surpass</option>
+                <option value="medianAll">Median g (all)</option>
+                <option value="meanAll">Mean g (all)</option>
+                <option value="completionRate">Completion Rate</option>
+                <option value="scoreRate">Score Rate</option>
+                <option value="invalid">Invalid Count</option>
+              </select>
+            </div>
+          </div>
+          <div class="bar-chart" id="leaderboard-chart"></div>
+          <p class="chart-footnote">Secondary comparison view. Surpass-SOTA: valid <em>g</em> &gt; 0.1. Strong Surpass: valid <em>g</em> &gt; 0.5.</p>
+        </div>
+        -->
+
+        <div class="panel featured-case-panel" id="featured-cases">
+          <div class="panel-head featured-case-head">
+            <div>
+              <h3>Case Studies</h3>
+              <p>Representative cases distilled from full agent traces</p>
+            </div>
+            <div class="featured-count">3 cases</div>
+          </div>
+          <div class="featured-case-tabs" id="featured-case-tabs" aria-label="Featured case switcher"></div>
+          <div class="featured-case-layout">
+            <section class="featured-case-summary" id="featured-case-summary" aria-live="polite"></section>
+            <section class="featured-case-detail">
+              <div class="featured-detail-body" id="featured-detail-body" aria-live="polite"></div>
+            </section>
+          </div>
+          <!-- Case comparison cards removed to keep the featured block compact. -->
+          <!-- <div class="featured-case-compare" id="featured-case-compare"></div> -->
+        </div>
+
+        <div class="panel chart-panel distribution-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Score Distribution</h3>
+              <p>Task-level <em>g</em> bins per configuration</p>
+            </div>
+          </div>
+          <div class="distribution-chart" id="distribution-chart"></div>
+          <div class="legend" id="distribution-legend"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="domains">
+      <div class="container">
+        <h2 class="section-title">Domain Breakdown</h2>
+        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Domain rankings use the same Surpass-SOTA rule as the overall leaderboard.</p>
+
+        <div class="domain-grid" id="domain-grid"></div>
+
+        <div class="two-col domain-detail-grid">
+          <div class="panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <h3 id="domain-chart-title">Domain Ranking</h3>
+                <p id="domain-chart-subtitle"></p>
+              </div>
+              <div class="controls compact">
+                <label for="domain-select">Domain</label>
+                <select id="domain-select"></select>
+              </div>
+            </div>
+            <div class="bar-chart compact-bars" id="domain-chart"></div>
+          </div>
+        </div>
+
+        <div class="panel table-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Domain Winners</h3>
+              <p>Best configuration within each scientific domain</p>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Domain</th>
+                <th>N</th>
+                <th>Winner</th>
+                <th>Surpass-SOTA</th>
+                <th>Match-SOTA</th>
+                <th>Median g (all)</th>
+              </tr>
+            </thead>
+            <tbody id="domain-winners-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" class="band">
+      <div class="container">
+        <h2 class="section-title">Case-Level View</h2>
+        <p class="section-description">Each cell shows task-level normalized relative gap <em>g</em>. Values above 0.1 count as Surpass-SOTA; nonnegative values match the paper's reported SOTA.</p>
+        <div class="case-matrix-legend legend" id="case-matrix-legend" aria-label="Case matrix legend">
+          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-surpass" aria-hidden="true"></span>Surpass-SOTA, <code>g &gt; 0.1</code></span>
+          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-match" aria-hidden="true"></span>Match-SOTA, <code>0 &lt;= g &lt;= 0.1</code></span>
+          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-below" aria-hidden="true"></span>Below SOTA, <code>g &lt; 0</code></span>
+          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-invalid" aria-hidden="true"></span>Invalid</span>
+          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-none" aria-hidden="true">none</span>No score/submission</span>
+          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-best" aria-hidden="true"></span>Outlined cell: best configuration for that task</span>
+        </div>
+
+        <div class="panel table-panel case-panel">
+          <div class="panel-head case-head">
+            <div>
+              <h3>Per-Case Score Matrix</h3>
+              <p id="case-count"></p>
+            </div>
+            <div class="case-controls">
+              <label class="search-box">
+                <span>Search</span>
+                <input id="case-search" type="search" placeholder="task name, case id, domain">
+              </label>
+              <label>
+                <span>Domain</span>
+                <select id="case-domain-filter"></select>
+              </label>
+            </div>
+          </div>
+          <div class="case-lookup-card" id="case-lookup-card" hidden></div>
+          <div class="case-table-wrap">
+            <table class="case-table">
+              <thead id="case-table-head"></thead>
+              <tbody id="case-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESTORE_METHOD_SECTION: pending Method block is intentionally hidden for the development preview.
+    <section id="method">
+      <div class="container">
+        <h2 class="section-title">Method & Pending Sections</h2>
+        <div class="two-col pending-grid">
+          <div class="panel placeholder-panel">
+            <div class="panel-head">
+              <div>
+                <h3>Time Spent</h3>
+                <p></p>
+              </div>
+            </div>
+            <div class="empty-canvas" aria-hidden="true"></div>
+          </div>
+          <div class="panel placeholder-panel">
+            <div class="panel-head">
+              <div>
+                <h3>Pipeline</h3>
+                <p></p>
+              </div>
+            </div>
+            <div class="empty-canvas" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    -->
+
+    <!-- RESTORE_TEAM_CITATION: uncomment when Team and Citation content is ready.
+    <section class="band">
+      <div class="container">
+        <div class="two-col pending-grid">
+          <div>
+            <h2 class="section-title">Team</h2>
+            <div class="panel blank-panel" aria-hidden="true">
+              <div class="empty-line"></div>
+              <div class="empty-line"></div>
+              <div class="empty-line short"></div>
+            </div>
+          </div>
+          <div>
+            <h2 class="section-title">Citation</h2>
+            <div class="panel blank-panel" aria-hidden="true">
+              <div class="empty-line"></div>
+              <div class="empty-line"></div>
+              <div class="empty-line"></div>
+              <div class="empty-line short"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    -->
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span>NatureBench leaderboard</span>
+    </div>
+  </footer>
+
+  <script src="naturebench-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

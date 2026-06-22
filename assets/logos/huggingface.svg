@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Hugging Face">
+  <circle cx="32" cy="30" r="20.5" fill="#ffcc4d"/>
+  <circle cx="24.5" cy="25.5" r="2.7" fill="#65471b"/>
+  <circle cx="39.5" cy="25.5" r="2.7" fill="#65471b"/>
+  <path d="M25 35.5c3.8 3.5 10.2 3.5 14 0" fill="none" stroke="#65471b" stroke-width="3.2" stroke-linecap="round"/>
+  <g fill="#ffcc4d" stroke="#e6a82e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.8 35.6c-5.1 1.4-8.2 5.8-7.1 10.1.9 3.6 5 5 8.9 3.1 3-1.5 5.1-4.1 7.2-6.5"/>
+    <path d="M49.2 35.6c5.1 1.4 8.2 5.8 7.1 10.1-.9 3.6-5 5-8.9 3.1-3-1.5-5.1-4.1-7.2-6.5"/>
+    <path d="M13.5 40.2c2.5.3 4.8 1.5 6.6 3.3"/>
+    <path d="M50.5 40.2c-2.5.3-4.8 1.5-6.6 3.3"/>
+  </g>
+  <path d="M18 45.3c4.4 3.4 8.8 5.2 14 5.2s9.6-1.8 14-5.2" fill="none" stroke="#ffcc4d" stroke-width="8" stroke-linecap="round"/>
+</svg>

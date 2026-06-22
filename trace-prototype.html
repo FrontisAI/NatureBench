@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NatureBench Trace Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --trace-bg: #f6f8f4;
+      --trace-panel: #ffffff;
+      --trace-panel-strong: #e8eee8;
+      --trace-border: #cedbd2;
+      --trace-text: #1e2824;
+      --trace-muted: #62746e;
+      --trace-faint: #87968f;
+      --trace-accent: #147c72;
+      --trace-accent-2: #0f625a;
+      --trace-accent-soft: rgba(20, 124, 114, 0.12);
+      --trace-terminal: #111a17;
+      --trace-terminal-border: #29443d;
+      --trace-terminal-muted: #91aaa1;
+      --trace-good: #147c72;
+      --trace-warn: #5f7f68;
+      --trace-shadow: 0 18px 38px rgba(31, 43, 38, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --trace-bg: #101714;
+      --trace-panel: #121c18;
+      --trace-panel-strong: #17211d;
+      --trace-border: #2c4036;
+      --trace-text: #e3ebe5;
+      --trace-muted: #98aaa2;
+      --trace-faint: #71877d;
+      --trace-accent: #52c4b7;
+      --trace-accent-2: #42b8a9;
+      --trace-accent-soft: rgba(82, 196, 183, 0.14);
+      --trace-terminal: #080f0d;
+      --trace-terminal-border: #29443d;
+      --trace-terminal-muted: #8fb2a6;
+      --trace-good: #42b8a9;
+      --trace-warn: #88a77a;
+      --trace-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+    }
+
+    body {
+      background: var(--trace-bg);
+      color: var(--trace-text);
+    }
+
+    .trace-topbar {
+      height: 50px;
+      border-bottom: 1px solid var(--trace-border);
+      background: color-mix(in srgb, var(--trace-bg) 94%, transparent);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .trace-topbar-inner {
+      width: 100%;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .trace-brand {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 12px;
+      color: var(--trace-text);
+      font-size: 0.9rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .trace-brand span {
+      color: var(--trace-accent-2);
+    }
+
+    .trace-brand small {
+      color: var(--trace-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .trace-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .trace-link,
+    .trace-case-select,
+    .trace-icon-btn {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--trace-border);
+      border-radius: 6px;
+      background: var(--trace-panel);
+      color: var(--trace-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .trace-link {
+      padding: 0 10px;
+    }
+
+    .trace-case-select {
+      padding: 0 30px 0 10px;
+      max-width: 300px;
+      color: var(--trace-text);
+    }
+
+    .trace-icon-btn {
+      width: 30px;
+    }
+
+    .trace-link:hover,
+    .trace-icon-btn:hover {
+      color: var(--trace-text);
+      border-color: color-mix(in srgb, var(--trace-accent) 38%, var(--trace-border));
+    }
+
+    .trace-page {
+      width: 100%;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .trace-page section {
+      padding: 0;
+    }
+
+    .trace-workspace {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .run-summary,
+    .timeline-toolbar,
+    .trace-tab-panel,
+    .workspace-panel {
+      border: 1px solid var(--trace-border);
+      border-radius: 8px;
+      background: var(--trace-panel);
+      box-shadow: var(--trace-shadow);
+    }
+
+    .run-summary {
+      position: sticky;
+      top: 72px;
+      padding: 18px 20px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--trace-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .back-link:hover {
+      color: var(--trace-text);
+    }
+
+    .run-title {
+      border-bottom: 1px solid var(--trace-border);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .run-title h1 {
+      margin: 0 0 8px;
+      color: var(--trace-text);
+      font-size: 1.08rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .run-title p {
+      margin: 0;
+      color: var(--trace-muted);
+      font-size: 0.72rem;
+      line-height: 1.45;
+    }
+
+    .score-block {
+      border-bottom: 1px solid var(--trace-border);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+    }
+
+    .score-value {
+      color: var(--trace-accent-2);
+      font-size: 2.05rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .score-label {
+      display: block;
+      color: var(--trace-muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 0.71rem;
+    }
+
+    .summary-table th,
+    .summary-table td {
+      padding: 5px 0;
+      vertical-align: top;
+      border: 0;
+    }
+
+    .summary-table th {
+      width: 42%;
+      background: transparent;
+      color: var(--trace-muted);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .summary-table td {
+      color: var(--trace-text);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .summary-action {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--trace-border);
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--trace-bg) 64%, var(--trace-panel));
+      color: var(--trace-text);
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .run-id {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--trace-muted);
+      font-size: 0.62rem;
+      line-height: 1.35;
+      margin-top: 12px;
+      word-break: break-word;
+    }
+
+    .run-id button {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--trace-border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--trace-muted);
+      cursor: pointer;
+    }
+
+    .trace-main {
+      min-width: 0;
+    }
+
+    .trace-tabs {
+      height: 42px;
+      display: flex;
+      align-items: flex-end;
+      gap: 22px;
+      border-bottom: 1px solid var(--trace-border);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .trace-tab {
+      height: 100%;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: var(--trace-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 0 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .trace-tab svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2;
+    }
+
+    .trace-tab.active {
+      color: var(--trace-accent-2);
+      border-bottom-color: var(--trace-accent-2);
+    }
+
+    .trace-tab:hover {
+      color: var(--trace-text);
+    }
+
+    .trace-pane {
+      display: none;
+    }
+
+    .trace-pane.active {
+      display: block;
+    }
+
+    .timeline-toolbar {
+      min-height: 48px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      color: var(--trace-muted);
+      font-size: 0.72rem;
+      margin-bottom: 18px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-bottom: 24px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 90px;
+      width: 1px;
+      background: var(--trace-border);
+    }
+
+    .event {
+      position: relative;
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      gap: 30px;
+      margin: 0 0 14px;
+    }
+
+    .event-rail {
+      color: var(--trace-muted);
+      font-size: 0.64rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.45;
+      padding-top: 9px;
+    }
+
+    .event-turn {
+      color: var(--trace-text);
+      font-weight: 800;
+    }
+
+    .event-time {
+      display: block;
+      margin-top: 3px;
+    }
+
+    .event-dot {
+      position: absolute;
+      left: 85px;
+      top: 12px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--trace-bg);
+      border-radius: 50%;
+      background: var(--trace-accent-2);
+      box-shadow: 0 0 0 1px var(--trace-border);
+      z-index: 2;
+    }
+
+    .event-card {
+      min-width: 0;
+      border: 1px solid var(--trace-border);
+      border-radius: 8px;
+      background: var(--trace-panel);
+      color: var(--trace-text);
+      overflow: hidden;
+    }
+
+    .event-card.plain {
+      padding: 14px 16px;
+    }
+
+    .event-card.thought {
+      padding: 14px 16px;
+      border-style: dashed;
+      background: color-mix(in srgb, var(--trace-panel) 78%, var(--trace-bg));
+    }
+
+    .event-card.gap {
+      padding: 12px 16px;
+      border-style: dashed;
+      background: color-mix(in srgb, var(--trace-warn) 10%, var(--trace-panel));
+    }
+
+    .event-card.tool {
+      border-color: var(--trace-terminal-border);
+      background: var(--trace-terminal);
+      color: #f7ebd8;
+    }
+
+    .event-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--trace-accent-2);
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .event-kicker code {
+      color: var(--trace-faint);
+      font-size: 0.58rem;
+    }
+
+    .event-card p {
+      margin: 0;
+      color: var(--trace-text);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    .event-card.thought p {
+      font-style: italic;
+    }
+
+    .event-card.gap p {
+      color: var(--trace-muted);
+    }
+
+    .tool-head {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--trace-terminal-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--trace-terminal-muted);
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tool-head strong {
+      color: var(--trace-accent-2);
+    }
+
+    .terminal-body {
+      padding: 12px 14px 14px;
+      overflow-x: auto;
+    }
+
+    .terminal-cmd,
+    .terminal-output {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 0.72rem;
+      line-height: 1.55;
+    }
+
+    .terminal-cmd {
+      color: #e8f4ef;
+      margin-bottom: 10px;
+    }
+
+    .terminal-cmd::before {
+      content: "$ ";
+      color: #66d3c4;
+      font-weight: 800;
+    }
+
+    .terminal-output {
+      border-top: 1px dashed var(--trace-terminal-border);
+      padding-top: 10px;
+      color: #c4d7d0;
+      max-height: min(42vh, 420px);
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .event-card.notice {
+      padding: 12px 16px;
+      background: color-mix(in srgb, var(--trace-accent) 8%, var(--trace-panel));
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metrics-panel,
+    .file-viewer {
+      border: 1px solid var(--trace-border);
+      border-radius: 8px;
+      background: var(--trace-panel);
+      padding: 16px;
+    }
+
+    .metrics-panel h2,
+    .file-viewer h2 {
+      margin: 0 0 8px;
+      color: var(--trace-text);
+      font-size: 0.86rem;
+    }
+
+    .trace-copy {
+      margin: 0 0 14px;
+      color: var(--trace-muted);
+      font-size: 0.74rem;
+      line-height: 1.55;
+    }
+
+    .chart-box {
+      border: 1px solid var(--trace-border);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--trace-bg) 62%, var(--trace-panel));
+      overflow: hidden;
+    }
+
+    .chart-box svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .workspace-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .file-list {
+      border: 1px solid var(--trace-border);
+      border-radius: 8px;
+      background: var(--trace-panel);
+      max-height: 570px;
+      overflow: auto;
+      padding: 8px 0;
+    }
+
+    .file-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      border: 0;
+      background: transparent;
+      color: var(--trace-text);
+      text-align: left;
+      padding: 7px 12px;
+      font-size: 0.68rem;
+      cursor: pointer;
+    }
+
+    .file-row:hover,
+    .file-row.active {
+      background: var(--trace-accent-soft);
+      color: var(--trace-accent);
+    }
+
+    .file-row span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-row span:last-child {
+      color: var(--trace-faint);
+      font-size: 0.62rem;
+    }
+
+    .file-preview {
+      min-height: 360px;
+      border: 1px solid var(--trace-border);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--trace-bg) 62%, var(--trace-panel));
+      padding: 16px;
+    }
+
+    .file-preview h3 {
+      margin: 0 0 12px;
+      color: var(--trace-text);
+      font-size: 0.82rem;
+    }
+
+    .file-preview pre {
+      margin: 0;
+      color: var(--trace-muted);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 0.68rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1180px) {
+      .trace-workspace {
+        grid-template-columns: 300px minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .trace-page {
+        padding: 16px;
+      }
+
+      .trace-topbar {
+        height: auto;
+      }
+
+      .trace-topbar-inner {
+        min-height: 50px;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+      }
+
+      .trace-top-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 8px;
+      }
+
+      .trace-case-select {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+      }
+
+      .trace-workspace,
+      .workspace-layout,
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .run-summary {
+        position: static;
+      }
+
+      .trace-tabs {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .trace-tab {
+        flex: 0 0 auto;
+      }
+
+      .timeline::before {
+        left: 12px;
+      }
+
+      .event {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding-left: 30px;
+      }
+
+      .event-rail {
+        text-align: left;
+        display: flex;
+        gap: 10px;
+      }
+
+      .event-dot {
+        left: 7px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="trace-topbar">
+    <div class="trace-topbar-inner">
+      <a class="trace-brand" href="index.html" aria-label="NatureBench home">Nature<span>Bench</span><small>/ traces</small></a>
+      <div class="trace-top-actions">
+        <select class="trace-case-select" id="case-select" aria-label="Select trace case"></select>
+        <a class="trace-link" href="index.html#featured-cases">Featured cases</a>
+        <button class="trace-icon-btn" id="theme-toggle" type="button" aria-label="Toggle theme">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="trace-page">
+    <div class="trace-workspace">
+      <aside class="run-summary" id="run-summary" aria-label="Run summary"></aside>
+
+      <section class="trace-main">
+        <nav class="trace-tabs" aria-label="Trace views">
+          <button class="trace-tab active" data-tab="trace" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="5" cy="6" r="1.5"></circle><line x1="5" y1="9" x2="5" y2="14"></line><circle cx="5" cy="17" r="1.5"></circle><line x1="10" y1="6" x2="20" y2="6"></line><line x1="10" y1="12" x2="17" y2="12"></line><line x1="10" y1="17" x2="20" y2="17"></line></svg>
+            Run trace
+          </button>
+          <button class="trace-tab" data-tab="workspace" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            Workspace
+          </button>
+          <button class="trace-tab" data-tab="metrics" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Metrics
+          </button>
+        </nav>
+
+        <section class="trace-pane active" data-pane="trace" id="pane-trace"></section>
+        <section class="trace-pane" data-pane="workspace" id="pane-workspace"></section>
+        <section class="trace-pane" data-pane="metrics" id="pane-metrics"></section>
+      </section>
+    </div>
+  </main>
+
+  <script src="trace-data.js"></script>
+  <script>
+    const traceData = window.NATUREBENCH_TRACE_DATA || {};
+    const caseOrder = ["cancer-gene", "genomic", "reaction"].filter((key) => traceData[key]);
+    let activeCaseKey = new URLSearchParams(window.location.search).get("case") || "genomic";
+    if (!traceData[activeCaseKey]) activeCaseKey = caseOrder[0];
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatG(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "";
+      return `${number >= 0 ? "+" : ""}${number.toFixed(5)}`;
+    }
+
+    function shortSession(value) {
+      if (!value) return "";
+      return value.length > 12 ? `${value.slice(0, 8)}...` : value;
+    }
+
+    function wallClock(value) {
+      if (!value) return "";
+      const match = String(value).match(/T(\d{2}:\d{2}:\d{2})/);
+      return match ? `${match[1]}Z` : shortSession(value);
+    }
+
+    function switchTab(key) {
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.tab === key);
+      });
+      document.querySelectorAll("[data-pane]").forEach((pane) => {
+        pane.classList.toggle("active", pane.dataset.pane === key);
+      });
+    }
+
+    function renderCaseSelect() {
+      const select = $("case-select");
+      select.innerHTML = caseOrder.map((key) => {
+        const item = traceData[key];
+        return `<option value="${escapeHtml(key)}" ${key === activeCaseKey ? "selected" : ""}>${escapeHtml(item.title)}</option>`;
+      }).join("");
+      select.addEventListener("change", () => {
+        activeCaseKey = select.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set("case", activeCaseKey);
+        window.history.replaceState({}, "", url);
+        renderPage();
+      });
+    }
+
+    function renderSummary(item) {
+      const completeness = item.traceCompleteness || "redacted trace";
+      $("run-summary").innerHTML = `
+        <a class="back-link" href="index.html#featured-cases">← Back to case studies</a>
+        <section class="run-title">
+          <h1>${escapeHtml(item.title)}</h1>
+          <p>${escapeHtml(item.role)} · ${escapeHtml(completeness)}</p>
+        </section>
+        <section class="score-block">
+          <div class="score-value">${escapeHtml(formatG(item.bestG))}</div>
+          <span class="score-label">best normalized gap g</span>
+        </section>
+        <table class="summary-table">
+          <tbody>
+            <tr><th>Agent</th><td>${escapeHtml(item.agent)}</td></tr>
+            <tr><th>Model</th><td>${escapeHtml(item.model)}</td></tr>
+            <tr><th>Harness</th><td>${escapeHtml(item.harness)}</td></tr>
+            <tr><th>Status</th><td>${escapeHtml(item.status)}</td></tr>
+            <tr><th>Duration</th><td>${escapeHtml(item.durationLabel)}</td></tr>
+            <tr><th>Source events</th><td>${escapeHtml(item.sourceEventCount)}</td></tr>
+            <tr><th>Rendered</th><td>${escapeHtml(item.renderedEventCount)}</td></tr>
+            <tr><th>Attempts</th><td>${escapeHtml(item.attempts)}</td></tr>
+            <tr><th>Best attempt</th><td>${escapeHtml(item.bestAttempt ?? "")}</td></tr>
+            <tr><th>Trace</th><td>${escapeHtml(completeness)}</td></tr>
+          </tbody>
+        </table>
+        <button class="summary-action" type="button" data-tab-target="workspace">Browse engineering files</button>
+        <div class="run-id">
+          <span>${escapeHtml(item.key)}</span>
+          <button type="button" aria-label="Copy run id" data-copy="${escapeHtml(item.sessionId)}">⧉</button>
+        </div>
+      `;
+    }
+
+    function eventMarkup(event, index) {
+      const turn = event.turn || `#${index + 1}`;
+      const elapsed = event.elapsed || "";
+      const kind = event.kind || "message";
+      const title = event.title || kind;
+      if (kind === "tool") {
+        return `
+          <article class="event">
+            <div class="event-rail"><span class="event-turn">${escapeHtml(turn)}</span><span class="event-time">${escapeHtml(elapsed)}</span></div>
+            <span class="event-dot"></span>
+            <div class="event-card tool">
+              <div class="tool-head"><span>Tool <strong>${escapeHtml(event.toolName || "Tool")}</strong></span><code>${escapeHtml(event.exit || "ok")}</code></div>
+              <div class="terminal-body">
+                <pre class="terminal-cmd">${escapeHtml(event.command || "")}</pre>
+                ${event.output ? `<pre class="terminal-output">${escapeHtml(event.output)}</pre>` : ""}
+              </div>
+            </div>
+          </article>
+        `;
+      }
+      const cls = kind === "thought" ? "thought" : kind === "gap" ? "gap" : kind === "complete" ? "notice" : "plain";
+      return `
+        <article class="event">
+          <div class="event-rail"><span class="event-turn">${escapeHtml(turn)}</span><span class="event-time">${escapeHtml(elapsed)}</span></div>
+          <span class="event-dot"></span>
+          <div class="event-card ${cls}">
+            <div class="event-kicker">${escapeHtml(title)} ${event.timestamp ? `<code>${escapeHtml(wallClock(event.timestamp))}</code>` : ""}</div>
+            <p>${escapeHtml(event.text || "")}</p>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderTracePane(item) {
+      $("pane-trace").innerHTML = `
+        <div class="timeline-toolbar">
+          <span>${escapeHtml(item.renderedEventCount)} rendered events · ${escapeHtml(item.sourceEventCount)} source records · ${escapeHtml(item.traceCompleteness)}</span>
+        </div>
+        <div class="timeline" id="timeline">
+          ${item.events.map(eventMarkup).join("")}
+        </div>
+      `;
+    }
+
+    function renderWorkspacePane(item) {
+      $("pane-workspace").innerHTML = `
+        <p class="trace-copy">Engineering files are shown as lightweight previews. Large prediction files, checkpoints and binary artifacts are listed only.</p>
+        <div class="workspace-layout">
+          <div class="file-list" id="file-list" aria-label="Workspace files"></div>
+          <div class="file-preview">
+            <h3 id="file-preview-title">Pick a file</h3>
+            <pre id="file-preview-body">Select a file from the list to view a preview.</pre>
+          </div>
+        </div>
+      `;
+      renderFiles(item.files || []);
+    }
+
+    function renderFiles(files) {
+      const list = $("file-list");
+      const title = $("file-preview-title");
+      const body = $("file-preview-body");
+      list.innerHTML = files.map((file, index) => `
+        <button class="file-row" type="button" data-file-index="${index}">
+          <span>${escapeHtml(file.name)}</span>
+          <span>${escapeHtml(file.size)}</span>
+        </button>
+      `).join("");
+      function select(index) {
+        const file = files[index];
+        if (!file) return;
+        title.textContent = file.name;
+        body.textContent = file.body || "Listed only.";
+        list.querySelectorAll(".file-row").forEach((button, i) => button.classList.toggle("active", i === index));
+      }
+      list.querySelectorAll("[data-file-index]").forEach((button) => button.addEventListener("click", () => select(Number(button.dataset.fileIndex))));
+      select(0);
+    }
+
+    function renderMetricsPane(item) {
+      const milestones = metricMilestones(item.submissions || []);
+      $("pane-metrics").innerHTML = `
+        <div class="metrics-grid">
+          <div class="metrics-panel">
+            <h2>g by attempt</h2>
+            <p class="trace-copy">The line uses evaluator aggregate_improvement, the same normalized gap g used by the leaderboard. g = 0 is paper SOTA; g &gt; 0.1 is Surpass-SOTA.</p>
+            <div class="chart-box" id="main-chart"></div>
+          </div>
+          <div class="metrics-panel">
+            <h2>Attempt milestones</h2>
+            <p class="trace-copy">Milestones are sampled from the real submissions.jsonl for this case.</p>
+            <table class="summary-table"><tbody>
+              ${milestones.map((point) => `<tr><th>A${escapeHtml(point.attempt)}</th><td>${escapeHtml(formatG(point.g))}</td></tr>`).join("")}
+            </tbody></table>
+          </div>
+        </div>
+      `;
+      drawChart("main-chart", item.submissions || []);
+    }
+
+    function metricMilestones(points) {
+      if (points.length <= 8) return points;
+      const picks = [0, Math.floor(points.length * 0.1), Math.floor(points.length * 0.25), Math.floor(points.length * 0.5), Math.floor(points.length * 0.75), points.length - 1];
+      const bestIndex = points.reduce((best, point, index) => Number(point.g) > Number(points[best].g) ? index : best, 0);
+      return [...new Set([...picks, bestIndex])].sort((a, b) => a - b).map((i) => points[i]);
+    }
+
+
+    function drawChart(targetId, points, compact = false) {
+      const target = $(targetId);
+      if (!target || !points.length) return;
+      const width = compact ? 260 : 720;
+      const height = compact ? 82 : 280;
+      const left = compact ? 10 : 62;
+      const right = compact ? 8 : 24;
+      const top = compact ? 12 : 28;
+      const bottom = compact ? 12 : 42;
+      const xs = points.map((p) => Number(p.attempt));
+      const ys = points.map((p) => Number(p.g));
+      const xMin = Math.min(...xs);
+      const xMax = Math.max(...xs);
+      const yMin = Math.min(-0.45, ...ys);
+      const yMax = Math.max(0.14, ...ys);
+      const x = (attempt) => left + ((attempt - xMin) / Math.max(1, xMax - xMin)) * (width - left - right);
+      const y = (value) => top + ((yMax - value) / Math.max(0.01, yMax - yMin)) * (height - top - bottom);
+      const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${x(Number(point.attempt)).toFixed(1)} ${y(Number(point.g)).toFixed(1)}`).join(" ");
+      const area = `${path} L ${x(xMax).toFixed(1)} ${height - bottom} L ${x(xMin).toFixed(1)} ${height - bottom} Z`;
+      target.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="g by attempt">
+        ${compact ? "" : [-0.4, -0.2, 0, 0.1].map((tick) => `<line x1="${left}" x2="${width - right}" y1="${y(tick).toFixed(1)}" y2="${y(tick).toFixed(1)}" stroke="var(--trace-border)" stroke-width="1"></line><text x="${left - 12}" y="${(y(tick) + 4).toFixed(1)}" text-anchor="end" fill="var(--trace-muted)" font-size="11" font-weight="800">${tick.toFixed(1)}</text>`).join("")}
+        <line x1="${left}" x2="${width - right}" y1="${y(0.1).toFixed(1)}" y2="${y(0.1).toFixed(1)}" stroke="var(--trace-warn)" stroke-width="${compact ? 1.2 : 2}" stroke-dasharray="7 7"></line>
+        ${compact ? "" : `<line x1="${left}" x2="${width - right}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--trace-accent)" stroke-width="2" stroke-dasharray="7 7"></line><text x="${width - right - 6}" y="${(y(0.1) - 7).toFixed(1)}" text-anchor="end" fill="var(--trace-warn)" font-size="11" font-weight="800">Surpass-SOTA g&gt;0.1</text><text x="${width - right - 6}" y="${(y(0) - 7).toFixed(1)}" text-anchor="end" fill="var(--trace-accent)" font-size="11" font-weight="800">paper SOTA g=0</text>`}
+        <path d="${area}" fill="var(--trace-accent-soft)"></path>
+        <path d="${path}" fill="none" stroke="var(--trace-accent)" stroke-width="${compact ? 3 : 4}" stroke-linecap="round" stroke-linejoin="round"></path>
+        ${compact ? "" : metricMilestones(points).map((point) => `<circle cx="${x(Number(point.attempt)).toFixed(1)}" cy="${y(Number(point.g)).toFixed(1)}" r="4.8" fill="var(--trace-bg)" stroke="var(--trace-accent)" stroke-width="2.5"></circle><text x="${x(Number(point.attempt)).toFixed(1)}" y="${(y(Number(point.g)) - 12).toFixed(1)}" text-anchor="middle" fill="var(--trace-text)" font-size="11" font-weight="800">${formatG(point.g)}</text>`).join("")}
+      </svg>`;
+    }
+
+    function bindDynamicControls() {
+      document.querySelectorAll("[data-tab-target]").forEach((button) => button.addEventListener("click", () => switchTab(button.dataset.tabTarget)));
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          try { await navigator.clipboard.writeText(button.dataset.copy || ""); } catch (_) {}
+        });
+      });
+    }
+
+    function renderPage() {
+      const item = traceData[activeCaseKey];
+      if (!item) return;
+      document.title = `${item.title} · NatureBench Trace`;
+      renderCaseSelect();
+      renderSummary(item);
+      renderTracePane(item);
+      renderWorkspacePane(item);
+      renderMetricsPane(item);
+      bindDynamicControls();
+    }
+
+    function bindTabs() {
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.addEventListener("click", () => switchTab(button.dataset.tab));
+      });
+    }
+
+    function bindTheme() {
+      const button = $("theme-toggle");
+      if (!button) return;
+      button.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme") || "light";
+        document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+        renderMetricsPane(traceData[activeCaseKey]);
+        bindDynamicControls();
+      });
+    }
+
+    bindTabs();
+    bindTheme();
+    renderPage();
+  </script>
+</body>
+</html>
