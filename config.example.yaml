@@ -13,7 +13,7 @@ run:
   model: null
   mode: base
   timeout: 14400
-  setup_timeout: 1800
+  setup_timeout: 14400
   max_workers: 1
 
   skip_build: true
@@ -59,7 +59,7 @@ solve:
   model: null
   mode: base
   timeout: 14400
-  setup_timeout: 1800
+  setup_timeout: 14400
   max_workers: 1
   skip_build: true
   base_image: naturebench-base:v3

@@ -1,15 +1,16 @@
-"""eval_service.py — 宿主机 Evaluation Service (HTTP)
+"""eval_service.py — host-side Evaluation Service (HTTP)
 
-为解题容器中的 Solver Agent 提供评测接口。Agent 在容器内生成结果文件后，
-通过 HTTP 调用本服务获取得分，并可多次迭代优化。
+Provides a scoring interface for the solver agent running inside a task
+container. The agent produces result files in the container and calls this
+service over HTTP to get scores, iterating as many times as needed.
 
-端点:
-    POST /evaluate      — 提交预测结果，返回得分
-    POST /register      — 动态注册任务
-    POST /start_timer   — 通知某任务开始计时（solve.py 在启动 agent 前调用）
-    GET  /best_score    — 查询某任务当前最高分
-    GET  /time_remaining — 查询剩余时间
-    GET  /health        — 健康检查
+Endpoints:
+    POST /evaluate      — submit predictions and return scores
+    POST /register      — register a task dynamically
+    POST /start_timer   — signal that a task's timer should start (solve.py calls this before launching the agent)
+    GET  /best_score    — query the current best score for a task
+    GET  /time_remaining — query remaining time
+    GET  /health        — health check
 """
 from __future__ import annotations
 
@@ -41,48 +42,48 @@ logger = logging.getLogger("eval_service")
 
 
 # ---------------------------------------------------------------------------
-# 得分追踪
+# Score tracking
 # ---------------------------------------------------------------------------
 
 @dataclass
 class SubmissionRecord:
-    """单次提交记录"""
+    """A single submission record."""
     attempt: int
-    raw_scores: Dict[str, Any]                     # evaluator 返回的完整嵌套 dict
+    raw_scores: Dict[str, Any]                     # full nested dict returned by the evaluator
     per_instance_improvement: Dict[str, float]     # {instance: improvement}
-    aggregate_improvement: Optional[float]         # mean of per_instance, 若全缺则 None
+    aggregate_improvement: Optional[float]         # mean of per_instance, None if all missing
 
 
 @dataclass
 class TaskState:
-    """单个任务的评测状态"""
+    """Evaluation state for a single task."""
     task_name: str
-    data_dir: Path                          # 任务包根目录
-    out_dir: Optional[Path] = None          # 宿主机输出目录（落 submissions.jsonl 用）
-    primary_table: Dict[str, Dict[str, Any]] = field(default_factory=dict)  # per-instance primary 信息
+    data_dir: Path                          # task package root directory
+    out_dir: Optional[Path] = None          # host output directory (for writing submissions.jsonl)
+    primary_table: Dict[str, Dict[str, Any]] = field(default_factory=dict)  # per-instance primary info
     submissions: List[SubmissionRecord] = field(default_factory=list)
     best_attempt: Optional[int] = None
     best_aggregate_improvement: Optional[float] = None
-    start_time: Optional[float] = None      # 任务开始时间 (time.time())
-    timeout: Optional[int] = None           # 任务超时秒数
+    start_time: Optional[float] = None      # task start time (time.time())
+    timeout: Optional[int] = None           # task timeout in seconds
     lock: threading.Lock = field(default_factory=threading.Lock)
-    # ---- 评测期间暂停计时 ----
-    total_paused: float = 0.0               # 累计暂停秒数
-    active_evals: int = 0                   # 当前并发评测数（>0 表示暂停中）
-    pause_start: Optional[float] = None     # 本次暂停开始时刻
-    # ---- 连续失败自动跳过 ----
-    consecutive_failures: int = 0           # 连续评测异常次数
-    should_skip: bool = False               # 连续失败 ≥ 阈值，通知 solve.py 终止容器
+    # ---- pause the timer during evaluation ----
+    total_paused: float = 0.0               # cumulative paused seconds
+    active_evals: int = 0                   # current concurrent evaluations (>0 means paused)
+    pause_start: Optional[float] = None     # start time of the current pause
+    # ---- auto-skip on consecutive failures ----
+    consecutive_failures: int = 0           # consecutive evaluation errors
+    should_skip: bool = False               # consecutive failures >= threshold, signal solve.py to stop the container
 
     def pause_timer(self) -> None:
-        """评测开始时调用。首个并发评测会记录暂停起点。"""
+        """Called when an evaluation starts. The first concurrent evaluation records the pause start."""
         with self.lock:
             self.active_evals += 1
             if self.active_evals == 1:
                 self.pause_start = time.time()
 
     def resume_timer(self) -> None:
-        """评测结束时调用。最后一个并发评测结束后累加暂停时长。"""
+        """Called when an evaluation ends. The last concurrent evaluation adds the pause duration."""
         with self.lock:
             self.active_evals -= 1
             if self.active_evals == 0 and self.pause_start is not None:
@@ -90,7 +91,7 @@ class TaskState:
                 self.pause_start = None
 
     def get_effective_elapsed(self) -> float:
-        """返回扣除暂停后的有效经过时间。"""
+        """Return the effective elapsed time with pauses subtracted."""
         with self.lock:
             if self.start_time is None:
                 return 0.0
@@ -101,7 +102,7 @@ class TaskState:
             return max(0.0, raw - paused)
 
     def record(self, rec: SubmissionRecord) -> None:
-        """记录一次 attempt 并按 max(aggregate_improvement) 更新 best。"""
+        """Record an attempt and update best by max(aggregate_improvement)."""
         with self.lock:
             self.submissions.append(rec)
             if rec.aggregate_improvement is not None:
@@ -112,10 +113,11 @@ class TaskState:
 
 
 class ScoreTracker:
-    """全局得分追踪器，线程安全。
+    """Global thread-safe score tracker.
 
-    State key 是 (task_name, batch_name) 元组，让不同 batch/agent 跑同名 task
-    时互不污染。batch_name 缺省值为 "default"。
+    The state key is a (task_name, batch_name) tuple, so different batches/agents
+    running the same task name do not pollute each other. batch_name defaults to
+    "default".
     """
 
     DEFAULT_BATCH = "default"
@@ -131,14 +133,15 @@ class ScoreTracker:
                        out_dir: Optional[Path] = None,
                        batch_name: Optional[str] = None,
                        force: bool = False) -> Tuple[Dict[str, Dict[str, Any]], List[str]]:
-        """注册任务。
+        """Register a task.
 
         Args:
-          batch_name: 隔离命名空间。同 task_name 不同 batch 互不污染。
-          force: True → 重置 start_time/timeout 并清空 submissions（强制 rerun）；
-                 False → 已存在则保留 submissions/best_score；如果 start_time
-                         尚未设置（首次启动）才允许重置 timer 状态，否则保持
-                         既有计时上下文不动（resume 友好）。
+          batch_name: isolation namespace. Same task_name under different batches do not pollute each other.
+          force: True → reset start_time/timeout and clear submissions (force rerun);
+                 False → keep submissions/best_score if already present; reset timer
+                         state only when start_time has not yet been set (first start),
+                         otherwise leave the existing timing context untouched
+                         (resume-friendly).
         """
         bn = batch_name or self.DEFAULT_BATCH
         key = (task_name, bn)
@@ -195,7 +198,7 @@ class ScoreTracker:
 
 
 # ---------------------------------------------------------------------------
-# 评测核心逻辑
+# Core evaluation logic
 # ---------------------------------------------------------------------------
 
 
@@ -208,7 +211,7 @@ def _bn_from_query(parsed) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# AutoSOTA-style 归一化打分
+# AutoSOTA-style normalized scoring
 # ---------------------------------------------------------------------------
 
 _NUM_RE = re.compile(r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
@@ -284,11 +287,11 @@ def _parse_one_score(value: Any, higher_is_better: bool) -> Optional[float]:
 
 
 def _best_sota(sota_score: Any, higher_is_better: bool) -> Optional[float]:
-    """从 sota_score 字段提取按方向最强的数值。
+    """Extract the strongest value by direction from the sota_score field.
 
-    sota_score 可能是 list / 单个 dict / scalar / 非数字字符串。
-    每个候选经 _parse_one_score 解析（支持 ±、(…)、~、<、ranges 等变体）；
-    higher_is_better=True 取最大；False 取最小。
+    sota_score may be a list / single dict / scalar / non-numeric string.
+    Each candidate is parsed by _parse_one_score (supports ±, (…), ~, <, ranges, etc.);
+    higher_is_better=True takes the max; False takes the min.
     """
     candidates: List[float] = []
 
@@ -315,54 +318,55 @@ def _best_sota(sota_score: Any, higher_is_better: bool) -> Optional[float]:
 def _get_per_instance_primaries(
     metadata_path: Path, task_name: Optional[str] = None,
 ) -> Tuple[Dict[str, Dict[str, Any]], List[str]]:
-    """从 metadata.json 提取每个 performance entry 的 primary metric 信息。
+    """Extract the primary metric info for each performance entry from metadata.json.
 
     Returns:
         (table, issues):
           table = {instance_name: {"metric", "higher_is_better", "sota"}}
-          issues = 文字形式的具体问题清单（注册时按 warning 打）
-        缺 sota_score、缺 is_primary metric、或 sota 无法解析的 instance 不进表。
+          issues = textual list of specific problems (logged as warnings at registration)
+        Instances missing sota_score, missing an is_primary metric, or with an
+        unparsable sota are not added to the table.
     """
     issues: List[str] = []
     if not metadata_path.exists():
-        issues.append(f"metadata.json 不存在: {metadata_path}")
+        issues.append(f"metadata.json does not exist: {metadata_path}")
         return ({}, issues)
     try:
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
-        issues.append(f"metadata.json 解析失败: {e}")
+        issues.append(f"metadata.json failed to parse: {e}")
         return ({}, issues)
     table: Dict[str, Dict[str, Any]] = {}
     entries = metadata.get("performance_entries", [])
     if not entries:
-        issues.append("metadata.performance_entries 为空")
+        issues.append("metadata.performance_entries is empty")
         return ({}, issues)
     for entry in entries:
         instance = entry.get("dataset_name") or entry.get("instance_name")
         if not instance:
-            issues.append("performance_entries 中有 entry 缺 dataset_name")
+            issues.append("an entry in performance_entries is missing dataset_name")
             continue
         primary = next(
             (m for m in entry.get("metrics", []) if m.get("is_primary")),
             None,
         )
         if primary is None:
-            issues.append(f"instance={instance}: 没有 is_primary metric, 已跳过")
+            issues.append(f"instance={instance}: no is_primary metric, skipped")
             continue
         metric_name = primary.get("name")
         if not metric_name:
-            issues.append(f"instance={instance}: primary metric 缺 name, 已跳过")
+            issues.append(f"instance={instance}: primary metric missing name, skipped")
             continue
         higher_is_better = primary.get("metric_direction") == "higher_is_better"
         sota = _best_sota(primary.get("sota_score"), higher_is_better)
         if sota is None:
             issues.append(
-                f"instance={instance}, metric={metric_name}: 缺或无法解析 sota_score, 已跳过"
+                f"instance={instance}, metric={metric_name}: sota_score missing or unparsable, skipped"
             )
             continue
         if sota == 0:
             issues.append(
-                f"instance={instance}, metric={metric_name}: sota_score=0 无法归一化, 已跳过"
+                f"instance={instance}, metric={metric_name}: sota_score=0 cannot be normalized, skipped"
             )
             continue
         table[instance] = {
@@ -374,9 +378,9 @@ def _get_per_instance_primaries(
 
 
 def _find_metric_value(scores: Any, target_metric: str) -> Optional[float]:
-    """递归在嵌套 dict 中查找匹配 target_metric 名字的数值。
+    """Recursively search a nested dict for a value whose key matches target_metric.
 
-    名字匹配做模糊化（去 _ - 空格 + 小写）。
+    Name matching is fuzzy (strips _ - spaces, lowercases).
     """
     norm = lambda s: s.lower().replace("_", "").replace(" ", "").replace("-", "")
     target = norm(target_metric)
@@ -400,7 +404,7 @@ def _compute_improvements(
     raw_scores: Dict[str, Any],
     primary_table: Dict[str, Dict[str, Any]],
 ) -> Tuple[Dict[str, float], Optional[float]]:
-    """按 AutoSOTA-style 归一化计算 per-instance improvement 与聚合分数。
+    """Compute per-instance improvement and an aggregate score using AutoSOTA-style normalization.
 
     Per-instance: improvement = direction × (agent − sota) / |sota|
         higher_is_better → direction = +1, else −1
@@ -449,26 +453,26 @@ def _compute_improvements(
 
 
 def run_evaluator(task_data_dir: Path, output_dir: Path) -> Dict[str, Any]:
-    """通过 subprocess 隔离运行任务包的 evaluator.py，避免共享 os.environ 造成的 race condition。
+    """Run the task package's evaluator.py in a subprocess with an isolated os.environ.
 
     Args:
-        task_data_dir: 任务包根目录（包含 evaluation/evaluator.py）
-        output_dir: Agent 输出目录（evaluator 通过 OUTPUT_DIR 环境变量读取）
+        task_data_dir: task package root directory (contains evaluation/evaluator.py)
+        output_dir: agent output directory (read by the evaluator via the OUTPUT_DIR env var)
 
     Returns:
-        evaluator 返回的 results dict
+        the results dict returned by the evaluator
     """
     import subprocess as _subp
 
     evaluator_script = task_data_dir / "evaluation" / "evaluator.py"
     if not evaluator_script.exists():
-        raise FileNotFoundError(f"evaluator.py 未找到: {evaluator_script}")
+        raise FileNotFoundError(f"evaluator.py not found: {evaluator_script}")
 
     wrapper = Path(__file__).parent / "_evaluator_runner.py"
     if not wrapper.exists():
-        raise FileNotFoundError(f"_evaluator_runner.py 未找到: {wrapper}")
+        raise FileNotFoundError(f"_evaluator_runner.py not found: {wrapper}")
 
-    # 子进程独立的环境，避免线程间 os.environ["OUTPUT_DIR"] 互相覆盖
+    # Run the evaluator in a subprocess with its own environment
     sub_env = {**os.environ, "OUTPUT_DIR": str(output_dir)}
 
     try:
@@ -483,13 +487,13 @@ def run_evaluator(task_data_dir: Path, output_dir: Path) -> Dict[str, Any]:
         raise RuntimeError(f"evaluator subprocess timed out after 3600s for {evaluator_script}")
 
     if proc.returncode != 0:
-        # 暴露 stderr 末尾以便调试
+        # Surface the tail of stderr for debugging
         raise RuntimeError(
             f"evaluator subprocess failed (exit {proc.returncode}): "
             f"{(proc.stderr or '')[-1500:]}"
         )
 
-    # 从 stdout 末尾找 marker 后的 JSON
+    # Find the JSON after the marker at the end of stdout
     marker = "===EVAL_RESULT_JSON==="
     out = proc.stdout or ""
     idx = out.rfind(marker)
@@ -509,13 +513,13 @@ def run_evaluator(task_data_dir: Path, output_dir: Path) -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# HTTP 请求处理
+# HTTP request handling
 # ---------------------------------------------------------------------------
 
 class EvalRequestHandler(BaseHTTPRequestHandler):
-    """处理评测 HTTP 请求"""
+    """Handle evaluation HTTP requests."""
 
-    tracker: ScoreTracker  # 由 server 注入
+    tracker: ScoreTracker  # injected by the server
 
     def log_message(self, format, *args):
         logger.info(format, *args)
@@ -545,11 +549,11 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             params = parse_qs(parsed.query)
             task_name = params.get("task_name", [None])[0]
             if not task_name:
-                self._send_json(400, {"error": "缺少 task_name 参数"})
+                self._send_json(400, {"error": "missing task_name parameter"})
                 return
             state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
             if state is None:
-                self._send_json(404, {"error": f"任务 {task_name} 未注册"})
+                self._send_json(404, {"error": f"task {task_name} not registered"})
                 return
             best_rec = None
             if state.best_attempt is not None:
@@ -570,15 +574,15 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             params = parse_qs(parsed.query)
             task_name = params.get("task_name", [None])[0]
             if not task_name:
-                self._send_json(400, {"error": "缺少 task_name 参数"})
+                self._send_json(400, {"error": "missing task_name parameter"})
                 return
             state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
             if state is None:
-                self._send_json(404, {"error": f"任务 {task_name} 未注册"})
+                self._send_json(404, {"error": f"task {task_name} not registered"})
                 return
             elapsed = state.get_effective_elapsed()
             remaining = max(0, state.timeout - elapsed) if state.timeout else None
-            # 计算当前累计暂停时间（含正在进行的暂停）
+            # Compute the current cumulative pause time (including the ongoing pause)
             cur_paused = state.total_paused
             if state.pause_start is not None:
                 cur_paused += time.time() - state.pause_start
@@ -598,7 +602,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             self._send_json(200, self.tracker.all_results())
             return
 
-        self._send_json(404, {"error": "未知端点"})
+        self._send_json(404, {"error": "unknown endpoint"})
 
     # ----- POST -----
 
@@ -625,59 +629,60 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             self._handle_pause_timer()
             return
 
-        self._send_json(404, {"error": "未知端点"})
+        self._send_json(404, {"error": "unknown endpoint"})
 
     def _handle_evaluate(self):
-        """处理 POST /evaluate
+        """Handle POST /evaluate
 
-        请求体 JSON:
+        Request body JSON:
         {
             "task_name": "s42256-020-0209-y",
-            "output_dir": "/workspace/output"   // 容器内的输出目录路径
+            "output_dir": "/workspace/output"   // output directory path inside the container
         }
 
-        由于 output_dir 是容器内路径，我们需要通过挂载映射来访问。
-        实际上，我们让 Agent 把结果文件内容直接传过来更简单。
+        Since output_dir is a path inside the container, it is accessed via the
+        mount mapping. In practice it is simpler to have the agent send the
+        result file contents directly.
 
-        支持两种模式:
-        模式 A — 传文件路径（需要宿主机能访问）:
+        Two modes are supported:
+        Mode A — pass a file path (the host must be able to access it):
             {"task_name": "...", "output_dir": "/host/path/to/output"}
-        模式 B — 传结果数据（推荐，容器内使用）:
+        Mode B — pass result data (recommended, used inside the container):
             {"task_name": "...", "predictions": {"instance_name": {"sample_id": label, ...}}}
         """
         try:
             body = json.loads(self._read_body())
         except json.JSONDecodeError as e:
-            self._send_json(400, {"error": f"JSON 解析失败: {e}"})
+            self._send_json(400, {"error": f"JSON failed to parse: {e}"})
             return
 
         task_name = body.get("task_name")
         if not task_name:
-            self._send_json(400, {"error": "缺少 task_name"})
+            self._send_json(400, {"error": "missing task_name"})
             return
 
         state = self.tracker.get_task(task_name, batch_name=body.get("batch_name") if body else None)
         if state is None:
-            self._send_json(404, {"error": f"任务 {task_name} 未注册"})
+            self._send_json(404, {"error": f"task {task_name} not registered"})
             return
 
-        # 暂停该任务的倒计时（评测期间不计入 agent 解题时间）
+        # Pause this task's countdown (evaluation time does not count toward agent solve time)
         state.pause_timer()
         try:
             output_dir_str = body.get("output_dir")
             if not output_dir_str:
-                self._send_json(400, {"error": "缺少 output_dir"})
+                self._send_json(400, {"error": "missing output_dir"})
                 return
 
             output_dir = Path(output_dir_str)
             if not output_dir.exists():
-                self._send_json(400, {"error": f"output_dir 不存在: {output_dir}"})
+                self._send_json(400, {"error": f"output_dir does not exist: {output_dir}"})
                 return
 
-            # 调用 evaluator
+            # Call the evaluator
             results = run_evaluator(state.data_dir, output_dir)
 
-            # AutoSOTA-style 归一化：per-instance improvement + 聚合
+            # AutoSOTA-style normalization: per-instance improvement + aggregate
             per_instance_improvement, aggregate_improvement = _compute_improvements(
                 results, state.primary_table
             )
@@ -691,7 +696,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             )
             state.record(rec)
 
-            # ---- 持久化到 submissions.jsonl ----
+            # ---- Persist to submissions.jsonl ----
             if state.out_dir is not None:
                 try:
                     jsonl_path = state.out_dir / "submissions.jsonl"
@@ -706,9 +711,9 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                     with open(jsonl_path, "a", encoding="utf-8") as f:
                         f.write(line + "\n")
                 except OSError as e:
-                    logger.warning("[%s] 写 submissions.jsonl 失败: %s", task_name, e)
+                    logger.warning("[%s] failed to write submissions.jsonl: %s", task_name, e)
 
-            # ---- 连续失败追踪 ----
+            # ---- Track consecutive failures ----
             if aggregate_improvement is None:
                 state.consecutive_failures += 1
                 logger.warning(
@@ -718,14 +723,14 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 if state.consecutive_failures >= CONSEC_FAIL_SKIP_THRESHOLD:
                     state.should_skip = True
                     logger.warning(
-                        "[%s] 连续 %d 次评测无有效分数，标记为 should_skip",
+                        "[%s] %d consecutive evaluations with no valid score, marking should_skip",
                         task_name, state.consecutive_failures,
                     )
             else:
                 state.consecutive_failures = 0
 
             logger.info(
-                "[%s] 评测完成 (attempt=%d): aggregate_improvement=%s, best=%s",
+                "[%s] evaluation complete (attempt=%d): aggregate_improvement=%s, best=%s",
                 task_name, attempt, aggregate_improvement,
                 state.best_aggregate_improvement,
             )
@@ -741,7 +746,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             })
 
         except Exception as e:
-            logger.error("[%s] 评测失败: %s", task_name, traceback.format_exc())
+            logger.error("[%s] evaluation failed: %s", task_name, traceback.format_exc())
             # ---- record() the failure as a SubmissionRecord with aggregate=None ----
             # state.record() guards best_* with `if aggregate is not None`, so a
             # failure record only grows submissions list / total_attempts; it does
@@ -755,7 +760,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                     aggregate_improvement=None,
                 ))
             except Exception as _e_rec:
-                logger.warning("[%s] state.record(failure) 失败: %s", task_name, _e_rec)
+                logger.warning("[%s] state.record(failure) failed: %s", task_name, _e_rec)
             # ---- persist failure to submissions.jsonl (type=failure, scores=None) ----
             if state.out_dir is not None:
                 try:
@@ -773,53 +778,53 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                     with open(jsonl_path, "a", encoding="utf-8") as f:
                         f.write(line + "\n")
                 except OSError as _e_io:
-                    logger.warning("[%s] 写 submissions.jsonl (failure) 失败: %s", task_name, _e_io)
-            # ---- 连续失败追踪（异常也算） ----
+                    logger.warning("[%s] failed to write submissions.jsonl (failure): %s", task_name, _e_io)
+            # ---- Track consecutive failures (exceptions count too) ----
             state.consecutive_failures += 1
             if state.consecutive_failures >= CONSEC_FAIL_SKIP_THRESHOLD:
                 state.should_skip = True
                 logger.warning(
-                    "[%s] 连续 %d 次评测异常，标记为 should_skip",
+                    "[%s] %d consecutive evaluation errors, marking should_skip",
                     task_name, state.consecutive_failures,
                 )
             self._send_json(500, {
-                "error": f"评测失败: {e}",
+                "error": f"evaluation failed: {e}",
                 "traceback": traceback.format_exc(),
             })
         finally:
-            # 恢复该任务的倒计时（无论评测成功或失败）
+            # Resume this task's countdown (whether evaluation succeeded or failed)
             state.resume_timer()
 
     def _handle_register(self):
-        """处理 POST /register — 动态注册任务
+        """Handle POST /register — register a task dynamically
 
-        请求体 JSON:
+        Request body JSON:
         {
             "task_name": "s42256-xxx",
             "data_dir": "/full/path/to/task",
-            "timeout": 3600           // 可选
+            "timeout": 3600           // optional
         }
         """
         try:
             body = json.loads(self._read_body())
         except json.JSONDecodeError as e:
-            self._send_json(400, {"error": f"JSON 解析失败: {e}"})
+            self._send_json(400, {"error": f"JSON failed to parse: {e}"})
             return
 
         task_name = body.get("task_name")
         if not task_name:
-            self._send_json(400, {"error": "缺少 task_name"})
+            self._send_json(400, {"error": "missing task_name"})
             return
 
         data_dir_str = body.get("data_dir")
         if not data_dir_str:
-            self._send_json(400, {"error": "缺少 data_dir"})
+            self._send_json(400, {"error": "missing data_dir"})
             return
 
         data_dir = Path(data_dir_str)
         if not data_dir.exists():
             self._send_json(400, {
-                "error": f"data_dir 不存在: {data_dir_str}",
+                "error": f"data_dir does not exist: {data_dir_str}",
             })
             return
 
@@ -830,7 +835,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             try:
                 out_dir.mkdir(parents=True, exist_ok=True)
             except OSError as e:
-                logger.warning("[%s] out_dir 创建失败 (%s): %s", task_name, out_dir, e)
+                logger.warning("[%s] failed to create out_dir (%s): %s", task_name, out_dir, e)
                 out_dir = None
         batch_name = body.get("batch_name")
         force = bool(body.get("force", False))
@@ -842,8 +847,8 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             logger.warning("[%s] METADATA: %s", task_name, msg)
         if not primary_table:
             logger.error(
-                "[%s] METADATA: 没有可用的 instance（缺 sota_score / 缺 primary metric / 全空），"
-                "拒绝注册。修复 metadata.json 后重跑。", task_name,
+                "[%s] METADATA: no usable instance (missing sota_score / missing primary metric / all empty), "
+                "registration refused. Fix metadata.json and rerun.", task_name,
             )
             self._send_json(422, {
                 "status": "incomplete_metadata",
@@ -851,7 +856,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 "issues": issues,
             })
             return
-        logger.info("[%s] 动态注册任务: data_dir=%s, timeout=%s, out_dir=%s, instances=%d",
+        logger.info("[%s] task registered dynamically: data_dir=%s, timeout=%s, out_dir=%s, instances=%d",
                     task_name, data_dir, timeout, out_dir, len(primary_table))
 
         self._send_json(200, {
@@ -864,9 +869,9 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
         })
 
     def _handle_start_timer(self):
-        """处理 POST /start_timer — solve.py 通知某任务开始计时
+        """Handle POST /start_timer — solve.py signals that a task's timer should start
 
-        请求体 JSON:
+        Request body JSON:
         {
             "task_name": "s42256-xxx"
         }
@@ -874,23 +879,23 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
         try:
             body = json.loads(self._read_body())
         except json.JSONDecodeError as e:
-            self._send_json(400, {"error": f"JSON 解析失败: {e}"})
+            self._send_json(400, {"error": f"JSON failed to parse: {e}"})
             return
 
         task_name = body.get("task_name")
         if not task_name:
-            self._send_json(400, {"error": "缺少 task_name"})
+            self._send_json(400, {"error": "missing task_name"})
             return
 
         batch_name = body.get("batch_name")
         state = self.tracker.get_task(task_name, batch_name=batch_name)
         if state is None:
-            self._send_json(404, {"error": f"任务 {task_name} 未注册"})
+            self._send_json(404, {"error": f"task {task_name} not registered"})
             return
 
         with state.lock:
             if state.start_time is not None:
-                # 已经启动过，忽略重复调用（防止 Agent 重置计时器）
+                # Already started; ignore the duplicate call
                 self._send_json(200, {
                     "status": "already_started",
                     "task_name": task_name,
@@ -899,7 +904,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 return
             state.start_time = time.time()
 
-        logger.info("[%s] 计时器已启动", task_name)
+        logger.info("[%s] timer started", task_name)
         self._send_json(200, {
             "status": "ok",
             "task_name": task_name,
@@ -907,56 +912,57 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
         })
 
     def _handle_resume_timer(self):
-        """处理 POST /resume_timer — solve.py 在 resume 跑前调用。
+        """Handle POST /resume_timer — solve.py calls this before a resume run.
 
-        语义与 /start_timer 互补：要求该任务的计时器**已经**启动过，
-        本调用仅确认服务端 task state 仍然存在并清理上次运行可能残留的
-        active_evals/pause_start，**绝不重置** start_time / total_paused
-        / submissions / best_score（这些都要在 resume 中续接）。
+        Complementary to /start_timer: it requires the task's timer to have
+        **already** been started. This call only confirms that the server-side
+        task state still exists and clears any active_evals/pause_start left over
+        from the previous run; it **never resets** start_time / total_paused
+        / submissions / best_score (all of which must continue across the resume).
         """
         try:
             body = json.loads(self._read_body())
         except json.JSONDecodeError as e:
-            self._send_json(400, {"error": f"JSON 解析失败: {e}"})
+            self._send_json(400, {"error": f"JSON failed to parse: {e}"})
             return
 
         task_name = body.get("task_name")
         if not task_name:
-            self._send_json(400, {"error": "缺少 task_name"})
+            self._send_json(400, {"error": "missing task_name"})
             return
 
         batch_name = body.get("batch_name")
         state = self.tracker.get_task(task_name, batch_name=batch_name)
         if state is None:
-            self._send_json(404, {"error": f"任务 {task_name} 未注册（resume 需要既有状态）"})
+            self._send_json(404, {"error": f"task {task_name} not registered (resume requires existing state)"})
             return
 
         with state.lock:
             if state.start_time is None:
-                # 服务重启或 register 失败导致状态丢失：把现在记为 start_time
-                # 是不准确的，所以拒绝并提示调用方走 fresh 路径。
+                # A restart or a failed register can lose state, and recording now as
+                # start_time would be inaccurate, so reject and tell the caller to use the fresh path.
                 self._send_json(409, {
-                    "error": "任务计时器从未启动；请先调用 /start_timer 走 fresh 路径，而非 /resume_timer",
+                    "error": "task timer was never started; call /start_timer for the fresh path instead of /resume_timer",
                     "task_name": task_name,
                 })
                 return
-            # 清理上一轮可能未配对的暂停状态
+            # Clear any unpaired pause state from the previous round
             if state.active_evals != 0:
                 logger.warning(
-                    "[%s] resume_timer: 残留 active_evals=%d, 强制归零",
+                    "[%s] resume_timer: leftover active_evals=%d, forcing to zero",
                     task_name, state.active_evals,
                 )
                 state.active_evals = 0
             if state.pause_start is not None:
                 state.total_paused += time.time() - state.pause_start
                 state.pause_start = None
-            # 续跑期间允许新的连续失败计数
+            # Allow a new consecutive-failure count during the resume run
             state.consecutive_failures = 0
             state.should_skip = False
             elapsed = state.start_time and (time.time() - state.start_time - state.total_paused)
 
         logger.info(
-            "[%s] resume_timer: 续跑确认，start_time=%s elapsed=%.1fs total_paused=%.1fs",
+            "[%s] resume_timer: resume confirmed, start_time=%s elapsed=%.1fs total_paused=%.1fs",
             task_name, state.start_time, elapsed or 0, state.total_paused,
         )
         self._send_json(200, {
@@ -967,51 +973,53 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
         })
 
     def _handle_pause_timer(self):
-        """处理 POST /pause_timer — solve.py 在容器退出后调用。
+        """Handle POST /pause_timer — solve.py calls this after the container exits.
 
-        语义：把当前 wall-clock 计入暂停（task 不在工作的时段不应该计入
-        agent 解题时间），就像评测期间的 pause_timer 一样。再次 resume 时
-        通过 /resume_timer 把这段时长累加到 total_paused。
+        Counts the current wall-clock into the pause (time when the task is not
+        being worked on should not count toward agent solve time), just like the
+        pause_timer used during evaluation. On the next resume, /resume_timer
+        adds this duration into total_paused.
 
-        与 evaluate-internal 的 pause_timer 解耦：只要 active_evals==0 时
-        服务端没有正在跑的评测；如果尚有评测在跑，本调用会拒绝以避免
-        破坏评测期间的暂停状态。
+        Decoupled from the evaluate-internal pause_timer: only valid when
+        active_evals==0, i.e. no evaluation is running on the server. If an
+        evaluation is still running, this call is rejected to avoid breaking the
+        evaluation-time pause state.
         """
         try:
             body = json.loads(self._read_body())
         except json.JSONDecodeError as e:
-            self._send_json(400, {"error": f"JSON 解析失败: {e}"})
+            self._send_json(400, {"error": f"JSON failed to parse: {e}"})
             return
 
         task_name = body.get("task_name")
         if not task_name:
-            self._send_json(400, {"error": "缺少 task_name"})
+            self._send_json(400, {"error": "missing task_name"})
             return
 
         batch_name = body.get("batch_name")
         state = self.tracker.get_task(task_name, batch_name=batch_name)
         if state is None:
-            self._send_json(404, {"error": f"任务 {task_name} 未注册"})
+            self._send_json(404, {"error": f"task {task_name} not registered"})
             return
 
         with state.lock:
             if state.start_time is None:
-                # Timer 未启动，pause 没有意义
+                # Timer not started, pause is meaningless
                 self._send_json(409, {
-                    "error": "任务计时器尚未启动；无需暂停",
+                    "error": "task timer not yet started; nothing to pause",
                     "task_name": task_name,
                 })
                 return
             if state.active_evals > 0:
-                # 评测进行中已经在 paused 状态，不要重复打断
+                # Already paused while evaluation is in progress; do not interrupt again
                 self._send_json(409, {
-                    "error": "评测进行中，已经处于暂停状态",
+                    "error": "evaluation in progress, already paused",
                     "task_name": task_name,
                     "active_evals": state.active_evals,
                 })
                 return
             if state.pause_start is not None:
-                # 已经在暂停中（比如上次 pause 没配对 resume），幂等返回
+                # Already paused (e.g. a previous pause without a matching resume), return idempotently
                 self._send_json(200, {
                     "status": "already_paused",
                     "task_name": task_name,
@@ -1023,7 +1031,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             elapsed = time.time() - state.start_time - state.total_paused
 
         logger.info(
-            "[%s] pause_timer: 暂停计时（容器退出），elapsed_active=%.1fs total_paused=%.1fs",
+            "[%s] pause_timer: timer paused (container exit), elapsed_active=%.1fs total_paused=%.1fs",
             task_name, elapsed, state.total_paused,
         )
         self._send_json(200, {
@@ -1035,7 +1043,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
 
 
 # ---------------------------------------------------------------------------
-# 服务启动
+# Server startup
 # ---------------------------------------------------------------------------
 
 def create_server(
@@ -1043,11 +1051,11 @@ def create_server(
     port: int = 8321,
     tracker: Optional[ScoreTracker] = None,
 ) -> ThreadingHTTPServer:
-    """创建并返回多线程 HTTP 服务器实例（不启动）"""
+    """Create and return a multithreaded HTTP server instance (not started)."""
     if tracker is None:
         tracker = ScoreTracker()
 
-    # 通过闭包注入 tracker
+    # Inject the tracker via a closure
     handler_class = type(
         "BoundEvalHandler",
         (EvalRequestHandler,),
@@ -1055,7 +1063,7 @@ def create_server(
     )
 
     server = ThreadingHTTPServer((host, port), handler_class)
-    logger.info("Evaluation Service 准备就绪: http://%s:%d", host, port)
+    logger.info("Evaluation Service ready: http://%s:%d", host, port)
     return server
 
 
@@ -1064,35 +1072,35 @@ def start_server_background(
     port: int = 8321,
     tracker: Optional[ScoreTracker] = None,
 ) -> Tuple[ThreadingHTTPServer, threading.Thread]:
-    """在后台线程启动 Evaluation Service（多线程处理并发请求）"""
+    """Start the Evaluation Service in a background thread (multithreaded for concurrent requests)."""
     server = create_server(host, port, tracker)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    logger.info("Evaluation Service 已在后台启动: http://%s:%d", host, port)
+    logger.info("Evaluation Service started in the background: http://%s:%d", host, port)
     return server, thread
 
 
 # ---------------------------------------------------------------------------
-# 独立运行入口
+# Standalone entry point
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="NatureBench Evaluation Service")
-    parser.add_argument("--host", default="0.0.0.0", help="监听地址")
-    parser.add_argument("--port", type=int, default=8321, help="监听端口")
+    parser.add_argument("--host", default="0.0.0.0", help="listen address")
+    parser.add_argument("--port", type=int, default=8321, help="listen port")
     parser.add_argument(
         "--data-dir", default=None,
-        help="任务包根目录（包含各任务子目录）。可选：若省略则仅通过 POST /register 注册任务",
+        help="task package root directory (containing per-task subdirectories). Optional: if omitted, tasks are registered only via POST /register",
     )
     parser.add_argument(
         "--tasks", nargs="*",
-        help="要注册的任务名列表（默认注册 data-dir 下所有子目录）",
+        help="list of task names to register (default: register all subdirectories under data-dir)",
     )
     parser.add_argument(
         "--timeout", type=int, default=3600,
-        help="默认任务超时时间（秒），默认 3600",
+        help="default task timeout (seconds), default 3600",
     )
     args = parser.parse_args()
 
@@ -1112,16 +1120,16 @@ if __name__ == "__main__":
                 for msg in issues:
                     logger.warning("[%s] METADATA: %s", name, msg)
                 if tbl:
-                    logger.info("已注册任务: %s (instances=%d)", name, len(tbl))
+                    logger.info("task registered: %s (instances=%d)", name, len(tbl))
                 else:
-                    logger.error("[%s] metadata 不可用，未生效", name)
+                    logger.error("[%s] metadata unavailable, not applied", name)
     else:
-        logger.info("未指定 --data-dir，等待通过 POST /register 注册任务")
+        logger.info("--data-dir not specified, waiting for tasks to be registered via POST /register")
 
     server = create_server(args.host, args.port, tracker)
-    logger.info("启动 Evaluation Service，按 Ctrl+C 停止")
+    logger.info("Starting Evaluation Service, press Ctrl+C to stop")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        logger.info("正在关闭...")
+        logger.info("Shutting down...")
         server.shutdown()

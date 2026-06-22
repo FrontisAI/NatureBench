@@ -1,15 +1,15 @@
 """solve.py — drive coding agents to solve NatureBench task packages.
 
-架构概述:
-  1. 在宿主机启动 Evaluation Service (HTTP)
-  2. 为每个任务启动解题容器
-  3. 容器内挂载: /task/problem/ (只读), /workspace (读写)
-  4. 容器内不挂载 evaluation/ 目录 (Agent 不能直接看答案)
-  5. 在容器内启动 Agent CLI (claude/codex)
-  6. Agent 通过 HTTP 调用 Evaluation Service 获取得分，迭代优化
-  7. 超时后强制停止容器，取最高分作为最终得分
+Architecture overview:
+  1. Start the Evaluation Service (HTTP) on the host
+  2. Launch a solver container for each task
+  3. Container mounts: /task/problem/ (read-only), /workspace (read-write)
+  4. The evaluation/ directory is not mounted into the container (the agent cannot see the answers directly)
+  5. Start the agent CLI inside the container (claude/codex)
+  6. The agent calls the Evaluation Service over HTTP to get scores and iterate
+  7. After the timeout the container is force-stopped, and the best score becomes the final score
 
-用法:
+Usage:
     python solve.py --config config.yaml
     python solve.py --task-set ./task-set/cpu.txt --data-dir ./data/tasks --out-dir ./results --agent claude --model <model>
 """
@@ -569,7 +569,7 @@ def _build_codex_cmd(
 
 
 def _host_url(eval_service_url: str) -> str:
-    """将容器可见的 host.docker.internal URL 转为宿主机 localhost URL."""
+    """Convert the container-visible host.docker.internal URL to the host localhost URL."""
     return eval_service_url.replace("host.docker.internal", "localhost")
 
 
@@ -1461,7 +1461,7 @@ def _monitor_and_kill(
     stop_reason: Optional[dict] = None,
     batch_name: Optional[str] = None,
 ) -> None:
-    """守护线程：每 poll_interval 秒轮询 /time_remaining，剩余 ≤0 或 should_skip 则终止容器。"""
+    """Watcher thread: poll /time_remaining every poll_interval seconds; stop the container when remaining <=0 or should_skip is set."""
     host_url = _host_url(eval_service_url)
     while proc.poll() is None:
         time.sleep(poll_interval)
@@ -1521,7 +1521,7 @@ def _run_single_task(
     dockerfile_name: str = "Dockerfile.v3",
     *,
     is_resume: bool = False,
-    setup_timeout: int = 1800,
+    setup_timeout: int = 14400,
     codex_auth_dir: Optional[Path] = None,
     codex_use_api_key: bool = False,
     proxy_mode: str = "host",
@@ -1906,7 +1906,7 @@ def _run_single_task(
             # Phase 1: Start container detached with a long sleep so it
             # outlives both setup and agent. Lifetime budget:
             #   setup_timeout + timeout + 600 (cleanup margin)
-            container_lifetime = setup_timeout + timeout + 600  # 保证容器生命周期涵盖setup、agent运行和评测时长
+            container_lifetime = setup_timeout + timeout + 600  # Ensure the container lifetime covers the setup, agent run, and evaluation durations
             run_detach = docker_cmd[:2] + ["-d"] + docker_cmd[2:]
             run_detach.extend(["/bin/bash", "-c", f"sleep {container_lifetime}"])
             proc_d = subprocess.run(run_detach, capture_output=True, text=True)
@@ -2382,7 +2382,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--setup-timeout", type=int, default=None,
-        help="Per-task setup-phase upper bound in seconds (default: 1800 = 30 min). "
+        help="Per-task setup-phase upper bound in seconds (default: 14400 = 4 h). "
              "Caps the docker exec time spent on pip install / dependency "
              "preparation BEFORE the agent timer starts. Distinct from "
              "--timeout so agent solve budget isn't consumed by setup.",
@@ -2556,7 +2556,7 @@ def main() -> None:
     if mode not in {"base", "reproduce"}:
         raise ValueError(f"Unsupported --mode for the public release: {mode!r}. Use 'base' or 'reproduce'.")
     timeout = args.timeout or 14400
-    setup_timeout = getattr(args, "setup_timeout", None) or 1800
+    setup_timeout = getattr(args, "setup_timeout", None) or 14400
     max_workers = args.max_workers or 1
     skip_build = bool(getattr(args, "skip_build", False))
     skip_judge = bool(getattr(args, "skip_judge", False))

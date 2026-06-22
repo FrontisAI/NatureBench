@@ -1,7 +1,8 @@
 """Gemini CLI agent implementation for NatureBench.
 
-与 claude.py / codex.py 对称：Agent 在解题容器内运行，通过 HTTP 调用
-宿主机 Evaluation Service 获取得分，支持多次迭代优化。
+Symmetric with claude.py / codex.py: the agent runs inside the solver
+container and calls the host-side Evaluation Service over HTTP to get scores,
+supporting multiple iterative refinements.
 """
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import subprocess
 
-# 复用与 claude/codex 完全相同的 prompt 模板（任务无关，只与流程相关）
+# Reuse the exact same prompt templates as claude/codex (task-agnostic, process-only)
 GEMINI_BASE_PROMPT = """# Role & Objective
 You are an expert AI Researcher and Scientific Coder.
 Your goal is to solve the Scientific Machine Learning task in this container.
@@ -345,7 +346,7 @@ class GeminiAgent:
         task: Dict[str, Any],
         llm_kwargs: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """在解题容器内通过 Gemini CLI 解题。"""
+        """Solve the task inside the solver container via the Gemini CLI."""
         self.system_prompt = self.build_system_prompt(task)
 
         output_path = Path(task.get("output_path"))

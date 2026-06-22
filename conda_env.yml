@@ -1,4 +1,4 @@
-name: cnsbench
+name: naturebench
 channels:
   - defaults
 dependencies:

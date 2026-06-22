@@ -1,4 +1,4 @@
-name: cnsbench-eval
+name: naturebench-eval
 channels:
   - bioconda
   - conda-forge

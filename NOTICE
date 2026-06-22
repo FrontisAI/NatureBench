@@ -2,10 +2,10 @@ NatureBench — Licensing Scope
 =============================
 
 The MIT License in `LICENSE` applies ONLY to the original contributions of this
-benchmark: the task specifications, evaluation/scoring code, Dockerfiles,
+benchmark: the task specifications, evaluation code, Dockerfiles,
 data-preparation and harness scripts authored by the NatureBench Authors.
 
-It does NOT apply to the third-party datasets included with or downloaded by the
-tasks. Each task's input data and ground truth retain the license of their
-original source; see the per-task `licenses/` directory (ATTRIBUTION.txt and the
-accompanying license files) for the applicable terms and attribution.
+It does NOT apply to the third-party datasets that the tasks download. Each
+task's input data and ground truth retain the license of their original source;
+see the per-task `licenses/` directory (ATTRIBUTION.txt and the accompanying
+license files) for the applicable terms and attribution.

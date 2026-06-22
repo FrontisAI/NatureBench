@@ -57,7 +57,7 @@ def _download_dataset(
         raise SystemExit(
             "huggingface_hub is required for dataset download. "
             "Create and activate the release environment with: "
-            "conda env create -f conda_env.yml && conda activate cnsbench"
+            "conda env create -f conda_env.yml && conda activate naturebench"
         ) from exc
 
     snapshot_download(
@@ -164,7 +164,7 @@ def main() -> None:
     )
     agent.add_argument("--mode", default="base", choices=["base", "reproduce"])
     agent.add_argument("--timeout", type=int, default=14400)
-    agent.add_argument("--setup-timeout", type=int, default=1800)
+    agent.add_argument("--setup-timeout", type=int, default=14400)
     agent.add_argument("--max-workers", type=int, default=1)
 
     docker = parser.add_argument_group("docker and task setup")

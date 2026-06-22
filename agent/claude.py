@@ -1,7 +1,8 @@
 """Claude Code agent implementation for NatureBench.
 
-重构后的版本：Agent 在解题容器内运行，通过 HTTP 调用宿主机 Evaluation Service
-获取得分，支持多次迭代优化。
+In this version the agent runs inside the solver container and calls the
+host-side Evaluation Service over HTTP to get scores, supporting multiple
+iterative refinements.
 """
 from __future__ import annotations
 
@@ -17,7 +18,7 @@ from .base import BaseAgent
 
 
 # =============================================================================
-# SYSTEM PROMPT — 解题循环模式
+# SYSTEM PROMPT — solve loop mode
 # =============================================================================
 CLAUDE_BASE_PROMPT = """# Role & Objective
 You are an expert AI Researcher and Scientific Coder.
@@ -347,7 +348,7 @@ class ClaudeAgent():
         self.logger = logging.getLogger(f"cns_bench.agent.ClaudeAgent")
 
     def build_system_prompt(self, task: Dict[str, Any]) -> str:
-        """构建 prompt，注入 eval service URL、task_name、batch_name、eval_output_dir 和时限。"""
+        """Build the prompt, injecting the eval service URL, task_name, batch_name, eval_output_dir, and time limit."""
         task_name = task.get("task_name", "unknown")
         batch_name = task.get("batch_name", "default")
         eval_service_url = task.get("eval_service_url", "http://host.docker.internal:8321")
@@ -374,15 +375,15 @@ class ClaudeAgent():
         task: Dict[str, Any],
         llm_kwargs: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """在解题容器内通过 Claude Code CLI 解题。"""
+        """Solve the task inside the solver container via the Claude Code CLI."""
 
         self.system_prompt = self.build_system_prompt(task)
-        
+
         output_path = Path(task.get("output_path"))
         log_path = output_path / "claude.jsonl"
         err_path = output_path / "claude.err"
-        
-        # 构建 Claude Code CLI 命令
+
+        # Build the Claude Code CLI command
         cmd = [
             "claude",
             "-p", self.system_prompt,

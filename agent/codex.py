@@ -1,7 +1,8 @@
 """Codex agent implementation for NatureBench.
 
-重构后的版本：Agent 在解题容器内运行，通过 HTTP 调用宿主机 Evaluation Service
-获取得分，支持多次迭代优化。
+In this version the agent runs inside the solver container and calls the
+host-side Evaluation Service over HTTP to get scores, supporting multiple
+iterative refinements.
 """
 from __future__ import annotations
 
@@ -17,7 +18,7 @@ from .base import BaseAgent
 
 
 # =============================================================================
-# SYSTEM PROMPT — 解题循环模式
+# SYSTEM PROMPT — solve loop mode
 # =============================================================================
 CODEX_BASE_PROMPT = """# Session Rules
 You are running in non-interactive mode: your reply may include narration text, but it must contain at least one tool call. A reply that ends with text only (with no tool call after it) closes the session — even if the text says you'll continue. To plan or pivot, embed it in a tool call (e.g. `bash -lc 'echo "switching to LightGBM" >> /workspace/plan.log'`) and chain the next concrete action in the same call. Keep iterating until /time_remaining is near zero unless you are clearly above SOTA and have plateaued.
@@ -331,7 +332,7 @@ class CodexAgent():
         self.logger = logging.getLogger(f"cns_bench.agent.CodexAgent")
 
     def build_system_prompt(self, task: Dict[str, Any]) -> str:
-        """构建 prompt，注入 eval service URL、task_name、batch_name、eval_output_dir 和时限。"""
+        """Build the prompt, injecting the eval service URL, task_name, batch_name, eval_output_dir, and time limit."""
         task_name = task.get("task_name", "unknown")
         batch_name = task.get("batch_name", "default")
         eval_service_url = task.get("eval_service_url", "http://host.docker.internal:8321")
