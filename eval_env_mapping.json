@@ -1,0 +1,11 @@
+{
+  "environments": {
+    "main": {
+      "conda_env": "cnsbench-eval",
+      "port": 8321,
+      "description": "Evaluator service environment used by all 90 NatureBench release tasks."
+    }
+  },
+  "default_env": "main",
+  "task_routing": {}
+}
