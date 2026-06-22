@@ -1,6 +1,6 @@
-# Configuration: Models, Network, and Evaluation Service
+# Configuration: Agents, Network, and Evaluation Service
 
-## Model and Network Configuration
+## Agent and Network Configuration
 
 NatureBench starts the agent CLI inside Docker containers. Before running, prepare the corresponding authentication method and network access on the host.
 
@@ -15,7 +15,7 @@ export ANTHROPIC_BASE_URL=...
 
 This release does not provide mounting logic for official Claude Code web login state. To use Claude Code, use the API environment variables above or extend the container-side CLI login-state handling yourself.
 
-### Codex
+### Codex CLI
 
 Codex supports two authentication modes.
 
