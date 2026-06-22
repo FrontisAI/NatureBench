@@ -19,15 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-SCOPE NOTE
-
-This MIT License applies ONLY to the original contributions of this benchmark:
-the task specifications, evaluation/scoring code, Dockerfiles, data-preparation
-and harness scripts authored by the NatureBench Authors.
-
-It does NOT apply to the third-party datasets included with or downloaded by the
-tasks. Each task's input data and ground truth retain the license of their
-original source; see the per-task `licenses/` directory (ATTRIBUTION.txt and the
-accompanying license files) for the applicable terms and attribution.

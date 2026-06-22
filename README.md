@@ -31,6 +31,7 @@ The strongest configuration reaches a 17.8% Surpass-SOTA rate, and success remai
 ```text
 .
 ├── LICENSE
+├── NOTICE                   # licensing scope: MIT for original work vs third-party data
 ├── run_naturebench.py        # one-command entry point: download data and launch evaluation
 ├── solve.py                  # main evaluation orchestrator
 ├── eval_service.py           # host-side evaluation service
@@ -480,7 +481,7 @@ Batch-level summary is written to `--out-dir/run_summary.json`. It includes `tot
 
 ## ⚖️License
 
-The top-level [`LICENSE`](LICENSE) applies only to original NatureBench contributions. Third-party data bundled in each task package are governed by the notices in that task's `tasks/<case_id>/licenses/` directory.
+The top-level [`LICENSE`](LICENSE) is the MIT License and applies only to original NatureBench contributions; see [`NOTICE`](NOTICE) for the exact scope. Third-party data bundled in each task package is governed by the notices in that task's `tasks/<case_id>/licenses/` directory.
 
 ## 🎈Citation
 
