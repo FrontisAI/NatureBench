@@ -5,7 +5,7 @@ NatureBench is a cross-discipline benchmark of 90 tasks distilled from peer-revi
 NatureBench is built on NatureGym, an automated pipeline that converts a published paper into a containerized task package comprising a task brief, the paper's dataset, a held-out test set with hidden ground truth, and an automated evaluator.
 
 - Hugging Face dataset: `https://huggingface.co/datasets/FrontisAI/NatureBench`
-- Leaderboard: `https://sai-clj.github.io/naturebench-leaderboard/`
+- Leaderboard: `https://frontisai.github.io/NatureBench/`
 
 ## Repository Contents
 
