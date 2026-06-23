@@ -22,6 +22,9 @@ Task package fields:
 | `environment/Dockerfile.v3` | Task-specific environment, based on the base image defined by `docker/Dockerfile.base`. |
 | `metadata.json` | Task name, domain, compute-resource demand, and per-instance SOTA scores. |
 
+Some large tasks store visible data as `problem/data_archives/*.tar.gz` in the Hugging Face dataset. `run_naturebench.py` automatically extracts these archives after download so that every task exposes the same runtime path: `problem/data/`. After successful extraction, the local `problem/data_archives/`
+directory is removed to avoid keeping a second copy of the same data.
+
 ## Task Lists
 
 `task-set/` lists are divided by resource demand:

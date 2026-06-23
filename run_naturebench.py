@@ -11,8 +11,10 @@ from __future__ import annotations
 import argparse
 import os
 import shlex
+import shutil
 import subprocess
 import sys
+import tarfile
 from datetime import datetime
 from pathlib import Path
 
@@ -68,6 +70,62 @@ def _download_dataset(
         local_dir_use_symlinks=False,
         allow_patterns=allow_patterns,
     )
+
+
+def _validate_data_archive(archive_path: Path, destination: Path) -> None:
+    destination = destination.resolve()
+    with tarfile.open(archive_path, "r:gz") as archive:
+        members = archive.getmembers()
+        has_data_member = False
+        for member in members:
+            target = (destination / member.name).resolve()
+            if destination != target and destination not in target.parents:
+                raise RuntimeError(f"Refusing to extract unsafe archive member {member.name!r} from {archive_path}")
+            if member.issym() or member.islnk():
+                raise RuntimeError(f"Refusing to extract link member {member.name!r} from {archive_path}")
+            if member.name == "data" or member.name.startswith("data/"):
+                has_data_member = True
+        if not has_data_member:
+            raise RuntimeError(f"Archive {archive_path} must contain a top-level data/ directory")
+
+
+def _extract_tar_gz(archive_path: Path, destination: Path) -> None:
+    with tarfile.open(archive_path, "r:gz") as archive:
+        archive.extractall(destination)
+
+
+def _materialize_archived_task_data(tasks_dir: Path, task_ids: list[str], dry_run: bool) -> None:
+    """Expand packaged problem/data archives into the task layout expected by solve.py."""
+    expanded = 0
+    for task_id in task_ids:
+        task_dir = tasks_dir / task_id
+        problem_dir = task_dir / "problem"
+        archive_dir = problem_dir / "data_archives"
+        if not archive_dir.is_dir():
+            continue
+        archives = sorted(archive_dir.glob("*.tar.gz"))
+        if not archives:
+            continue
+        if dry_run:
+            print(f"[dry-run] would extract {len(archives)} data archive(s) for {task_id}")
+            continue
+        for archive_path in archives:
+            _validate_data_archive(archive_path, problem_dir)
+        data_dir = problem_dir / "data"
+        if data_dir.exists():
+            shutil.rmtree(data_dir)
+        for archive_path in archives:
+            print(f"Extracting {archive_path.relative_to(tasks_dir)}", flush=True)
+            _extract_tar_gz(archive_path, problem_dir)
+        if not data_dir.is_dir():
+            raise RuntimeError(
+                f"Data archives for {task_id} did not create {data_dir}. "
+                "Archives must contain a top-level data/ directory."
+            )
+        shutil.rmtree(archive_dir)
+        expanded += 1
+    if expanded:
+        print(f"Materialized archived data for {expanded} task(s).", flush=True)
 
 
 def _resolve_tasks_dir(dataset_root: Path) -> Path:
@@ -249,6 +307,8 @@ def main() -> None:
     if not args.skip_download:
         _download_dataset(args.dataset_id, data_root, args.dataset_revision, selected_tasks, args.dry_run)
     tasks_dir = _resolve_tasks_dir(data_root)
+    if not args.skip_download:
+        _materialize_archived_task_data(tasks_dir, selected_tasks, args.dry_run)
     if args.download_only:
         print(f"Dataset root: {data_root}")
         print(f"Task packages: {tasks_dir}")
