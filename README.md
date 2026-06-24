@@ -87,6 +87,7 @@ This lists only the parameters you set explicitly; options with sensible default
   - `start_eval_services.sh` — start evaluation service from the mapping file
 - `task-set/` — task lists grouped by resource demand
 - `docs/` — detailed configuration, usage, and task-package reference
+- `naturegym/` — NatureGym construction pipeline: skills + batch drivers that build task packages from papers
 - `conda_env.yml` — main orchestration environment
 - `conda_env_eval.yml` — evaluation service environment
 - `eval_env_mapping.json` — task-to-evaluation-service port mapping
@@ -100,6 +101,7 @@ This lists only the parameters you set explicitly; options with sensible default
 | [`docs/configuration.md`](docs/configuration.md) | Agent authentication (Claude Code / Codex CLI / Gemini CLI), the post-hoc judge, network proxy, and the evaluation service. |
 | [`docs/usage.md`](docs/usage.md) | More run examples (CPU, GPU batch, Codex login, resume), the complete parameter reference, and output formats. |
 | [`docs/task-packages.md`](docs/task-packages.md) | Task package structure and the resource-grouped task lists. |
+| [`naturegym/`](naturegym/README.md) | The NatureGym construction pipeline that builds task packages from Nature-family papers (skills + batch drivers). |
 
 ## ⚖️License
 
@@ -110,9 +112,13 @@ The top-level [`LICENSE`](LICENSE) is the MIT License and applies only to origin
 If you use NatureBench in your research, please cite our work:
 
 ```bibtex
-@misc{naturebench2026,
-  title        = {NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?},
-  howpublished = {\url{https://github.com/FrontisAI/NatureBench}},
-  year         = {2026}
+@misc{wang2026naturebench,
+  title         = {NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?},
+  author        = {Yuru Wang and Lejun Cheng and Yuxin Zuo and Sihang Zeng and Bingxiang He and Che Jiang and Junlin Yang and Yuchong Wang and Kaikai Zhao and Weifeng Huang and Kai Tian and Zhenzhao Yuan and Jincheng Zhong and Weizhi Wang and Ning Ding and Bowen Zhou and Kaiyan Zhang},
+  year          = {2026},
+  eprint        = {2606.24530},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2606.24530}
 }
 ```
