@@ -47,8 +47,10 @@ def _download_dataset(
     task_ids: list[str],
     dry_run: bool,
 ) -> None:
-    allow_patterns = ["README.md", "LICENSE", "manifest.jsonl"]
-    allow_patterns.extend(f"tasks/{task_id}/**" for task_id in task_ids)
+    # Download only the selected task packages (each tasks/<id>/** subtree, which
+    # includes that task's licenses/ attribution). Repo-level README/LICENSE/manifest
+    # are dataset-card files and are not fetched.
+    allow_patterns = [f"tasks/{task_id}/**" for task_id in task_ids]
 
     if dry_run:
         print(f"[dry-run] would download {len(task_ids)} task(s) from {dataset_id} to {data_dir}")
