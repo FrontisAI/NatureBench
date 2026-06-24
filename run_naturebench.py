@@ -74,26 +74,11 @@ def _download_dataset(
     )
 
 
-def _validate_data_archive(archive_path: Path, destination: Path) -> None:
-    destination = destination.resolve()
-    with tarfile.open(archive_path, "r:gz") as archive:
-        members = archive.getmembers()
-        has_data_member = False
-        for member in members:
-            target = (destination / member.name).resolve()
-            if destination != target and destination not in target.parents:
-                raise RuntimeError(f"Refusing to extract unsafe archive member {member.name!r} from {archive_path}")
-            if member.issym() or member.islnk():
-                raise RuntimeError(f"Refusing to extract link member {member.name!r} from {archive_path}")
-            if member.name == "data" or member.name.startswith("data/"):
-                has_data_member = True
-        if not has_data_member:
-            raise RuntimeError(f"Archive {archive_path} must contain a top-level data/ directory")
-
-
 def _extract_tar_gz(archive_path: Path, destination: Path) -> None:
     with tarfile.open(archive_path, "r:gz") as archive:
-        archive.extractall(destination)
+        # Single-pass safe extraction: the stdlib 'data' filter rejects absolute
+        # paths, parent-dir traversal, and out-of-tree links (Python 3.11.4+/3.12).
+        archive.extractall(destination, filter="data")
 
 
 def _materialize_archived_task_data(tasks_dir: Path, task_ids: list[str], dry_run: bool) -> None:
@@ -111,8 +96,6 @@ def _materialize_archived_task_data(tasks_dir: Path, task_ids: list[str], dry_ru
         if dry_run:
             print(f"[dry-run] would extract {len(archives)} data archive(s) for {task_id}")
             continue
-        for archive_path in archives:
-            _validate_data_archive(archive_path, problem_dir)
         data_dir = problem_dir / "data"
         if data_dir.exists():
             shutil.rmtree(data_dir)
