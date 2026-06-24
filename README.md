@@ -75,7 +75,7 @@ This lists only the parameters you set explicitly; options with sensible default
 
 ## 🌱NatureGym
 
-The task packages are built by **NatureGym**, an automated, Skills-based pipeline that turns a published Nature-family paper into a containerized, runnable task. It filters papers, acquires and verifies the data, and assembles the task package (brief, data, hidden evaluator, environment), while an information firewall removes the source method so that agents must *discover* solutions rather than reproduce them.
+The task packages are built by **NatureGym**, an automated, Skills-based pipeline that turns a published Nature-family paper into a containerized, runnable task. It filters papers, acquires and verifies the data, and assembles the task package (brief, data, evaluator, environment, metadata), while an information firewall removes the source method so that agents must *discover* solutions rather than reproduce them.
 
 The pipeline runs as a chain of Claude Code skills driven by batch scripts, all under [`naturegym/`](naturegym/). See [`naturegym/README.md`](naturegym/README.md) for the stage-by-stage flow, the construction skills, and how to run them.
 
