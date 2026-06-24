@@ -26,7 +26,7 @@ Raw paper (PDF + HTML)
 [4] task-build            data organization, task documentation, evaluator, metadata, environment
    │   ├─ task-verify       36 static + dynamic checks
    │   └─ task-fix          repair failed checks (iterative)
-   ▼
+   ▼  (task_build.status == "success")
 [5] Dockerfile verify/fix  build the image on a real machine, verify imports/versions
    │   ├─ scripts/batch_dockerfile_verify.sh   Docker build + import smoke test
    │   └─ dockerfile-fix         repair Docker build / import failures
@@ -92,5 +92,5 @@ python scripts/batch_paper_preprocess.py -j 4 ./papers
 
 Each script also accepts `--single <folder>` for one paper and `--start N --end N` for a subfolder range (`python scripts/batch_paper_filter.py --help`).
 
-Stages are gated: a paper proceeds only when the previous stage records success in `filter_result.json` (`passed`, then `data_check_passed`). The construction is agent-driven and the reviews surface critical corrections for human confirmation, so this is a semi-automated pipeline rather than a single fire-and-forget command.
+Stages are gated: a paper proceeds only when the previous stage records success in `filter_result.json` (`passed`, then `data_check_passed`, then `task_build.status == "success"`). The construction is agent-driven and the reviews surface critical corrections for human confirmation.
 
