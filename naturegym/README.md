@@ -72,7 +72,6 @@ naturegym/
 
 ## Requirements
 
-- [Claude Code](https://docs.claude.com/en/docs/claude-code) CLI on `PATH` with credentials configured (see [`../docs/configuration.md`](../docs/configuration.md)) — the batch drivers invoke `claude -p`.
 - The **`naturegym` construction environment** (Python 3.11), separate from the evaluation environments. Create and activate it with:
   ```bash
   conda env create -f naturegym/environment.yml

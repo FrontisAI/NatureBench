@@ -16,6 +16,7 @@ dependencies:
   - python=3.11
   - pip
   - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cpu
       # --- required by the pipeline scripts ---
       - pymupdf          # `fitz`: PDF figure/table extraction (paper-preprocess)
       - beautifulsoup4   # HTML -> Markdown and link extraction (paper-preprocess)
@@ -30,5 +31,4 @@ dependencies:
       - scipy
       - nibabel
       - tifffile
-      # Optional: install `torch` (CPU) as well if you need to inspect
-      # .pt/.pth tensor files; omitted here to keep the environment light.
+      - torch==2.6.0+cpu   # CPU build; inspect .pt/.pth tensor files (data-check)
