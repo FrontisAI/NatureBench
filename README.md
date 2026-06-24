@@ -6,7 +6,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-b31b1b?style=for-the-badge&logo=arxiv&logoColor=ffffff)](https://arxiv.org/abs/2606.24530) &nbsp; [![Hugging Face Dataset](https://img.shields.io/badge/HUGGINGFACE-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/FrontisAI/NatureBench) &nbsp; [![Leaderboard](https://img.shields.io/badge/Leaderboard-steelblue?style=for-the-badge&logo=googlechrome&logoColor=ffffff)](https://frontisai.github.io/NatureBench/)
 
-[📖 Overview](#overview) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
+[📖 Overview](#overview) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
 </div>
 
@@ -73,6 +73,12 @@ python run_naturebench.py \
 
 This lists only the parameters you set explicitly; options with sensible defaults are omitted (see [Quick Start defaults](docs/usage.md#quick-start-defaults) for the full list and their values). Adjust `--gpu-devices` / `--max-workers` to your hardware, or use `--tasks cpu` (without the GPU flags) for a GPU-free run. The complete parameter reference is in [`docs/usage.md`](docs/usage.md).
 
+## 🌱NatureGym
+
+The task packages are built by **NatureGym**, an automated, Skills-based pipeline that turns a published Nature-family paper into a containerized, runnable task. It filters papers, acquires and verifies the data, and assembles the task package (brief, data, hidden evaluator, environment), while an information firewall removes the source method so that agents must *discover* solutions rather than reproduce them.
+
+The pipeline runs as a chain of Claude Code skills driven by batch scripts, all under [`naturegym/`](naturegym/). See [`naturegym/README.md`](naturegym/README.md) for the stage-by-stage flow, the construction skills, and how to run them.
+
 ## 📦Repository Contents
 
 - `run_naturebench.py` — one-command entry point: download data and launch evaluation
@@ -101,7 +107,6 @@ This lists only the parameters you set explicitly; options with sensible default
 | [`docs/configuration.md`](docs/configuration.md) | Agent authentication (Claude Code / Codex CLI / Gemini CLI), the post-hoc judge, network proxy, and the evaluation service. |
 | [`docs/usage.md`](docs/usage.md) | More run examples (CPU, GPU batch, Codex login, resume), the complete parameter reference, and output formats. |
 | [`docs/task-packages.md`](docs/task-packages.md) | Task package structure and the resource-grouped task lists. |
-| [`naturegym/`](naturegym/README.md) | The NatureGym construction pipeline that builds task packages from Nature-family papers (skills + batch drivers). |
 
 ## ⚖️License
 
