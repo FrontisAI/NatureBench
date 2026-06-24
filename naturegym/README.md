@@ -72,12 +72,17 @@ naturegym/
 
 ## Requirements
 
-- Python 3.11+.
+- [Claude Code](https://docs.claude.com/en/docs/claude-code) CLI on `PATH` with credentials configured (see [`../docs/configuration.md`](../docs/configuration.md)) — the batch drivers invoke `claude -p`.
+- The **`naturegym` construction environment** (Python 3.11), separate from the evaluation environments. Create and activate it with:
+  ```bash
+  conda env create -f naturegym/environment.yml
+  conda activate naturegym
+  ```
 - Docker, for stage 5 (image build + import verification). Task images inherit from `naturebench-base:v3` (built from `../docker/Dockerfile.base`).
 
 ## Running
 
-Each batch driver runs one stage over a parent directory of per-paper folders, in parallel with `-j`. Run them **from the `naturegym/` directory** so the agent discovers the skills under `.claude/skills/`:
+With the `naturegym` environment active, each batch driver runs one stage over a parent directory of per-paper folders, in parallel with `-j`. Run them **from the `naturegym/` directory** so the agent discovers the skills under `.claude/skills/`:
 
 ```bash
 cd naturegym

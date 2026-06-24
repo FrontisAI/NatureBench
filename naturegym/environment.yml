@@ -1,0 +1,34 @@
+# NatureGym construction environment.
+#
+# This environment runs the construction pipeline (the batch drivers under
+# scripts/ and the skill scripts under .claude/skills/). It is SEPARATE from the
+# evaluation environments (`naturebench` / `naturebench-eval`) in the repo root.
+#
+#   conda env create -f naturegym/environment.yml
+#   conda activate naturegym
+#
+# Note: docker/Dockerfile-side verification (docker_env_verify.py) runs INSIDE
+# each task image during stage 5 and does not use this environment.
+name: naturegym
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      # --- required by the pipeline scripts ---
+      - pymupdf          # `fitz`: PDF figure/table extraction (paper-preprocess)
+      - beautifulsoup4   # HTML -> Markdown and link extraction (paper-preprocess)
+      - requests         # link validation and size estimation (paper-filter)
+      - urllib3
+      # --- data inspection (data-check / inspect_data.py); imported lazily
+      #     per file format, so each is optional but recommended ---
+      - numpy
+      - pandas
+      - h5py
+      - pyarrow
+      - scipy
+      - nibabel
+      - tifffile
+      # Optional: install `torch` (CPU) as well if you need to inspect
+      # .pt/.pth tensor files; omitted here to keep the environment light.
