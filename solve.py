@@ -42,14 +42,30 @@ from config_loader import load_yaml_config, merge_args_with_config
 from eval_service import ScoreTracker, start_server_background
 from tqdm import tqdm
 
+# Canonical in-container command builders + resume prompts. These live in
+# agent/cli_commands.py so solve.py and the agent adapter layer share one
+# source of truth for what gets run inside the container. The leading-underscore
+# aliases preserve the names used throughout this module.
+from agent.cli_commands import (
+    _CODEX_HOME,
+    build_claude_cmd as _build_claude_cmd,
+    build_gemini_cmd as _build_gemini_cmd,
+    build_codex_cmd as _build_codex_cmd,
+    codex_exec_cmd as _codex_exec_cmd,
+    RESUME_PROMPT_CLAUDE as _RESUME_PROMPT_CLAUDE,
+    RESUME_PROMPT_CODEX as _RESUME_PROMPT_CODEX,
+    RESUME_PROMPT_GEMINI as _RESUME_PROMPT_GEMINI,
+)
+# Agent registry. Importing cli_adapters registers the built-in CLI adapters
+# (claude/codex/gemini); custom agents register themselves the same way.
+from agent.adapter import REGISTRY, AgentRunContext
+import agent.cli_adapters  # noqa: F401  (registers built-in adapters on import)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [solve] %(levelname)s %(message)s",
 )
 logger = logging.getLogger("cns_bench.solve")
-
-
-_CODEX_HOME = "/tmp/codex-home"
 
 
 # ---------------------------------------------------------------------------
@@ -247,12 +263,6 @@ def _prepare_task_codex_state_dir(
 
 
 
-def _codex_exec_cmd(base_cmd: List[str]) -> List[str]:
-    """Run Codex with a dedicated HOME so auth lookup is explicit."""
-    return ["env", f"HOME={_CODEX_HOME}", *base_cmd]
-
-
-
 def _proxy_env_args(
     proxy_host: str,
     http_port: int,
@@ -442,128 +452,6 @@ def _remove_container(container_name: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Agent CLI command builders
-# ---------------------------------------------------------------------------
-
-def _build_claude_cmd(
-    system_prompt: str,
-    model: str,
-    *,
-    session_id: Optional[str] = None,
-    resume_session: bool = False,
-) -> List[str]:
-    """Build the Claude Code CLI command to run inside the container.
-
-    When session_id is provided:
-      - resume_session=False  → new session pinned to that UUID via --session-id.
-      - resume_session=True   → continue prior session via --resume <uuid>.
-
-    Without session_id this starts a fresh Claude Code session.
-    """
-    cmd: List[str] = ["claude"]
-    if session_id:
-        if resume_session:
-            cmd.extend(["--resume", session_id])
-        else:
-            cmd.extend(["--session-id", session_id])
-    cmd.extend([
-        "-p", system_prompt,
-        "--model", model,
-        "--allowedTools", "Task,TaskOutput,Bash,Glob,Grep,ExitPlanMode,Read,Edit,Write,NotebookEdit,TodoWrite,KillShell,AskUserQuestion,Skill,EnterPlanMode,MCPSearch",
-        "--disallowedTools", "WebSearch,WebFetch",
-        "--permission-mode", "dontAsk",
-        "--output-format", "stream-json",
-        "--verbose",
-    ])
-    return cmd
-
-
-def _build_gemini_cmd(
-    system_prompt: str,
-    model: str,
-    *,
-    session_id: Optional[str] = None,
-    resume_session: bool = False,
-) -> List[str]:
-    """Build the Gemini CLI command to run inside the container.
-
-    Uses --output-format stream-json so the CLI prints structured JSONL events
-    (init / message / result) to stdout. Without this flag the CLI defaults to
-    a TTY/interactive mode that (a) produces no parsable log and (b) in the
-    container uses native Gemini streaming.
-
-    When session_id is provided:
-      - resume_session=False  -> new session pinned to that UUID via --session-id.
-      - resume_session=True   -> continue prior session via --resume <uuid>.
-    """
-    cmd: List[str] = ["gemini"]
-    # Gemini CLI v1+ only accepts --resume <uuid|index|"latest">. There is no
-    # --session-id flag, so fresh runs must not pin a UUID; the CLI generates
-    # one and emits it in the stream-json "init" event.
-    if session_id and resume_session:
-        cmd.extend(["--resume", session_id])
-    cmd.extend([
-        "-p", system_prompt,
-        "--model", model,
-        "--yolo",
-        "--policy", "/etc/naturebench/no-web.toml",
-        "--output-format", "stream-json",
-    ])
-    return cmd
-
-
-def _build_codex_cmd(
-    system_prompt: str,
-    model: str,
-    *,
-    resume_session_id: Optional[str] = None,
-    use_api_key: bool = False,
-    api_base_url: Optional[str] = None,
-) -> List[str]:
-    """Build the Codex CLI command.
-
-    Two auth-mode branches:
-
-    * ``use_api_key=False`` (device-auth): rely on the
-      mounted ``~/.codex`` login state. No provider override needed.
-
-    * ``use_api_key=True``: use ``OPENAI_API_KEY``. If ``OPENAI_BASE_URL`` is
-      set, register it as an OpenAI-compatible custom provider.
-    """
-    head: List[str] = ["codex", "exec"]
-    if resume_session_id:
-        head.append("resume")
-        head.append(resume_session_id)
-
-    cmd: List[str] = [*head]
-    # `-C / --cd <DIR>` is only on `codex exec` (fresh); `codex exec resume`
-    # rejects it. The container WORKDIR is already /workspace, so omitting
-    # the flag on the resume path lands in the same cwd.
-    if not resume_session_id:
-        cmd.extend(["-C", "/workspace"])
-    cmd.extend([
-        "--skip-git-repo-check",
-        "--yolo",
-        "--json",
-        "-c", "web_search=disabled",
-    ])
-    if use_api_key and api_base_url:
-        base_url = api_base_url
-        cmd.extend([
-            "-c", 'model_provider="openai_compatible"',
-            "-c", 'model_providers.openai_compatible.name="OpenAI Compatible"',
-            "-c", f'model_providers.openai_compatible.base_url="{base_url}"',
-            "-c", 'model_providers.openai_compatible.env_key="OPENAI_API_KEY"',
-            "-c", 'model_providers.openai_compatible.wire_api="responses"',
-        ])
-    cmd.extend([
-        "-m", model,
-        system_prompt,
-    ])
-    return cmd
-
-
-# ---------------------------------------------------------------------------
 # Single-task solver
 # ---------------------------------------------------------------------------
 
@@ -580,52 +468,9 @@ def _host_url(eval_service_url: str) -> str:
 # Default Claude Code mounts ~/.claude → /root/.claude inside the container.
 # We pin the workspace cwd to /workspace, so the CLI stores its session jsonl at
 # `~/.claude/projects/-workspace/<sid>.jsonl`.
-# Claude resume prompt: minimal notice (claude does not need Session Rules,
-# and does not need extra time-budget reminders — the time-budget bullet is
-# already in CLAUDE_BASE_PROMPT and claude tends to use the full time anyway).
-_RESUME_PROMPT_CLAUDE = (
-    "[RESUME NOTICE] You were previously interrupted on this task. "
-    "The /workspace contents and any prior /evaluate submissions are preserved. "
-    "Continue from where you left off. "
-    "Check `/time_remaining` first before deciding what to do next."
-)
-
-# Codex resume prompt: re-inject the Session Rules block (the in-container codex
-# CLI re-reads the system prompt fresh on resume) PLUS a time-budget reminder
-# (codex tends to exit early; this counters that on resume runs).
-_RESUME_PROMPT_CODEX = (
-    "# Session Rules\n"
-    "You are running in non-interactive mode: your reply may include narration "
-    "text, but it must contain at least one tool call. A reply that ends with "
-    "text only (with no tool call after it) closes the session — even if the "
-    "text says you'll continue. To plan or pivot, embed it in a tool call "
-    "(e.g. `bash -lc 'echo \"switching to LightGBM\" >> /workspace/plan.log'`) "
-    "and chain the next concrete action in the same call. Keep iterating until "
-    "/time_remaining is near zero unless you are clearly above SOTA and have plateaued.\n\n"
-    "[RESUME NOTICE] You were previously interrupted on this task. "
-    "The /workspace contents and any prior /evaluate submissions are preserved. "
-    "Continue from where you left off. "
-    "**Use the full remaining time budget**: keep iterating, profiling, and refining until "
-    "`/time_remaining` is close to zero. Do **not** exit early just because you have a "
-    "working baseline or a 'reasonable' score. Only consider stopping early if your "
-    "`best_aggregate_improvement` is clearly above 0 (above SOTA) AND further attempts have "
-    "plateaued for several consecutive evaluations. "
-    "Check `/time_remaining` first before deciding what to do next."
-)
-
-# Gemini resume prompt: Gemini CLI re-reads the system prompt fresh on resume,
-# so we inject a time-budget reminder similar to codex.
-_RESUME_PROMPT_GEMINI = (
-    "[RESUME NOTICE] You were previously interrupted on this task. "
-    "The /workspace contents and any prior /evaluate submissions are preserved. "
-    "Continue from where you left off. "
-    "**Use the full remaining time budget**: keep iterating, profiling, and refining until "
-    "`/time_remaining` is close to zero. Do **not** exit early just because you have a "
-    "working baseline or a 'reasonable' score. Only consider stopping early if your "
-    "`best_aggregate_improvement` is clearly above 0 (above SOTA) AND further attempts have "
-    "plateaued for several consecutive evaluations. "
-    "Check `/time_remaining` first before deciding what to do next."
-)
+# The resume prompts themselves are defined in agent/cli_commands.py and
+# imported above as _RESUME_PROMPT_CLAUDE / _RESUME_PROMPT_CODEX /
+# _RESUME_PROMPT_GEMINI.
 
 # Backward-compat alias (in case anything still imports the old name).
 _RESUME_PROMPT = _RESUME_PROMPT_CLAUDE
@@ -754,34 +599,32 @@ def _has_prior_state(task_out_dir: Path) -> bool:
 
 
 def _archive_prior_state_for_force_fresh(task_out_dir: Path, task_name: str) -> None:
-    """For --force-fresh: move all stateful artifacts out of the way (no delete)
-    so that the next fresh run starts from clean. We rename rather than rm -rf
-    to keep history recoverable.
+    """For --force-fresh: move ALL prior artifacts in the task output directory
+    out of the way (no delete) so the next fresh run starts from clean.
+
+    The task output directory (``out_dir/<task>``) holds only prior-run output —
+    the task's input data lives in the task package (``data_dir/<task>``) — and
+    this runs before any fresh artifact is created, so archiving the whole
+    directory is safe and agent-agnostic (it covers every built-in CLI and any
+    custom agent without a hardcoded file list). We rename rather than rm -rf to
+    keep history recoverable, and leave any earlier archive directories in place
+    rather than nesting them.
     """
+    if not task_out_dir.is_dir():
+        return
     ts = int(time.time())
     bak_root = task_out_dir / f"_force_fresh_archive_{ts}"
+    # Snapshot entries before creating bak_root so it is never moved into itself.
+    entries = [p for p in sorted(task_out_dir.iterdir())
+               if not p.name.startswith("_force_fresh_archive_")]
     moved = []
-    for name in (
-        "result.json",
-        "submissions.jsonl",
-        "claude_session_id.txt",
-        ".claude_state",
-        "codex_session_id.txt",
-        ".codex_state",
-        "claude.jsonl",
-        "claude.err",
-        "codex.jsonl",
-        "codex.err",
-        "judge_verdict.json",
-    ):
-        src = task_out_dir / name
-        if src.exists():
-            bak_root.mkdir(parents=True, exist_ok=True)
-            src.rename(bak_root / name)
-            moved.append(name)
+    for src in entries:
+        bak_root.mkdir(parents=True, exist_ok=True)
+        src.rename(bak_root / src.name)
+        moved.append(src.name)
     if moved:
         logger.warning(
-            "[%s] --force-fresh: archived %d artifact(s) into %s/",
+            "[%s] --force-fresh: archived %d item(s) into %s/",
             task_name, len(moved), bak_root.name,
         )
 
@@ -1646,37 +1489,33 @@ def _run_single_task(
             "time_limit_minutes": time_limit_minutes,
         }
 
-        from agent import ClaudeAgent, CodexAgent, GeminiAgent
-        if agent_name == "claude":
-            agent = ClaudeAgent(model_name=model, mode=mode)
-            system_prompt = _RESUME_PROMPT_CLAUDE if is_resume else agent.build_system_prompt(task_info)
-            agent_cmd = _build_claude_cmd(
-                system_prompt, model,
-                session_id=claude_session_id,
-                resume_session=is_resume,
-            )
-        elif agent_name == "codex":
-            agent = CodexAgent(model_name=model, mode=mode)
-            system_prompt = _RESUME_PROMPT_CODEX if is_resume else agent.build_system_prompt(task_info)
-            agent_cmd = _build_codex_cmd(
-                system_prompt,
-                model,
-                resume_session_id=codex_resume_sid,
-                use_api_key=codex_use_api_key,
-                api_base_url=os.environ.get("OPENAI_BASE_URL"),
-            )
-            if task_codex_state_dir is not None:
-                agent_cmd = _codex_exec_cmd(agent_cmd)
-        elif agent_name == "gemini":
-            agent = GeminiAgent(model_name=model, mode=mode)
-            system_prompt = _RESUME_PROMPT_GEMINI if is_resume else agent.build_system_prompt(task_info)
-            agent_cmd = _build_gemini_cmd(
-                system_prompt, model,
-                session_id=gemini_session_id,
-                resume_session=is_resume,
-            )
-        else:
-            raise ValueError(f"Unsupported agent for Docker mode: {agent_name}")
+        # Dispatch through the agent registry. Built-in CLIs (claude/codex/
+        # gemini) and any custom agent are selected uniformly: the adapter owns
+        # the prompt and the exact in-container command. The session/auth fields
+        # below are populated by the agent-specific setup above; they are simply
+        # ignored by adapters that do not use them.
+        adapter = REGISTRY.get(agent_name)
+        agent_ctx = AgentRunContext(
+            system_prompt="",
+            model=model,
+            mode=mode,
+            task_name=task_name,
+            batch_name=out_dir.name,
+            task_out_dir=task_out_dir,
+            workspace_dir=workspace_dir,
+            eval_service_url=eval_service_url,
+            eval_output_dir=eval_output_dir,
+            time_limit_minutes=time_limit_minutes,
+            is_resume=is_resume,
+            session_id=(claude_session_id if claude_session_id is not None else gemini_session_id),
+            codex_resume_sid=codex_resume_sid,
+            codex_use_api_key=codex_use_api_key,
+            codex_api_base_url=os.environ.get("OPENAI_BASE_URL"),
+            codex_state_active=(task_codex_state_dir is not None),
+        )
+        agent_ctx.system_prompt = adapter.system_prompt(agent_ctx)
+        system_prompt = agent_ctx.system_prompt
+        agent_cmd = adapter.build_command(agent_ctx)
 
         # 3. Construct docker run command
         # Container name: include batch (out_dir.name) so multiple solve.py
@@ -1775,6 +1614,10 @@ def _run_single_task(
                     "-v", f"{str(_policy_src.resolve())}:/etc/naturebench/no-web.toml:ro",
                 ])
 
+        # Adapter-declared extra mounts. Built-in CLIs declare none (their mounts
+        # are handled above); a custom agent adds host paths it needs here.
+        docker_cmd.extend(adapter.docker_mounts(agent_ctx))
+
         # Reproduce mode: mount paper PDF and paper markdown
         if mode == "reproduce":
             # Mount paper PDF (named {task_name}.pdf at task_root)
@@ -1821,6 +1664,10 @@ def _run_single_task(
                         docker_cmd.extend(["-e", f"{key}={val}"])
                 else:
                     docker_cmd.extend(["-e", f"{key}={val}"])
+
+        # Adapter-declared extra env. Built-in CLIs declare none (the keys above
+        # cover them); a custom agent injects additional variables here.
+        docker_cmd.extend(adapter.extra_env(agent_ctx))
 
         # Codex official auth persistence: mount host auth dir into the
         # container's HOME/.codex so `codex login --device-auth` can be reused.
@@ -2364,8 +2211,10 @@ def main() -> None:
         help="Output directory for results.",
     )
     parser.add_argument(
-        "--agent", default=None, choices=["claude", "codex", "gemini"],
-        help="Agent to use (claude, codex, or gemini).",
+        "--agent", default=None,
+        help="Agent to use. Built-in: claude, codex, gemini. Custom agents "
+             "registered via the agent registry are also accepted; an unknown "
+             "name is rejected with the list of registered agents.",
     )
     parser.add_argument(
         "--model", default=None,

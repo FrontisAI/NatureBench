@@ -23,6 +23,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+# Agent registry: each adapter declares where its conversation transcript lives
+# (internal session file, streamed stdout log, or nothing). Importing
+# cli_adapters registers the built-in CLI adapters.
+from agent.adapter import REGISTRY
+import agent.cli_adapters  # noqa: F401  (registers built-in adapters on import)
+
 logger = logging.getLogger("judge")
 
 
@@ -569,94 +575,30 @@ def excerpt_agent_log(log_path: Path, max_bytes: int = MAX_LOG_EXCERPT_BYTES) ->
     return "\n---\n".join(kept_lines)
 
 
-def _find_state_log(task_out_dir: Path, agent_name: str) -> Optional[Path]:
-    """Locate the agent's internal session file under .{agent}_state/.
-
-    These files are the agent CLI's own conversation record — more complete
-    than the streamed <agent>.jsonl. Layout differs per agent:
-      - claude: .claude_state/projects/*/<session_id>.jsonl
-      - codex:  .codex_state/sessions/YYYY/MM/DD/rollout-*-<session_id>.jsonl
-      - gemini: .gemini_state/tmp/<project_id>/chats/*.jsonl
-
-    Returns the session file matching the recorded session id when possible,
-    otherwise the most recently modified candidate, or None.
-    """
-    def _newest(paths: List[Path]) -> Optional[Path]:
-        existing = [p for p in paths if p.is_file()]
-        if not existing:
-            return None
-        try:
-            return max(existing, key=lambda p: p.stat().st_mtime)
-        except OSError:
-            return existing[0]
-
-    if agent_name == "claude":
-        proj_dir = task_out_dir / ".claude_state" / "projects"
-        if not proj_dir.is_dir():
-            return None
-        cands = list(proj_dir.rglob("*.jsonl"))
-        sid_file = task_out_dir / "claude_session_id.txt"
-        if sid_file.exists():
-            sid = sid_file.read_text(encoding="utf-8").strip()
-            for c in cands:
-                if c.stem == sid:
-                    return c
-        return _newest(cands)
-
-    if agent_name == "codex":
-        sess_dir = task_out_dir / ".codex_state" / "sessions"
-        if not sess_dir.is_dir():
-            return None
-        cands = list(sess_dir.rglob("rollout-*.jsonl"))
-        sid_file = task_out_dir / "codex_session_id.txt"
-        if sid_file.exists():
-            sid = sid_file.read_text(encoding="utf-8").strip()
-            for c in cands:
-                if sid in c.name:
-                    return c
-        return _newest(cands)
-
-    if agent_name == "gemini":
-        tmp_dir = task_out_dir / ".gemini_state" / "tmp"
-        if not tmp_dir.is_dir():
-            return None
-        # Gemini CLI writes the chat record as <chats>/<session-id>.json
-        # or session-<ts>-<sid8>.json. Older builds used .jsonl; accept both.
-        cands: List[Path] = []
-        for pat in ("*/chats/*.json", "*/chats/*.jsonl"):
-            cands.extend(tmp_dir.glob(pat))
-        sid_file = task_out_dir / "gemini_session_id.txt"
-        if sid_file.exists():
-            sid = sid_file.read_text(encoding="utf-8").strip()
-            short = sid[:8]
-            for c in cands:
-                # Filename variants: <session_id>.{json,jsonl},
-                #                    session-<ts>-<sid8>.{json,jsonl}.
-                if c.stem == sid or sid in c.name or short in c.name:
-                    return c
-        return _newest(cands)
-
-    return None
-
-
 def collect_judge_inputs(task_out_dir: Path, agent_name: str = "claude") -> Dict[str, Any]:
     """Bundle the inputs needed for one judge call.
 
-    Log source priority:
-      1. The agent's internal session file under .{agent}_state/ (most complete).
-      2. The streamed <agent>.jsonl produced by solve.py.
-    If neither exists, the log excerpt is empty and judge_task reports a
-    judge_error rather than guessing at an unrelated *.jsonl file.
+    The agent adapter decides where (if anywhere) its conversation transcript
+    lives — its internal session file, a streamed stdout log, or nothing at all.
+    A custom agent that exposes no transcript is judged on its workspace code
+    alone; there is no implicit ``<agent>.jsonl`` assumption.
     """
     workspace = task_out_dir / "workspace"
-    log_path = _find_state_log(task_out_dir, agent_name)
-    log_source = "state"
-    if log_path is None or not log_path.exists():
-        log_path = task_out_dir / f"{agent_name}.jsonl"
-        log_source = "stream"
+    log_path: Optional[Path] = None
+    excerptor = excerpt_agent_log
+    if REGISTRY.has(agent_name):
+        adapter = REGISTRY.get(agent_name)
+        log_path = adapter.transcript_path(task_out_dir)
+        excerptor = adapter.transcript_excerptor() or excerpt_agent_log
+    if log_path is None:
+        log_source = "none"
+        excerpt = ""
+    else:
+        log_source = "stream" if log_path.name == f"{agent_name}.jsonl" else "state"
+        excerpt = excerptor(log_path)
     return {
         "code_files": collect_code_files(workspace),
-        "agent_log_excerpt": excerpt_agent_log(log_path),
+        "agent_log_excerpt": excerpt,
         "log_source": log_source,
         "log_path": str(log_path) if log_path else None,
     }

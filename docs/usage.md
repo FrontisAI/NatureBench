@@ -182,7 +182,7 @@ When reusing the same `--out-dir`, tasks with prior state require an explicit ch
 
 | Parameter | Default | Usage |
 |---|---|---|
-| `--agent` | none | Required unless `--download-only` is used. Must be `claude`, `codex`, or `gemini`. |
+| `--agent` | none | Required unless `--download-only` is used. Built-in: `claude`, `codex`, or `gemini`; a custom agent registered is also accepted (see [`docs/custom-agents.md`](custom-agents.md)). |
 | `--model` | none | Model name passed to the corresponding CLI. Required unless `--download-only` is used. |
 | `--mode` | `base` | Public benchmark protocol uses `base`. `reproduce` additionally mounts paper PDF/Markdown for task calibration. |
 | `--timeout` | `14400` | Per-task agent solve budget, in seconds. |
@@ -258,7 +258,7 @@ If only shared-pool tasks are run, omit normal `--gpu-devices` and make `--tasks
 | `none` | none | Do not inject proxy variables; containers use Docker default networking directly. |
 
 - **Ports:** `--proxy-http-port` and `--proxy-socks-port` (used by `embedded` / `sidecar`) default to `7890` and `7891`.
-- **Per-agent defaults:** Codex defaults to `embedded`; Claude and Gemini default to `host`.
+- **Per-agent defaults:** Codex defaults to `embedded`; others default to `host`.
 - **Override:** an explicit `--proxy-mode` overrides these defaults.
 
 For `embedded`, provide your own Clash/Mihomo bundle (not included in this repository); `--proxy-bundle` defaults to `./.clash-bundle`:

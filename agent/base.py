@@ -8,8 +8,6 @@ import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from .backend.base_backend import LLMBackend
-
 # =============================================================================
 # SYSTEM PROMPT
 # =============================================================================
@@ -80,6 +78,10 @@ class BaseAgent:
         mode: str = "base",  # "base" or "reference"
     ) -> None:
         self.model_name = model_name
+        # Imported lazily so the single-shot LLM backend (and its optional
+        # openai/backoff dependencies) is only required when a BaseAgent is
+        # actually constructed. The CLI agents do not use this path.
+        from .backend.base_backend import LLMBackend
         self.backend = LLMBackend(model_name, **(backend_kwargs or {}))
         self.trajectory: List[Dict[str, Any]] = []
         self.system_prompt = ""

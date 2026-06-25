@@ -74,6 +74,8 @@ python run_naturebench.py \
 This lists only the parameters you set explicitly; options with sensible defaults are omitted (see [Quick Start defaults](docs/usage.md#quick-start-defaults) for the full list and their values). Adjust `--gpu-devices` / `--max-workers` to your hardware, or use `--tasks cpu` (without the GPU flags) for a GPU-free run. 
 In our experiments each task ran on a single GPU matched to its compute tier: `gpu_low` tasks on one NVIDIA RTX 3090/4090 (24 GB) and `gpu_high` tasks on one NVIDIA A800 (80 GB, A100-class), with the 3 `cpu` tasks using none. The complete parameter reference is in [`docs/usage.md`](docs/usage.md).
 
+The built-in `--agent` options are `claude`, `codex`, and `gemini`; to run your own agent on NatureBench instead, see [`docs/custom-agents.md`](docs/custom-agents.md).
+
 ## 🌱NatureGym
 
 The task packages are built by **NatureGym**, an automated, Skills-based pipeline that turns a published Nature-family paper into a containerized, runnable task. It filters papers, acquires and verifies the data, and assembles the task package (brief, data, evaluator, environment, metadata), while an information firewall removes the source method so that agents must *discover* solutions rather than reproduce them.
@@ -86,14 +88,14 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 - `solve.py` — main evaluation orchestrator
 - `eval_service.py` — host-side evaluation service
 - `judge.py` — post-hoc validity judge
-- `agent/` — adapters for Claude Code / Codex CLI / Gemini CLI
+- `agent/` — agent adapters and registry for Claude Code / Codex CLI / Gemini CLI (and custom agents)
 - `evaluator/` — evaluator interface
 - `docker/Dockerfile.base` — NatureBench base Docker image
 - `scripts/` — helper scripts
   - `ensure_naturebench_base.sh` — build the NatureBench base image if it is missing
   - `start_eval_services.sh` — start evaluation service from the mapping file
 - `task-set/` — task lists grouped by resource demand
-- `docs/` — detailed configuration, usage, and task-package reference
+- `docs/` — detailed configuration, usage, task-packages, and custom-agents references
 - `naturegym/` — NatureGym construction pipeline: skills + batch drivers that build task packages from papers
 - `conda_env.yml` — main orchestration environment
 - `conda_env_eval.yml` — evaluation service environment
@@ -108,6 +110,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 | [`docs/configuration.md`](docs/configuration.md) | Agent authentication (Claude Code / Codex CLI / Gemini CLI), the post-hoc judge, network proxy, and the evaluation service. |
 | [`docs/usage.md`](docs/usage.md) | More run examples (CPU, GPU batch, Codex login, resume), the complete parameter reference, and output formats. |
 | [`docs/task-packages.md`](docs/task-packages.md) | Task package structure and the resource-grouped task lists. |
+| [`docs/custom-agents.md`](docs/custom-agents.md) | Plugging in a custom agent: How to run your own agent on NatureBench. |
 
 ## ⚖️License
 

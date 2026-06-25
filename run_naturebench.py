@@ -196,9 +196,10 @@ def main() -> None:
     agent = parser.add_argument_group("agent")
     agent.add_argument(
         "--agent",
-        choices=["claude", "codex", "gemini"],
         default=None,
-        help="Agent harness. Required unless --download-only is used.",
+        help="Agent harness. Built-in: claude, codex, gemini. Custom agents "
+             "registered via the agent registry are also accepted (see "
+             "docs/custom-agents.md). Required unless --download-only is used.",
     )
     agent.add_argument(
         "--model",
