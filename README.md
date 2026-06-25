@@ -71,7 +71,8 @@ python run_naturebench.py \
   --ensure-base-image
 ```
 
-This lists only the parameters you set explicitly; options with sensible defaults are omitted (see [Quick Start defaults](docs/usage.md#quick-start-defaults) for the full list and their values). Adjust `--gpu-devices` / `--max-workers` to your hardware, or use `--tasks cpu` (without the GPU flags) for a GPU-free run. The complete parameter reference is in [`docs/usage.md`](docs/usage.md).
+This lists only the parameters you set explicitly; options with sensible defaults are omitted (see [Quick Start defaults](docs/usage.md#quick-start-defaults) for the full list and their values). Adjust `--gpu-devices` / `--max-workers` to your hardware, or use `--tasks cpu` (without the GPU flags) for a GPU-free run. 
+In our experiments each task ran on a single GPU matched to its compute tier: `gpu_low` tasks on one NVIDIA RTX 3090/4090 (24 GB) and `gpu_high` tasks on one NVIDIA A800 (80 GB, A100-class), with the 3 `cpu` tasks using none. The complete parameter reference is in [`docs/usage.md`](docs/usage.md).
 
 ## 🌱NatureGym
 
