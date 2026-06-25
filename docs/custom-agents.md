@@ -133,7 +133,7 @@ Optional hooks (all default to a no-op, so a minimal agent needs none):
 ### Selecting your agent
 
 The registry is populated by importing the adapter module. Import it once before
-`solve.py` dispatches (add an import line to `agent/__init__.py`), then select it:
+`solve.py` dispatches (e.g. add an import line to `agent/__init__.py`), then select it:
 
 ```bash
 python run_naturebench.py --agent myagent --model <model> --tasks cpu
