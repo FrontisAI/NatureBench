@@ -149,12 +149,12 @@ it available one of two ways:
 
 - **Runtime install** — install it inside `build_command` (e.g.
   `["bash", "-lc", "pip install my-agent && my-agent ..."]`).
-- **Extend the image** — build a derived image from the NatureBench base image 
-  ([`docker/Dockerfile.base`](../docker/Dockerfile.base))
-  with your agent installed. How you run it then depends on its tag:
-  - if you tag it as the base name the task Dockerfiles build `FROM`
-    , both run paths work — the default `--skip-build`
-    , and per-task image builds via `--build-task-images`;
+- **Extend the image** — build a derived image from the NatureBench base image
+  ([`docker/Dockerfile.base`](../docker/Dockerfile.base)) with your agent
+  installed. How you run it then depends on its tag:
+  - if you tag it as the base name the task Dockerfiles build `FROM`, both run
+    paths work — the default `--skip-build`, and per-task image builds via
+    `--build-task-images`;
   - otherwise, run it with `--skip-build --base-image <your-image>`.
 
 ### Judge history
