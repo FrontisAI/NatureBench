@@ -110,8 +110,8 @@ class MyAgentAdapter(AgentAdapter):
     def build_command(self, ctx: AgentRunContext) -> List[str]:
         # The argv run inside the container; any executable form works
         # (a binary, `python -m ...`, a shell script, ...).
-        # If your agent program is not already in the image, install it at runtime
-        # here (see "Container image" below).
+        # If your agent program is not already in the image, you can install it at
+        # runtime here, or bake it into the image (see "Container image" below).
         return ["my-agent", "--model", ctx.model, "--prompt", ctx.system_prompt]
 
 
@@ -149,10 +149,13 @@ it available one of two ways:
 
 - **Runtime install** — install it inside `build_command` (e.g.
   `["bash", "-lc", "pip install my-agent && my-agent ..."]`).
-- **Extend the image** — build a derived image with your agent installed, then
-  use it one of two ways: run it directly with `--skip-build --base-image
-  <your-image>`, or tag it as the base name the task Dockerfiles build `FROM` so
-  that per-task images are built on top of it.
+- **Extend the image** — build a derived image from the NatureBench base image 
+  ([`docker/Dockerfile.base`](../docker/Dockerfile.base))
+  with your agent installed. How you run it then depends on its tag:
+  - if you tag it as the base name the task Dockerfiles build `FROM`
+    , both run paths work — the default `--skip-build`
+    , and per-task image builds via `--build-task-images`;
+  - otherwise, run it with `--skip-build --base-image <your-image>`.
 
 ### Judge history
 
