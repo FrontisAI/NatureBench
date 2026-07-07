@@ -6,9 +6,13 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-b31b1b?style=for-the-badge&logo=arxiv&logoColor=ffffff)](https://arxiv.org/abs/2606.24530) &nbsp; [![Hugging Face Dataset](https://img.shields.io/badge/HUGGINGFACE-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/FrontisAI/NatureBench) &nbsp; [![Leaderboard](https://img.shields.io/badge/Leaderboard-steelblue?style=for-the-badge&logo=googlechrome&logoColor=ffffff)](https://frontisai.github.io/NatureBench/)
 
-[📖 Overview](#overview) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
+[📰 News](#news) • [📖 Overview](#overview) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
 </div>
+
+## 📰News
+
+- [2026-07-07] We update the public artifacts for the twelve harness-model evaluation, adding GLM-5.2 and MiniMax-M3. The paper and README carry the main summary, Hugging Face hosts the task packages, and the GitHub Pages leaderboard tracks detailed harness-model results.
 
 ## 📖Overview
 
@@ -22,10 +26,10 @@ NatureBench is built on **NatureGym**, an automated pipeline that converts a pub
 
 ## 📊Results
 
-The strongest configuration reaches a 17.8% Surpass-SOTA rate, and success remains uneven across the six scientific domains NatureBench spans.
+Across twelve harness-model configurations, the strongest reaches a 17.8% Surpass-SOTA rate, and success remains uneven across the six scientific domains NatureBench spans.
 
 <p align="center">
-  <img src="assets/main_results.png" width="840" alt="NatureBench scientific domains and Surpass-SOTA rates across agent-model configurations">
+  <img src="assets/main_results.png" width="840" alt="NatureBench scientific domains and Surpass-SOTA rates across harness-model configurations">
 </p>
 
 ## 🔧Installation
