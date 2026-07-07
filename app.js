@@ -384,7 +384,7 @@
     const topCompletion = [...data.leaderboard].sort((a, b) => b.completionRate - a.completionRate || b.surpassSota - a.surpassSota)[0];
     const cards = [
       [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench"],
-      [data.benchmark.modelCount, "Agent-model configurations", "evaluated configurations"],
+      [data.benchmark.modelCount, "Harness-model configurations", "evaluated configurations"],
       [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups"],
       [formatPercent(top.surpassSota), "Best Surpass-SOTA", top.name],
       [formatPercent(topMatch.matchSota), "Best Match-SOTA", topMatch.name],

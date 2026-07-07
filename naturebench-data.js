@@ -1,7 +1,7 @@
 window.NATUREBENCH_DATA = {
   "benchmark": {
     "taskCount": 90,
-    "modelCount": 10,
+    "modelCount": 12,
     "domainCount": 6
   },
   "models": [
@@ -34,6 +34,12 @@ window.NATUREBENCH_DATA = {
     },
     {
       "name": "Opus 4.7"
+    },
+    {
+      "name": "MiniMax-M3"
+    },
+    {
+      "name": "GLM-5.2"
     }
   ],
   "leaderboard": [
@@ -49,6 +55,19 @@ window.NATUREBENCH_DATA = {
       "medianValid": -0.007,
       "completionRate": 100,
       "scoreRate": 100
+    },
+    {
+      "name": "GLM-5.2",
+      "harness": "Claude Code",
+      "invalid": 2,
+      "matchSota": 41.1111,
+      "surpassSota": 15.5556,
+      "strongSurpassSota": 2.2222,
+      "meanAll": -3.8527,
+      "medianAll": -0.0576,
+      "medianValid": -0.0508,
+      "completionRate": 96.6667,
+      "scoreRate": 98.8889
     },
     {
       "name": "Gemini 3.5 Flash",
@@ -88,6 +107,19 @@ window.NATUREBENCH_DATA = {
       "medianValid": -0.0608,
       "completionRate": 100,
       "scoreRate": 100
+    },
+    {
+      "name": "MiniMax-M3",
+      "harness": "Claude Code",
+      "invalid": 0,
+      "matchSota": 33.3333,
+      "surpassSota": 11.1111,
+      "strongSurpassSota": 1.1111,
+      "meanAll": -5.897,
+      "medianAll": -0.1029,
+      "medianValid": -0.0999,
+      "completionRate": 98.8889,
+      "scoreRate": 98.8889
     },
     {
       "name": "Qwen 3.7 Max",
@@ -205,6 +237,41 @@ window.NATUREBENCH_DATA = {
       ]
     },
     {
+      "name": "GLM-5.2",
+      "bins": [
+        {
+          "label": "none/invalid",
+          "count": 3,
+          "percent": 3.3
+        },
+        {
+          "label": "g < -0.5",
+          "count": 17,
+          "percent": 18.9
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 33,
+          "percent": 36.7
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 23,
+          "percent": 25.6
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 12,
+          "percent": 13.3
+        },
+        {
+          "label": "g > 0.5",
+          "count": 2,
+          "percent": 2.2
+        }
+      ]
+    },
+    {
       "name": "Gemini 3.5 Flash",
       "bins": [
         {
@@ -301,6 +368,41 @@ window.NATUREBENCH_DATA = {
           "label": "0.1 < g <= 0.5",
           "count": 10,
           "percent": 11.1
+        },
+        {
+          "label": "g > 0.5",
+          "count": 1,
+          "percent": 1.1
+        }
+      ]
+    },
+    {
+      "name": "MiniMax-M3",
+      "bins": [
+        {
+          "label": "none/invalid",
+          "count": 1,
+          "percent": 1.1
+        },
+        {
+          "label": "g < -0.5",
+          "count": 20,
+          "percent": 22.2
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 39,
+          "percent": 43.3
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 20,
+          "percent": 22.2
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 9,
+          "percent": 10
         },
         {
           "label": "g > 0.5",
@@ -534,6 +636,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 25.8065
         },
         {
+          "name": "GLM-5.2",
+          "surpassSota": 25.8065
+        },
+        {
           "name": "Gemini 3.5 Flash",
           "surpassSota": 25.8065
         },
@@ -543,6 +649,10 @@ window.NATUREBENCH_DATA = {
         },
         {
           "name": "Opus 4.6",
+          "surpassSota": 19.3548
+        },
+        {
+          "name": "MiniMax-M3",
           "surpassSota": 19.3548
         },
         {
@@ -581,6 +691,14 @@ window.NATUREBENCH_DATA = {
       "models": [
         {
           "name": "Opus 4.7",
+          "surpassSota": 12.5
+        },
+        {
+          "name": "GLM-5.2",
+          "surpassSota": 12.5
+        },
+        {
+          "name": "MiniMax-M3",
           "surpassSota": 12.5
         },
         {
@@ -638,6 +756,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 7.1429
         },
         {
+          "name": "GLM-5.2",
+          "surpassSota": 7.1429
+        },
+        {
           "name": "GLM-5.1",
           "surpassSota": 7.1429
         },
@@ -663,6 +785,10 @@ window.NATUREBENCH_DATA = {
         },
         {
           "name": "GPT-5.4",
+          "surpassSota": 0
+        },
+        {
+          "name": "MiniMax-M3",
           "surpassSota": 0
         },
         {
@@ -700,6 +826,14 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 23.0769
         },
         {
+          "name": "GLM-5.2",
+          "surpassSota": 23.0769
+        },
+        {
+          "name": "MiniMax-M3",
+          "surpassSota": 15.3846
+        },
+        {
           "name": "Qwen 3.7 Max",
           "surpassSota": 15.3846
         },
@@ -732,6 +866,14 @@ window.NATUREBENCH_DATA = {
         {
           "name": "Opus 4.7",
           "surpassSota": 18.1818
+        },
+        {
+          "name": "GLM-5.2",
+          "surpassSota": 0
+        },
+        {
+          "name": "MiniMax-M3",
+          "surpassSota": 0
         },
         {
           "name": "Opus 4.6",
@@ -796,6 +938,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
+          "name": "GLM-5.2",
+          "surpassSota": 0
+        },
+        {
           "name": "Kimi K2.6",
           "surpassSota": 0
         },
@@ -809,6 +955,10 @@ window.NATUREBENCH_DATA = {
         },
         {
           "name": "GLM-5.1",
+          "surpassSota": 0
+        },
+        {
+          "name": "MiniMax-M3",
           "surpassSota": 0
         },
         {
@@ -871,6 +1021,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.076536
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.03159
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.038814
         }
       }
     },
@@ -922,6 +1080,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.004816
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.314077
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.151785
         }
       }
     },
@@ -973,6 +1139,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.00906
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.1198
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.276865
         }
       }
     },
@@ -1024,6 +1198,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.301107
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.031822
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.147208
         }
       }
     },
@@ -1033,8 +1215,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "buggy",
-      "bestModel": "Qwen 3.7 Max",
-      "bestScore": 0.022845,
+      "bestModel": "MiniMax-M3",
+      "bestScore": 0.024354,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1075,6 +1257,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.005209
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.024354
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.015437
         }
       }
     },
@@ -1126,6 +1316,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.176661
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.070353
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.151442
         }
       }
     },
@@ -1177,6 +1375,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.007505
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.012
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.008765
         }
       }
     },
@@ -1228,6 +1434,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.058151
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.12563
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.111928
         }
       }
     },
@@ -1279,6 +1493,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.008703
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.259985
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.034784
         }
       }
     },
@@ -1288,8 +1510,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.10968,
+      "bestModel": "GLM-5.2",
+      "bestScore": -0.089299,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1330,6 +1552,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.10968
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.843755
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.089299
         }
       }
     },
@@ -1339,8 +1569,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Structure Modeling",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": -0.456321,
+      "bestModel": "MiniMax-M3",
+      "bestScore": -0.4551,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1381,6 +1611,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.45997
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.4551
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.461935
         }
       }
     },
@@ -1390,8 +1628,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Simulation/Operator Learning",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": 1.614505,
+      "bestModel": "GLM-5.2",
+      "bestScore": 1.66261,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1432,6 +1670,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 1.614505
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.401577
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 1.66261
         }
       }
     },
@@ -1483,6 +1729,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.13522
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.130034
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.087944
         }
       }
     },
@@ -1534,6 +1788,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.990115
+        },
+        "MiniMax-M3": {
+          "state": "none",
+          "value": null
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.425721
         }
       }
     },
@@ -1585,6 +1847,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.933878
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.691076
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.895638
         }
       }
     },
@@ -1636,6 +1906,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 2.219814
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.285679
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.653319
         }
       }
     },
@@ -1687,6 +1965,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.134605
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.793739
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.576947
         }
       }
     },
@@ -1696,8 +1982,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "Qwen 3.7 Max",
-      "bestScore": 0.009413,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.014164,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1738,6 +2024,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.011141
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.04223
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.014164
         }
       }
     },
@@ -1747,8 +2041,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "buggy",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.099578,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.137577,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1789,6 +2083,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.099578
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.023399
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.137577
         }
       }
     },
@@ -1798,8 +2100,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Generation/Design",
       "taskDir": "part1",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.264176,
+      "bestModel": "MiniMax-M3",
+      "bestScore": 1.181878,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1840,6 +2142,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.262516
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 1.181878
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.096451
         }
       }
     },
@@ -1891,6 +2201,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.034601
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.632729
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.066716
         }
       }
     },
@@ -1942,6 +2260,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.287963
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.294813
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.15985
         }
       }
     },
@@ -1993,6 +2319,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.030928
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.063364
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.030019
         }
       }
     },
@@ -2044,6 +2378,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -1
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -3.040264
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -2.466347
         }
       }
     },
@@ -2095,6 +2437,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.066916
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.1184
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.1324
         }
       }
     },
@@ -2146,6 +2496,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.779112
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.3141
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.087149
         }
       }
     },
@@ -2197,6 +2555,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.029985
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.14581
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.133806
         }
       }
     },
@@ -2206,8 +2572,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.025132,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.025899,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2248,6 +2614,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.023149
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.109173
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.025899
         }
       }
     },
@@ -2257,8 +2631,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.125726,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.135641,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2299,6 +2673,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.120068
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.1091
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.135641
         }
       }
     },
@@ -2350,6 +2732,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.485823
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.8805
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.857429
         }
       }
     },
@@ -2401,6 +2791,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.10873
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.225736
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.239644
         }
       }
     },
@@ -2452,6 +2850,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.272825
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.5101
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.965417
         }
       }
     },
@@ -2461,8 +2867,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.053719,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.09184,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2503,6 +2909,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.002131
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.025986
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.09184
         }
       }
     },
@@ -2554,6 +2968,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -39.293409
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -1
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -1
         }
       }
     },
@@ -2605,6 +3027,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -357.455135
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -148.610403
+        },
+        "GLM-5.2": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -2614,8 +3044,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Other Specialized",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.098553,
+      "bestModel": "GLM-5.2",
+      "bestScore": -0.045001,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2656,6 +3086,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.098553
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.289836
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.045001
         }
       }
     },
@@ -2707,6 +3145,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.427785
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.735678
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.819948
         }
       }
     },
@@ -2758,6 +3204,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.027163
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.105898
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.525238
         }
       }
     },
@@ -2809,6 +3263,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.113234
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.068181
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.01729
         }
       }
     },
@@ -2860,6 +3322,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.013712
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.001217
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.013571
         }
       }
     },
@@ -2869,8 +3339,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.112349,
+      "bestModel": "MiniMax-M3",
+      "bestScore": 0.12572,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2911,6 +3381,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.542854
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.12572
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -2.278239
         }
       }
     },
@@ -2920,8 +3398,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.065105,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.066908,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2962,6 +3440,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.065105
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.038294
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.066908
         }
       }
     },
@@ -3013,6 +3499,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.134166
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.1344
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.075406
         }
       }
     },
@@ -3064,6 +3558,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.008618
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.06622
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.0106
         }
       }
     },
@@ -3073,8 +3575,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": -0.293612,
+      "bestModel": "MiniMax-M3",
+      "bestScore": -0.099917,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3115,6 +3617,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.395072
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.099917
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.117153
         }
       }
     },
@@ -3166,6 +3676,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.003172
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.007488
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.001238
         }
       }
     },
@@ -3217,6 +3735,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.100466
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.233007
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.135182
         }
       }
     },
@@ -3226,8 +3752,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Opus 4.6",
-      "bestScore": -0.6011,
+      "bestModel": "GLM-5.2",
+      "bestScore": -0.600135,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3268,6 +3794,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.691329
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.74254
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.600135
         }
       }
     },
@@ -3319,6 +3853,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.023583
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.021143
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.024795
         }
       }
     },
@@ -3370,6 +3912,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.186987
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.141435
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.169803
         }
       }
     },
@@ -3421,6 +3971,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.461563
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.016791
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.285609
         }
       }
     },
@@ -3472,6 +4030,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.058089
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.070314
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.065084
         }
       }
     },
@@ -3523,6 +4089,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.514235
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.4351
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.696988
         }
       }
     },
@@ -3574,6 +4148,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.020453
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.321796
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.020453
         }
       }
     },
@@ -3583,8 +4165,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.098143,
+      "bestModel": "MiniMax-M3",
+      "bestScore": 0.099903,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3625,6 +4207,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.098143
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.099903
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.098275
         }
       }
     },
@@ -3676,6 +4266,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.023661
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.005928
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.018143
         }
       }
     },
@@ -3685,8 +4283,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.134862,
+      "bestModel": "GLM-5.2",
+      "bestScore": -0.104916,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3727,6 +4325,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.134862
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.231097
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.104916
         }
       }
     },
@@ -3736,8 +4342,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Generation/Design",
       "taskDir": "part2",
-      "bestModel": "Qwen 3.7 Max",
-      "bestScore": -0.085886,
+      "bestModel": "MiniMax-M3",
+      "bestScore": -0.029011,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3778,6 +4384,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.09337
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.029011
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.068223
         }
       }
     },
@@ -3829,6 +4443,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.020872
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.092379
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.066633
         }
       }
     },
@@ -3880,6 +4502,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.030017
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.046468
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.011574
         }
       }
     },
@@ -3931,6 +4561,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.487645
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.006344
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.011789
         }
       }
     },
@@ -3982,6 +4620,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.012775
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.008098
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.012147
         }
       }
     },
@@ -4033,6 +4679,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.088976
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.241676
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.185233
         }
       }
     },
@@ -4084,6 +4738,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.026325
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.0776
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.050845
         }
       }
     },
@@ -4135,6 +4797,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.016278
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.174487
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.110377
         }
       }
     },
@@ -4186,6 +4856,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.200449
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.7191
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.510041
         }
       }
     },
@@ -4237,6 +4915,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.304153
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -1.849636
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.059937
         }
       }
     },
@@ -4288,6 +4974,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.019965
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.01735
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.001622
         }
       }
     },
@@ -4339,6 +5033,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.356022
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -1.575832
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.04102
         }
       }
     },
@@ -4348,8 +5050,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Generation/Design",
       "taskDir": "part1",
-      "bestModel": "DeepSeek-V4-Pro",
-      "bestScore": -1.265223,
+      "bestModel": "MiniMax-M3",
+      "bestScore": -1,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4390,6 +5092,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -1.352497
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -1
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -2.765124
         }
       }
     },
@@ -4399,8 +5109,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GLM-5.1",
-      "bestScore": 0.325133,
+      "bestModel": "MiniMax-M3",
+      "bestScore": 0.403382,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4441,6 +5151,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.075946
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.403382
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.261978
         }
       }
     },
@@ -4492,6 +5210,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.178451
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -1
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.996751
         }
       }
     },
@@ -4543,6 +5269,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.08966
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.064144
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.051915
         }
       }
     },
@@ -4594,6 +5328,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.192747
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.530084
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.484792
         }
       }
     },
@@ -4645,6 +5387,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.218032
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.069769
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.132964
         }
       }
     },
@@ -4696,6 +5446,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.006001
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.0041
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.006784
         }
       }
     },
@@ -4747,6 +5505,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.468486
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.000735
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.369069
         }
       }
     },
@@ -4798,6 +5564,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.09551
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.266945
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.111179
         }
       }
     },
@@ -4849,6 +5623,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -7.346038
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -359.992
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -326.385986
         }
       }
     },
@@ -4900,6 +5682,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.22894
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.94939
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -2.008525
         }
       }
     },
@@ -4951,6 +5741,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.018201
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.012433
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.016707
         }
       }
     },
@@ -4960,8 +5758,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "Kimi K2.6",
-      "bestScore": 0.350783,
+      "bestModel": "GLM-5.2",
+      "bestScore": 0.371982,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5002,6 +5800,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.2043
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.361382
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.371982
         }
       }
     },
@@ -5011,8 +5817,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.094202,
+      "bestModel": "MiniMax-M3",
+      "bestScore": 0.164551,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5053,6 +5859,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.078265
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.164551
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.04895
         }
       }
     },
@@ -5104,6 +5918,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.017463
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.0686
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.05536
         }
       }
     },
@@ -5155,6 +5977,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.274184
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.005549
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.233499
         }
       }
     },
@@ -5206,6 +6036,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.561534
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.094
+        },
+        "GLM-5.2": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -5257,6 +6095,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.158529
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": 0.14492
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": 0.139117
         }
       }
     },
@@ -5308,6 +6154,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": 0.040272
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.2534
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.298784
         }
       }
     },
@@ -5359,6 +6213,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.489631
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -1.355791
+        },
+        "GLM-5.2": {
+          "state": "none",
+          "value": null
         }
       }
     },
@@ -5410,6 +6272,14 @@ window.NATUREBENCH_DATA = {
         "Opus 4.7": {
           "state": "valid",
           "value": -0.050454
+        },
+        "MiniMax-M3": {
+          "state": "valid",
+          "value": -0.227497
+        },
+        "GLM-5.2": {
+          "state": "valid",
+          "value": -0.556835
         }
       }
     }
