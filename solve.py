@@ -1857,6 +1857,7 @@ def _run_single_task(
 
         else:
             # === Single-phase launch: no setup needed ===
+            docker_cmd[-1:-1] = ["--workdir", "/workspace"]  # insert before image_tag
             docker_cmd.extend(agent_cmd)
 
             # Set timer (no setup delay)
