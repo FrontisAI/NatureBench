@@ -12,7 +12,8 @@
 
 ## 📰News
 
-- [2026-07-07] We update the public artifacts for the twelve harness-model evaluation, adding GLM-5.2 and MiniMax-M3. The paper and README carry the main summary, Hugging Face hosts the task packages, and the GitHub Pages leaderboard tracks detailed harness-model results.
+- **🏆 [2026-07-07] We update the leaderboard with 12 harness-model results, including GLM-5.2 and MiniMax-M3.**
+- **🚀 [2026-06-24] We introduce [NatureBench](https://arxiv.org/abs/2606.24530), a benchmark for scientific ML coding agents on Nature-family tasks.**
 
 ## 📖Overview
 
