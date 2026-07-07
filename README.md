@@ -12,7 +12,7 @@
 
 ## 📰News
 
-- **🏆 [2026-07-07] We update the leaderboard with 12 harness-model results, including GLM-5.2 and MiniMax-M3.**
+- **🏆 [2026-07-07] We update the [results](https://frontisai.github.io/NatureBench/) with 12 harness-model configurations, adding GLM-5.2 and MiniMax-M3.**
 - **🚀 [2026-06-24] We introduce [NatureBench](https://arxiv.org/abs/2606.24530), a benchmark for scientific ML coding agents on Nature-family tasks.**
 
 ## 📖Overview
