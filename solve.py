@@ -2945,6 +2945,10 @@ def main() -> None:
                     r.get("task_name", "?"), e,
                 )
 
+    # Refresh run_summary before the README-aware judge.
+    with results_lock:
+        _flush_summary()
+
     # --- Post-hoc LLM judge (scientific validity check) ---
     if not skip_judge:
         try:
@@ -2957,6 +2961,7 @@ def main() -> None:
                 if r.get("best_aggregate_improvement") is None:
                     continue  # no submission to review
                 judge_targets.append((tn, out_dir / tn))
+            verdicts: Dict[str, Dict[str, Any]] = {}
             if judge_targets:
                 logger.info("Running post-hoc judge on %d task(s)...", len(judge_targets))
                 verdicts = run_judges(
@@ -2965,7 +2970,7 @@ def main() -> None:
                     max_workers=min(4, len(judge_targets)),
                     data_dir=data_dir,
                 )
-                apply_verdicts_to_results(results, verdicts)
+            apply_verdicts_to_results(results, verdicts)
         except Exception as e:
             logger.exception("Judge stage failed: %s", e)
 

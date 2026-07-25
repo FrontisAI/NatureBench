@@ -64,11 +64,24 @@ This release does not provide unified mounting logic for official Gemini CLI log
 
 ### Post-hoc Judge
 
-If post-hoc judge is enabled, you can configure a separate judge endpoint. If unset, it falls back to `ANTHROPIC_API_KEY` / `ANTHROPIC_BASE_URL`:
+The post-hoc judge is configured independently from the agent CLI. Set the judge model with `JUDGE_MODEL`; `gpt-*` model IDs select the OpenAI Responses protocol, while all other model IDs select the Anthropic Messages protocol.
+
+Generic overrides apply to either selected provider:
 
 ```bash
+export JUDGE_MODEL=...
 export JUDGE_API_KEY=...
-export JUDGE_BASE_URL=...
+export JUDGE_BASE_URL=https://example.invalid
+```
+
+Provider-specific variables take precedence over the generic overrides:
+
+```bash
+export JUDGE_ANTHROPIC_API_KEY=...
+export JUDGE_ANTHROPIC_BASE_URL=https://api.anthropic.com
+
+export JUDGE_OPENAI_API_KEY=...
+export JUDGE_OPENAI_BASE_URL=https://api.openai.com
 ```
 
 ## Evaluation Service and State

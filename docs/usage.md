@@ -314,8 +314,8 @@ Each task's result is written under `--out-dir/<case_id>/`:
 | File Or Directory | Description |
 |---|---|
 | `result.json` | Per-task execution metadata such as status, return code, duration, session id, and resume history. |
-| `submissions.jsonl` | Every agent `/evaluate` submission, including attempt, raw scores, per-instance improvement, and aggregate improvement. Failed submissions are recorded as well. |
-| `judge_verdict.json` | Post-hoc validity judge output, if judge is enabled. |
+| `submissions.jsonl` | Every agent `/evaluate` submission, including its attempt number, timestamp when available, raw scores, per-instance improvement, and aggregate improvement. Failed submissions are recorded as well. |
+| `judge_verdict.json` | Post-hoc validity verdict. Judge failures use `is_valid: null` with a `judge_error` reason. |
 | `workspace/` | Final agent workspace snapshot. |
 
 Batch-level summary is written to `--out-dir/run_summary.json`. It includes `total_tasks`, `successes` (tasks whose return code is success), `scored_tasks` (tasks whose submissions produced a score), `average_best_aggregate_improvement` (averaged only over scored tasks), total duration, and for each task: `status`, `duration`, `best_attempt`, `best_aggregate_improvement`, `best_raw_scores`, `total_attempts`, and judge results.
