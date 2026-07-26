@@ -126,7 +126,7 @@ Optional hooks (all default to a no-op, so a minimal agent needs none):
   Anthropic/OpenAI/Gemini keys solve.py already forwards.
   `/task/problem` (read-only) and `/workspace` are mounted for every agent
   regardless.
-- `transcript_path(task_out_dir)` / `transcript_excerptor()` — expose your
+- `transcript_path(task_out_dir)` / `excerpt_transcript(...)` — expose your
   agent's solve/iteration history to the post-hoc judge (see "Judge history"
   below).
 
@@ -166,10 +166,15 @@ when available, its solve/iteration history. Two hooks control this:
   solve/iteration history log is. The built-in adapters return
   their internal session file or streamed stdout log. Returning `None` (the
   default) means the judge reviews only the final workspace code snapshot.
-- `transcript_excerptor()` lets you supply a parser for your history-log format.
-  The default (`None`) uses the built-in excerptor, whose format sniffing
-  recognizes only the Claude/Codex/Gemini CLI logs and silently skips records it
-  cannot parse. So if your agent writes a custom-format history log, return both
-  a `transcript_path` and a `transcript_excerptor` to put its solve/iteration
-  history in front of the judge; otherwise it is judged on code alone.
+- `excerpt_transcript(log_path, *, max_bytes, focus_start, focus_end)` provides
+  a parser for a custom history-log format. The runner supplies the same byte
+  budget and `SCORE_ATTEMPT` focus window available to the built-in parser. A
+  custom implementation may use any subset of these inputs, but it must accept
+  all runner-supplied keyword arguments, either explicitly or through
+  `**kwargs`. Returning `None` (the default) falls back to the built-in
+  parser, whose format sniffing recognizes the Claude/Codex/Gemini CLI
+  logs. After either parser returns, the framework clips
+  its output to `MAX_LOG_EXCERPT_BYTES` (2,000,000 UTF-8 bytes) before adding it
+  to the judge prompt. Parsers may use `max_bytes` for format-aware selection,
+  but the framework enforces the final hard limit.
 

@@ -21,7 +21,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -108,14 +108,20 @@ class AgentAdapter(ABC):
         """
         return None
 
-    def transcript_excerptor(self) -> Optional[Callable[[Path], str]]:
-        """Optional custom parser turning a transcript file into a judge excerpt.
+    def excerpt_transcript(
+        self,
+        log_path: Path,
+        *,
+        max_bytes: int = 2_000_000,
+        focus_start: Optional[float] = None,
+        focus_end: Optional[float] = None,
+    ) -> Optional[str]:
+        """Return custom transcript evidence for the post-hoc judge.
 
-        Return ``None`` (the default) to use the built-in excerptor, whose
-        format sniffing recognizes the Claude/Codex/Gemini CLI logs. A custom
-        agent whose transcript is in an unrecognized format can supply its own
-        callable here so its conversation history reaches the judge instead of
-        being skipped.
+        The runner supplies the same path, byte budget, and score-attempt focus
+        window available to the built-in parser. Custom adapters may ignore any
+        optional input or accept additional optional settings. Return ``None``
+        (the default) to use the built-in Claude/Codex/Gemini log parser.
         """
         return None
 

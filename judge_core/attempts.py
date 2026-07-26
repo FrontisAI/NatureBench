@@ -7,8 +7,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from judge_core.policy import MAX_BYTES_PER_CONTEXT_FILE
-from judge_core.sources import read_clip
+from judge_core.policy import (
+    MAX_ATTEMPT_TIMELINE_BYTES,
+    MAX_BYTES_PER_CONTEXT_FILE,
+)
+from judge_core.sources import clip_text_bytes, read_clip
 from judge_core.trace import normalize_trace_timestamp
 
 
@@ -99,37 +102,165 @@ def collect_attempt_context(
     }
 
 
-def format_attempt_timeline(context: Dict[str, Any]) -> str:
-    """Format attempt metadata without exposing score values."""
-    if context.get("metadata_available", True) is False:
-        return (
-            "SCORE_ATTEMPT metadata is unavailable because the final score "
-            "refresh failed; no attempt is attributed to the final benchmark score."
+def _render_attempt_timeline_subset(
+    header: str,
+    record_lines: List[str],
+    selected_indices: set[int],
+    score_fallback_line: Optional[str],
+) -> str:
+    """Render selected attempt lines with explicit omission markers."""
+    lines = [header]
+    previous_index = -1
+    for index in sorted(selected_indices):
+        omitted = index - previous_index - 1
+        if omitted > 0:
+            lines.append(
+                f"... [{omitted} evaluation attempts omitted to fit "
+                "timeline byte limit] ..."
+            )
+        lines.append(record_lines[index])
+        previous_index = index
+    trailing_omitted = len(record_lines) - previous_index - 1
+    if trailing_omitted > 0:
+        lines.append(
+            f"... [{trailing_omitted} evaluation attempts omitted to fit "
+            "timeline byte limit] ..."
         )
-    lines = [
+    if score_fallback_line is not None:
+        lines.append(score_fallback_line)
+    return "\n".join(lines)
+
+
+def _truncate_attempt_timeline(
+    header: str,
+    record_lines: List[str],
+    focus_index: Optional[int],
+    score_fallback_line: Optional[str],
+    max_bytes: int,
+) -> str:
+    """Fit attempt metadata while retaining score, previous, first, and last."""
+    if not record_lines:
+        lines = [header, "(no persisted evaluation-attempt timestamps available)"]
+        if score_fallback_line is not None:
+            lines.append(score_fallback_line)
+        return clip_text_bytes("\n".join(lines), max_bytes)
+
+    last_index = len(record_lines) - 1
+    resolved_focus_index = focus_index if focus_index is not None else last_index
+    selected_indices = {0, last_index, resolved_focus_index}
+    if resolved_focus_index > 0:
+        selected_indices.add(resolved_focus_index - 1)
+
+    result = _render_attempt_timeline_subset(
+        header,
+        record_lines,
+        selected_indices,
+        score_fallback_line,
+    )
+    if len(result.encode("utf-8")) > max_bytes:
+        return clip_text_bytes(result, max_bytes)
+
+    distance = 1
+    while distance < len(record_lines):
+        added = False
+        considered = False
+        for index in (
+            resolved_focus_index - distance,
+            resolved_focus_index + distance,
+        ):
+            if index < 0 or index > last_index or index in selected_indices:
+                continue
+            considered = True
+            candidate_indices = selected_indices | {index}
+            candidate = _render_attempt_timeline_subset(
+                header,
+                record_lines,
+                candidate_indices,
+                score_fallback_line,
+            )
+            if len(candidate.encode("utf-8")) <= max_bytes:
+                selected_indices = candidate_indices
+                result = candidate
+                added = True
+        if considered and not added:
+            break
+        distance += 1
+    return result
+
+
+def format_attempt_timeline(
+    context: Dict[str, Any],
+    max_bytes: int = MAX_ATTEMPT_TIMELINE_BYTES,
+) -> str:
+    """Format attempt metadata under a hard UTF-8 byte limit."""
+    if context.get("metadata_available", True) is False:
+        return clip_text_bytes(
+            "SCORE_ATTEMPT metadata is unavailable.",
+            max_bytes,
+        )
+
+    header = (
         "SCORE_ATTEMPT is the attempt whose evaluation result is used as "
         "the agent's final benchmark score."
-    ]
+    )
     attempts = context.get("attempts") or []
-    if not attempts:
-        lines.append("(no persisted evaluation-attempt timestamps available)")
-    for record in attempts:
-        suffix = " [SCORE_ATTEMPT]" if record.get("is_score_attempt") else ""
+    score_attempt = context.get("score_attempt")
+    record_lines: List[str] = []
+    score_index: Optional[int] = None
+    score_predecessor_index: Optional[int] = None
+    score_predecessor_attempt: Optional[int] = None
+    for index, record in enumerate(attempts):
+        is_score_attempt = bool(record.get("is_score_attempt"))
+        if is_score_attempt and score_index is None:
+            score_index = index
+        attempt_value = record.get("attempt")
+        if (
+            isinstance(score_attempt, int)
+            and not isinstance(score_attempt, bool)
+            and isinstance(attempt_value, int)
+            and not isinstance(attempt_value, bool)
+            and attempt_value < score_attempt
+            and (
+                score_predecessor_attempt is None
+                or attempt_value > score_predecessor_attempt
+            )
+        ):
+            score_predecessor_attempt = attempt_value
+            score_predecessor_index = index
+        suffix = " [SCORE_ATTEMPT]" if is_score_attempt else ""
         evaluated_at = record.get("evaluated_at") or "unavailable"
         status = record.get("status", "success")
-        lines.append(
+        record_lines.append(
             f"- Attempt {record['attempt']}: status={status}, "
             f"evaluated_at={evaluated_at}{suffix}"
         )
-    score_attempt = context.get("score_attempt")
-    if score_attempt is not None and not any(
-        record.get("is_score_attempt") for record in attempts
-    ):
-        lines.append(
+
+    score_fallback_line = None
+    if score_attempt is not None and score_index is None:
+        score_fallback_line = (
             f"- Attempt {score_attempt}: "
             "[SCORE_ATTEMPT; timestamp unavailable]"
         )
-    return "\n".join(lines)
+
+    lines = [header]
+    if not attempts:
+        lines.append("(no persisted evaluation-attempt timestamps available)")
+    lines.extend(record_lines)
+    if score_fallback_line is not None:
+        lines.append(score_fallback_line)
+    full_timeline = "\n".join(lines)
+    if len(full_timeline.encode("utf-8")) <= max_bytes:
+        return full_timeline
+    focus_index = (
+        score_index if score_index is not None else score_predecessor_index
+    )
+    return _truncate_attempt_timeline(
+        header,
+        record_lines,
+        focus_index,
+        score_fallback_line,
+        max_bytes,
+    )
 
 
 def collect_task_context(task_problem_dir: Path) -> Dict[str, str]:

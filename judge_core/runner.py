@@ -24,7 +24,7 @@ from judge_core.policy import (
 )
 from judge_core.policy import DEFAULT_JUDGE_MODEL as _DEFAULT_JUDGE_MODEL
 from judge_core.policy import MAX_LOG_EXCERPT_BYTES as _MAX_LOG_EXCERPT_BYTES
-from judge_core.sources import collect_source_files
+from judge_core.sources import clip_text_bytes, collect_source_files
 from judge_core.trace import excerpt_agent_log
 
 logger = logging.getLogger(__name__)
@@ -53,25 +53,34 @@ def collect_judge_inputs(
 
     adapter = REGISTRY.get(agent_name) if REGISTRY.has(agent_name) else None
     log_path = adapter.transcript_path(task_out_dir) if adapter else None
-    custom_excerptor = adapter.transcript_excerptor() if adapter else None
     if log_path is None:
-        excerpt = ""
+        log_excerpt = ""
         log_source = "none"
-    elif custom_excerptor is not None:
-        excerpt = custom_excerptor(log_path)
-        log_source = "stream" if log_path.name == f"{agent_name}.jsonl" else "state"
     else:
-        excerpt = excerpt_agent_log(
+        assert adapter is not None
+        custom_excerpt = adapter.excerpt_transcript(
             log_path,
+            max_bytes=MAX_LOG_EXCERPT_BYTES,
             focus_start=attempt_context.get("focus_start"),
             focus_end=attempt_context.get("focus_end"),
         )
+        log_excerpt = (
+            excerpt_agent_log(
+                log_path,
+                max_bytes=MAX_LOG_EXCERPT_BYTES,
+                focus_start=attempt_context.get("focus_start"),
+                focus_end=attempt_context.get("focus_end"),
+            )
+            if custom_excerpt is None
+            else custom_excerpt
+        )
         log_source = "stream" if log_path.name == f"{agent_name}.jsonl" else "state"
+    log_excerpt = clip_text_bytes(log_excerpt, MAX_LOG_EXCERPT_BYTES)
 
     return {
         "code_files": collect_source_files(workspace_dir),
         "attempt_context": attempt_context,
-        "agent_log_excerpt": excerpt,
+        "agent_log_excerpt": log_excerpt,
         "log_source": log_source,
         "log_path": str(log_path) if log_path else None,
     }
