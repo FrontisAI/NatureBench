@@ -46,157 +46,157 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Opus 4.7",
       "harness": "Claude Code",
-      "invalid": 0,
-      "matchSota": 47.7778,
-      "surpassSota": 17.7778,
+      "invalid": 12,
+      "matchSota": 41.1111,
+      "surpassSota": 15.5556,
       "strongSurpassSota": 3.3333,
-      "meanAll": -4.5376,
-      "medianAll": -0.007,
+      "meanAll": -4.5778,
+      "medianAll": -0.03,
       "medianValid": -0.007,
-      "completionRate": 100,
+      "completionRate": 86.6667,
       "scoreRate": 100
     },
     {
       "name": "GLM-5.2",
       "harness": "Claude Code",
-      "invalid": 2,
-      "matchSota": 41.1111,
-      "surpassSota": 15.5556,
-      "strongSurpassSota": 2.2222,
-      "meanAll": -3.8527,
-      "medianAll": -0.0576,
-      "medianValid": -0.0508,
-      "completionRate": 96.6667,
-      "scoreRate": 98.8889
-    },
-    {
-      "name": "Gemini 3.5 Flash",
-      "harness": "Gemini CLI",
-      "invalid": 4,
-      "matchSota": 37.7778,
-      "surpassSota": 15.5556,
-      "strongSurpassSota": 3.3333,
-      "meanAll": -5.7054,
-      "medianAll": -0.0829,
-      "medianValid": -0.0411,
-      "completionRate": 94.4444,
-      "scoreRate": 98.8889
-    },
-    {
-      "name": "GPT-5.5",
-      "harness": "Codex",
-      "invalid": 13,
-      "matchSota": 44.4444,
-      "surpassSota": 14.4444,
-      "strongSurpassSota": 3.3333,
-      "meanAll": -2.8113,
-      "medianAll": -0.0549,
-      "medianValid": 0.0008,
-      "completionRate": 84.4444,
+      "invalid": 9,
+      "matchSota": 35.5556,
+      "surpassSota": 13.3333,
+      "strongSurpassSota": 1.1111,
+      "meanAll": -5.4476,
+      "medianAll": -0.0813,
+      "medianValid": -0.0576,
+      "completionRate": 88.8889,
       "scoreRate": 98.8889
     },
     {
       "name": "Opus 4.6",
       "harness": "Claude Code",
-      "invalid": 0,
-      "matchSota": 36.6667,
-      "surpassSota": 12.2222,
+      "invalid": 14,
+      "matchSota": 28.8889,
+      "surpassSota": 11.1111,
       "strongSurpassSota": 1.1111,
-      "meanAll": -2.015,
-      "medianAll": -0.0608,
-      "medianValid": -0.0608,
-      "completionRate": 100,
+      "meanAll": -2.1561,
+      "medianAll": -0.1178,
+      "medianValid": -0.0825,
+      "completionRate": 84.4444,
       "scoreRate": 100
     },
     {
-      "name": "MiniMax-M3",
-      "harness": "Claude Code",
-      "invalid": 0,
-      "matchSota": 33.3333,
-      "surpassSota": 11.1111,
-      "strongSurpassSota": 1.1111,
-      "meanAll": -5.897,
-      "medianAll": -0.1029,
-      "medianValid": -0.0999,
-      "completionRate": 98.8889,
-      "scoreRate": 98.8889
-    },
-    {
-      "name": "Qwen 3.7 Max",
-      "harness": "Claude Code",
-      "invalid": 3,
-      "matchSota": 28.8889,
+      "name": "Gemini 3.5 Flash",
+      "harness": "Gemini CLI",
+      "invalid": 21,
+      "matchSota": 25.5556,
       "surpassSota": 10,
-      "strongSurpassSota": 2.2222,
-      "meanAll": -2.9383,
-      "medianAll": -0.1214,
-      "medianValid": -0.1049,
-      "completionRate": 95.5556,
+      "strongSurpassSota": 0,
+      "meanAll": -5.5432,
+      "medianAll": -0.2004,
+      "medianValid": -0.0842,
+      "completionRate": 75.5556,
       "scoreRate": 98.8889
     },
     {
       "name": "Kimi K2.6",
       "harness": "Claude Code",
-      "invalid": 2,
-      "matchSota": 30,
-      "surpassSota": 8.8889,
+      "invalid": 11,
+      "matchSota": 27.7778,
+      "surpassSota": 7.7778,
       "strongSurpassSota": 2.2222,
-      "meanAll": -10.1106,
-      "medianAll": -0.1423,
-      "medianValid": -0.0865,
-      "completionRate": 92.2222,
+      "meanAll": -10.18,
+      "medianAll": -0.1693,
+      "medianValid": -0.0852,
+      "completionRate": 82.2222,
       "scoreRate": 94.4444
+    },
+    {
+      "name": "Qwen 3.7 Max",
+      "harness": "Claude Code",
+      "invalid": 17,
+      "matchSota": 21.1111,
+      "surpassSota": 7.7778,
+      "strongSurpassSota": 0,
+      "meanAll": -2.7453,
+      "medianAll": -0.2118,
+      "medianValid": -0.1122,
+      "completionRate": 80,
+      "scoreRate": 98.8889
+    },
+    {
+      "name": "MiniMax-M3",
+      "harness": "Claude Code",
+      "invalid": 11,
+      "matchSota": 26.6667,
+      "surpassSota": 6.6667,
+      "strongSurpassSota": 0,
+      "meanAll": -6.0282,
+      "medianAll": -0.1601,
+      "medianValid": -0.1138,
+      "completionRate": 86.6667,
+      "scoreRate": 98.8889
     },
     {
       "name": "GPT-5.4",
       "harness": "Codex",
-      "invalid": 5,
-      "matchSota": 27.7778,
-      "surpassSota": 8.8889,
+      "invalid": 19,
+      "matchSota": 24.4444,
+      "surpassSota": 6.6667,
       "strongSurpassSota": 0,
-      "meanAll": -3.7164,
-      "medianAll": -0.1234,
-      "medianValid": -0.1129,
-      "completionRate": 94.4444,
+      "meanAll": -3.5879,
+      "medianAll": -0.1721,
+      "medianValid": -0.1062,
+      "completionRate": 78.8889,
       "scoreRate": 100
     },
     {
       "name": "GLM-5.1",
       "harness": "Claude Code",
-      "invalid": 0,
-      "matchSota": 28.8889,
-      "surpassSota": 7.7778,
-      "strongSurpassSota": 1.1111,
-      "meanAll": -8.4442,
-      "medianAll": -0.1503,
-      "medianValid": -0.1305,
-      "completionRate": 93.3333,
+      "invalid": 13,
+      "matchSota": 24.4444,
+      "surpassSota": 6.6667,
+      "strongSurpassSota": 0,
+      "meanAll": -8.5552,
+      "medianAll": -0.1971,
+      "medianValid": -0.1158,
+      "completionRate": 78.8889,
       "scoreRate": 93.3333
+    },
+    {
+      "name": "GPT-5.5",
+      "harness": "Codex",
+      "invalid": 40,
+      "matchSota": 25.5556,
+      "surpassSota": 4.4444,
+      "strongSurpassSota": 0,
+      "meanAll": -0.5221,
+      "medianAll": -0.4616,
+      "medianValid": -0.0532,
+      "completionRate": 54.4444,
+      "scoreRate": 98.8889
     },
     {
       "name": "DeepSeek-V4-Pro",
       "harness": "Claude Code",
-      "invalid": 0,
-      "matchSota": 26.6667,
+      "invalid": 10,
+      "matchSota": 23.3333,
       "surpassSota": 4.4444,
       "strongSurpassSota": 1.1111,
-      "meanAll": -8.571,
-      "medianAll": -0.2421,
-      "medianValid": -0.2389,
-      "completionRate": 98.8889,
+      "meanAll": -8.6335,
+      "medianAll": -0.292,
+      "medianValid": -0.2245,
+      "completionRate": 87.7778,
       "scoreRate": 98.8889
     },
     {
       "name": "MiniMax-M2.7",
       "harness": "Claude Code",
-      "invalid": 5,
-      "matchSota": 13.3333,
+      "invalid": 13,
+      "matchSota": 12.2222,
       "surpassSota": 1.1111,
       "strongSurpassSota": 0,
-      "meanAll": -11.7616,
-      "medianAll": -0.4007,
-      "medianValid": -0.3471,
-      "completionRate": 93.3333,
+      "meanAll": -8.8231,
+      "medianAll": -0.5008,
+      "medianValid": -0.3013,
+      "completionRate": 84.4444,
       "scoreRate": 98.8889
     }
   ],
@@ -205,29 +205,34 @@ window.NATUREBENCH_DATA = {
       "name": "Opus 4.7",
       "bins": [
         {
-          "label": "none/invalid",
+          "label": "No score",
           "count": 0,
           "percent": 0
         },
         {
+          "label": "Invalid",
+          "count": 12,
+          "percent": 13.3
+        },
+        {
           "label": "g < -0.5",
-          "count": 11,
-          "percent": 12.2
+          "count": 10,
+          "percent": 11.1
         },
         {
           "label": "-0.5 <= g < 0",
-          "count": 36,
-          "percent": 40
+          "count": 31,
+          "percent": 34.4
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 27,
-          "percent": 30
+          "count": 23,
+          "percent": 25.6
         },
         {
           "label": "0.1 < g <= 0.5",
-          "count": 13,
-          "percent": 14.4
+          "count": 11,
+          "percent": 12.2
         },
         {
           "label": "g > 0.5",
@@ -240,54 +245,24 @@ window.NATUREBENCH_DATA = {
       "name": "GLM-5.2",
       "bins": [
         {
-          "label": "none/invalid",
-          "count": 3,
-          "percent": 3.3
+          "label": "No score",
+          "count": 1,
+          "percent": 1.1
+        },
+        {
+          "label": "Invalid",
+          "count": 9,
+          "percent": 10
         },
         {
           "label": "g < -0.5",
-          "count": 17,
-          "percent": 18.9
+          "count": 15,
+          "percent": 16.7
         },
         {
           "label": "-0.5 <= g < 0",
           "count": 33,
           "percent": 36.7
-        },
-        {
-          "label": "0 <= g <= 0.1",
-          "count": 23,
-          "percent": 25.6
-        },
-        {
-          "label": "0.1 < g <= 0.5",
-          "count": 12,
-          "percent": 13.3
-        },
-        {
-          "label": "g > 0.5",
-          "count": 2,
-          "percent": 2.2
-        }
-      ]
-    },
-    {
-      "name": "Gemini 3.5 Flash",
-      "bins": [
-        {
-          "label": "none/invalid",
-          "count": 5,
-          "percent": 5.6
-        },
-        {
-          "label": "g < -0.5",
-          "count": 14,
-          "percent": 15.6
-        },
-        {
-          "label": "-0.5 <= g < 0",
-          "count": 37,
-          "percent": 41.1
         },
         {
           "label": "0 <= g <= 0.1",
@@ -301,43 +276,8 @@ window.NATUREBENCH_DATA = {
         },
         {
           "label": "g > 0.5",
-          "count": 3,
-          "percent": 3.3
-        }
-      ]
-    },
-    {
-      "name": "GPT-5.5",
-      "bins": [
-        {
-          "label": "none/invalid",
-          "count": 14,
-          "percent": 15.6
-        },
-        {
-          "label": "g < -0.5",
-          "count": 7,
-          "percent": 7.8
-        },
-        {
-          "label": "-0.5 <= g < 0",
-          "count": 29,
-          "percent": 32.2
-        },
-        {
-          "label": "0 <= g <= 0.1",
-          "count": 27,
-          "percent": 30
-        },
-        {
-          "label": "0.1 < g <= 0.5",
-          "count": 10,
-          "percent": 11.1
-        },
-        {
-          "label": "g > 0.5",
-          "count": 3,
-          "percent": 3.3
+          "count": 1,
+          "percent": 1.1
         }
       ]
     },
@@ -345,59 +285,29 @@ window.NATUREBENCH_DATA = {
       "name": "Opus 4.6",
       "bins": [
         {
-          "label": "none/invalid",
+          "label": "No score",
           "count": 0,
           "percent": 0
         },
         {
+          "label": "Invalid",
+          "count": 14,
+          "percent": 15.6
+        },
+        {
           "label": "g < -0.5",
+          "count": 15,
+          "percent": 16.7
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 35,
+          "percent": 38.9
+        },
+        {
+          "label": "0 <= g <= 0.1",
           "count": 16,
           "percent": 17.8
-        },
-        {
-          "label": "-0.5 <= g < 0",
-          "count": 41,
-          "percent": 45.6
-        },
-        {
-          "label": "0 <= g <= 0.1",
-          "count": 22,
-          "percent": 24.4
-        },
-        {
-          "label": "0.1 < g <= 0.5",
-          "count": 10,
-          "percent": 11.1
-        },
-        {
-          "label": "g > 0.5",
-          "count": 1,
-          "percent": 1.1
-        }
-      ]
-    },
-    {
-      "name": "MiniMax-M3",
-      "bins": [
-        {
-          "label": "none/invalid",
-          "count": 1,
-          "percent": 1.1
-        },
-        {
-          "label": "g < -0.5",
-          "count": 20,
-          "percent": 22.2
-        },
-        {
-          "label": "-0.5 <= g < 0",
-          "count": 39,
-          "percent": 43.3
-        },
-        {
-          "label": "0 <= g <= 0.1",
-          "count": 20,
-          "percent": 22.2
         },
         {
           "label": "0.1 < g <= 0.5",
@@ -412,32 +322,77 @@ window.NATUREBENCH_DATA = {
       ]
     },
     {
-      "name": "Qwen 3.7 Max",
+      "name": "Gemini 3.5 Flash",
       "bins": [
         {
-          "label": "none/invalid",
-          "count": 4,
-          "percent": 4.4
+          "label": "No score",
+          "count": 1,
+          "percent": 1.1
+        },
+        {
+          "label": "Invalid",
+          "count": 21,
+          "percent": 23.3
         },
         {
           "label": "g < -0.5",
-          "count": 19,
-          "percent": 21.1
+          "count": 11,
+          "percent": 12.2
         },
         {
           "label": "-0.5 <= g < 0",
-          "count": 41,
-          "percent": 45.6
+          "count": 34,
+          "percent": 37.8
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 17,
-          "percent": 18.9
+          "count": 14,
+          "percent": 15.6
         },
         {
           "label": "0.1 < g <= 0.5",
-          "count": 7,
-          "percent": 7.8
+          "count": 9,
+          "percent": 10
+        },
+        {
+          "label": "g > 0.5",
+          "count": 0,
+          "percent": 0
+        }
+      ]
+    },
+    {
+      "name": "Kimi K2.6",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 5,
+          "percent": 5.6
+        },
+        {
+          "label": "Invalid",
+          "count": 11,
+          "percent": 12.2
+        },
+        {
+          "label": "g < -0.5",
+          "count": 18,
+          "percent": 20
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 31,
+          "percent": 34.4
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 18,
+          "percent": 20
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 5,
+          "percent": 5.6
         },
         {
           "label": "g > 0.5",
@@ -447,17 +402,62 @@ window.NATUREBENCH_DATA = {
       ]
     },
     {
-      "name": "Kimi K2.6",
+      "name": "Qwen 3.7 Max",
       "bins": [
         {
-          "label": "none/invalid",
+          "label": "No score",
+          "count": 1,
+          "percent": 1.1
+        },
+        {
+          "label": "Invalid",
+          "count": 17,
+          "percent": 18.9
+        },
+        {
+          "label": "g < -0.5",
+          "count": 17,
+          "percent": 18.9
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 36,
+          "percent": 40
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 12,
+          "percent": 13.3
+        },
+        {
+          "label": "0.1 < g <= 0.5",
           "count": 7,
           "percent": 7.8
         },
         {
+          "label": "g > 0.5",
+          "count": 0,
+          "percent": 0
+        }
+      ]
+    },
+    {
+      "name": "MiniMax-M3",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 1,
+          "percent": 1.1
+        },
+        {
+          "label": "Invalid",
+          "count": 11,
+          "percent": 12.2
+        },
+        {
           "label": "g < -0.5",
-          "count": 21,
-          "percent": 23.3
+          "count": 19,
+          "percent": 21.1
         },
         {
           "label": "-0.5 <= g < 0",
@@ -466,8 +466,8 @@ window.NATUREBENCH_DATA = {
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 19,
-          "percent": 21.1
+          "count": 18,
+          "percent": 20
         },
         {
           "label": "0.1 < g <= 0.5",
@@ -476,8 +476,8 @@ window.NATUREBENCH_DATA = {
         },
         {
           "label": "g > 0.5",
-          "count": 2,
-          "percent": 2.2
+          "count": 0,
+          "percent": 0
         }
       ]
     },
@@ -485,29 +485,34 @@ window.NATUREBENCH_DATA = {
       "name": "GPT-5.4",
       "bins": [
         {
-          "label": "none/invalid",
-          "count": 5,
-          "percent": 5.6
+          "label": "No score",
+          "count": 0,
+          "percent": 0
+        },
+        {
+          "label": "Invalid",
+          "count": 19,
+          "percent": 21.1
         },
         {
           "label": "g < -0.5",
-          "count": 22,
-          "percent": 24.4
-        },
-        {
-          "label": "-0.5 <= g < 0",
-          "count": 38,
-          "percent": 42.2
-        },
-        {
-          "label": "0 <= g <= 0.1",
           "count": 17,
           "percent": 18.9
         },
         {
+          "label": "-0.5 <= g < 0",
+          "count": 32,
+          "percent": 35.6
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 16,
+          "percent": 17.8
+        },
+        {
           "label": "0.1 < g <= 0.5",
-          "count": 8,
-          "percent": 8.9
+          "count": 6,
+          "percent": 6.7
         },
         {
           "label": "g > 0.5",
@@ -520,24 +525,29 @@ window.NATUREBENCH_DATA = {
       "name": "GLM-5.1",
       "bins": [
         {
-          "label": "none/invalid",
+          "label": "No score",
           "count": 6,
           "percent": 6.7
         },
         {
+          "label": "Invalid",
+          "count": 13,
+          "percent": 14.4
+        },
+        {
           "label": "g < -0.5",
-          "count": 19,
-          "percent": 21.1
+          "count": 17,
+          "percent": 18.9
         },
         {
           "label": "-0.5 <= g < 0",
-          "count": 39,
-          "percent": 43.3
+          "count": 32,
+          "percent": 35.6
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 19,
-          "percent": 21.1
+          "count": 16,
+          "percent": 17.8
         },
         {
           "label": "0.1 < g <= 0.5",
@@ -546,8 +556,48 @@ window.NATUREBENCH_DATA = {
         },
         {
           "label": "g > 0.5",
+          "count": 0,
+          "percent": 0
+        }
+      ]
+    },
+    {
+      "name": "GPT-5.5",
+      "bins": [
+        {
+          "label": "No score",
           "count": 1,
           "percent": 1.1
+        },
+        {
+          "label": "Invalid",
+          "count": 40,
+          "percent": 44.4
+        },
+        {
+          "label": "g < -0.5",
+          "count": 3,
+          "percent": 3.3
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 23,
+          "percent": 25.6
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 19,
+          "percent": 21.1
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 4,
+          "percent": 4.4
+        },
+        {
+          "label": "g > 0.5",
+          "count": 0,
+          "percent": 0
         }
       ]
     },
@@ -555,24 +605,29 @@ window.NATUREBENCH_DATA = {
       "name": "DeepSeek-V4-Pro",
       "bins": [
         {
-          "label": "none/invalid",
+          "label": "No score",
           "count": 1,
           "percent": 1.1
         },
         {
+          "label": "Invalid",
+          "count": 10,
+          "percent": 11.1
+        },
+        {
           "label": "g < -0.5",
-          "count": 26,
-          "percent": 28.9
+          "count": 22,
+          "percent": 24.4
         },
         {
           "label": "-0.5 <= g < 0",
-          "count": 39,
-          "percent": 43.3
+          "count": 36,
+          "percent": 40
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 20,
-          "percent": 22.2
+          "count": 17,
+          "percent": 18.9
         },
         {
           "label": "0.1 < g <= 0.5",
@@ -590,24 +645,29 @@ window.NATUREBENCH_DATA = {
       "name": "MiniMax-M2.7",
       "bins": [
         {
-          "label": "none/invalid",
-          "count": 6,
-          "percent": 6.7
+          "label": "No score",
+          "count": 1,
+          "percent": 1.1
+        },
+        {
+          "label": "Invalid",
+          "count": 13,
+          "percent": 14.4
         },
         {
           "label": "g < -0.5",
-          "count": 35,
-          "percent": 38.9
+          "count": 31,
+          "percent": 34.4
         },
         {
           "label": "-0.5 <= g < 0",
-          "count": 37,
-          "percent": 41.1
+          "count": 34,
+          "percent": 37.8
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 11,
-          "percent": 12.2
+          "count": 10,
+          "percent": 11.1
         },
         {
           "label": "0.1 < g <= 0.5",
@@ -626,37 +686,25 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Cellular Omics",
       "n": 31,
-      "winner": "GPT-5.5",
-      "winnerSurpassSota": 25.8065,
-      "winnerMatchSota": 54.8387,
-      "winnerMedianAll": 0.0029,
+      "winner": "GLM-5.2",
+      "winnerSurpassSota": 22.5806,
+      "winnerMatchSota": 41.9355,
+      "winnerMedianAll": -0.041,
       "models": [
         {
-          "name": "GPT-5.5",
-          "surpassSota": 25.8065
-        },
-        {
           "name": "GLM-5.2",
-          "surpassSota": 25.8065
-        },
-        {
-          "name": "Gemini 3.5 Flash",
-          "surpassSota": 25.8065
+          "surpassSota": 22.5806
         },
         {
           "name": "Opus 4.7",
-          "surpassSota": 22.5806
+          "surpassSota": 19.3548
         },
         {
           "name": "Opus 4.6",
           "surpassSota": 19.3548
         },
         {
-          "name": "MiniMax-M3",
-          "surpassSota": 19.3548
-        },
-        {
-          "name": "Qwen 3.7 Max",
+          "name": "Gemini 3.5 Flash",
           "surpassSota": 16.129
         },
         {
@@ -668,11 +716,23 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 12.9032
         },
         {
-          "name": "GPT-5.4",
+          "name": "MiniMax-M3",
           "surpassSota": 12.9032
         },
         {
           "name": "DeepSeek-V4-Pro",
+          "surpassSota": 9.6774
+        },
+        {
+          "name": "GPT-5.5",
+          "surpassSota": 9.6774
+        },
+        {
+          "name": "GPT-5.4",
+          "surpassSota": 9.6774
+        },
+        {
+          "name": "Qwen 3.7 Max",
           "surpassSota": 9.6774
         },
         {
@@ -698,7 +758,7 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 12.5
         },
         {
-          "name": "MiniMax-M3",
+          "name": "Qwen 3.7 Max",
           "surpassSota": 12.5
         },
         {
@@ -706,15 +766,15 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 12.5
         },
         {
-          "name": "Qwen 3.7 Max",
-          "surpassSota": 12.5
+          "name": "DeepSeek-V4-Pro",
+          "surpassSota": 6.25
         },
         {
-          "name": "Opus 4.6",
-          "surpassSota": 12.5
+          "name": "MiniMax-M3",
+          "surpassSota": 6.25
         },
         {
-          "name": "GPT-5.5",
+          "name": "GPT-5.4",
           "surpassSota": 6.25
         },
         {
@@ -722,11 +782,11 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 6.25
         },
         {
-          "name": "DeepSeek-V4-Pro",
+          "name": "GPT-5.5",
           "surpassSota": 6.25
         },
         {
-          "name": "GPT-5.4",
+          "name": "Opus 4.6",
           "surpassSota": 6.25
         },
         {
@@ -742,19 +802,11 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Biomedical Modeling",
       "n": 14,
-      "winner": "GPT-5.5",
+      "winner": "GLM-5.2",
       "winnerSurpassSota": 7.1429,
-      "winnerMatchSota": 35.7143,
-      "winnerMedianAll": -0.1247,
+      "winnerMatchSota": 21.4286,
+      "winnerMedianAll": -0.1221,
       "models": [
-        {
-          "name": "GPT-5.5",
-          "surpassSota": 7.1429
-        },
-        {
-          "name": "Opus 4.7",
-          "surpassSota": 7.1429
-        },
         {
           "name": "GLM-5.2",
           "surpassSota": 7.1429
@@ -764,11 +816,11 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 7.1429
         },
         {
-          "name": "Gemini 3.5 Flash",
+          "name": "Opus 4.7",
           "surpassSota": 7.1429
         },
         {
-          "name": "Opus 4.6",
+          "name": "GPT-5.5",
           "surpassSota": 0
         },
         {
@@ -776,7 +828,7 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
-          "name": "Qwen 3.7 Max",
+          "name": "Opus 4.6",
           "surpassSota": 0
         },
         {
@@ -788,11 +840,19 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
+          "name": "Qwen 3.7 Max",
+          "surpassSota": 0
+        },
+        {
           "name": "MiniMax-M3",
           "surpassSota": 0
         },
         {
           "name": "DeepSeek-V4-Pro",
+          "surpassSota": 0
+        },
+        {
+          "name": "Gemini 3.5 Flash",
           "surpassSota": 0
         }
       ]
@@ -803,34 +863,26 @@ window.NATUREBENCH_DATA = {
       "winner": "Opus 4.7",
       "winnerSurpassSota": 30.7692,
       "winnerMatchSota": 46.1538,
-      "winnerMedianAll": -0.0505,
+      "winnerMedianAll": -0.0581,
       "models": [
         {
           "name": "Opus 4.7",
           "surpassSota": 30.7692
         },
         {
-          "name": "Gemini 3.5 Flash",
-          "surpassSota": 30.7692
-        },
-        {
-          "name": "GPT-5.5",
-          "surpassSota": 23.0769
-        },
-        {
           "name": "Opus 4.6",
           "surpassSota": 23.0769
         },
         {
-          "name": "GPT-5.4",
+          "name": "Gemini 3.5 Flash",
           "surpassSota": 23.0769
+        },
+        {
+          "name": "GPT-5.4",
+          "surpassSota": 15.3846
         },
         {
           "name": "GLM-5.2",
-          "surpassSota": 23.0769
-        },
-        {
-          "name": "MiniMax-M3",
           "surpassSota": 15.3846
         },
         {
@@ -838,19 +890,27 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 15.3846
         },
         {
-          "name": "Kimi K2.6",
-          "surpassSota": 15.3846
+          "name": "MiniMax-M3",
+          "surpassSota": 7.6923
         },
         {
-          "name": "GLM-5.1",
+          "name": "Kimi K2.6",
           "surpassSota": 7.6923
+        },
+        {
+          "name": "MiniMax-M2.7",
+          "surpassSota": 0
         },
         {
           "name": "DeepSeek-V4-Pro",
           "surpassSota": 0
         },
         {
-          "name": "MiniMax-M2.7",
+          "name": "GPT-5.5",
+          "surpassSota": 0
+        },
+        {
+          "name": "GLM-5.1",
           "surpassSota": 0
         }
       ]
@@ -859,13 +919,13 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "n": 11,
       "winner": "Opus 4.7",
-      "winnerSurpassSota": 18.1818,
-      "winnerMatchSota": 45.4545,
-      "winnerMedianAll": -0.0934,
+      "winnerSurpassSota": 9.0909,
+      "winnerMatchSota": 27.2727,
+      "winnerMedianAll": -0.1349,
       "models": [
         {
           "name": "Opus 4.7",
-          "surpassSota": 18.1818
+          "surpassSota": 9.0909
         },
         {
           "name": "GLM-5.2",
@@ -876,11 +936,11 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
-          "name": "Opus 4.6",
+          "name": "Kimi K2.6",
           "surpassSota": 0
         },
         {
-          "name": "Kimi K2.6",
+          "name": "Opus 4.6",
           "surpassSota": 0
         },
         {
@@ -892,10 +952,6 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
-          "name": "GLM-5.1",
-          "surpassSota": 0
-        },
-        {
           "name": "GPT-5.5",
           "surpassSota": 0
         },
@@ -904,11 +960,15 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
-          "name": "Qwen 3.7 Max",
+          "name": "GLM-5.1",
           "surpassSota": 0
         },
         {
           "name": "MiniMax-M2.7",
+          "surpassSota": 0
+        },
+        {
+          "name": "Qwen 3.7 Max",
           "surpassSota": 0
         }
       ]
@@ -954,15 +1014,15 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
+          "name": "Qwen 3.7 Max",
+          "surpassSota": 0
+        },
+        {
           "name": "GLM-5.1",
           "surpassSota": 0
         },
         {
           "name": "MiniMax-M3",
-          "surpassSota": 0
-        },
-        {
-          "name": "Qwen 3.7 Max",
           "surpassSota": 0
         },
         {
@@ -979,20 +1039,20 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Opus 4.6",
-      "bestScore": 0.101586,
+      "bestModel": "GPT-5.4",
+      "bestScore": 0.079069,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.101586
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
           "value": 0.079069
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": 0.096415
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -1007,16 +1067,16 @@ window.NATUREBENCH_DATA = {
           "value": 0.051191
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.097026
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
           "value": 0.011682
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.097818
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -1333,16 +1393,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "DeepSeek-V4-Pro",
-      "bestScore": 0.018125,
+      "bestModel": "GLM-5.1",
+      "bestScore": 0.01112,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.010282
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.011214
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -1353,32 +1413,32 @@ window.NATUREBENCH_DATA = {
           "value": -0.050071
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": 0.018125
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
           "state": "valid",
           "value": 0.01112
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.016978
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.00216
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.008691
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
           "value": 0.007505
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": 0.012
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "valid",
@@ -1487,8 +1547,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.089804
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.142087
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -1573,8 +1633,8 @@ window.NATUREBENCH_DATA = {
       "bestScore": -0.4551,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.819704
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
@@ -1628,16 +1688,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Simulation/Operator Learning",
       "taskDir": "part2",
-      "bestModel": "GLM-5.2",
-      "bestScore": 1.66261,
+      "bestModel": "Opus 4.7",
+      "bestScore": 1.614505,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
           "value": 0.33862
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": 0.386887
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -1656,16 +1716,16 @@ window.NATUREBENCH_DATA = {
           "value": -0.296691
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.547955
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 1.469476
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 1.1835
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -1676,8 +1736,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.401577
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": 1.66261
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -1723,8 +1783,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.118447
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.268804
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -1746,8 +1806,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part1",
-      "bestModel": "Qwen 3.7 Max",
-      "bestScore": -0.425721,
+      "bestModel": "Opus 4.6",
+      "bestScore": -0.9875,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1758,8 +1818,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.996212
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.431818
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -1774,12 +1834,12 @@ window.NATUREBENCH_DATA = {
           "value": -0.996212
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": -0.990115
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -0.425721
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
           "state": "invalid",
@@ -1794,8 +1854,8 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": -0.425721
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -1805,8 +1865,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Other Specialized",
       "taskDir": "buggy",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.002941,
+      "bestModel": "Qwen 3.7 Max",
+      "bestScore": -0.380494,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1841,8 +1901,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.380494
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.002941
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -1892,8 +1952,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.042035
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.619838
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
@@ -1923,12 +1983,12 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Structure Modeling",
       "taskDir": "buggy",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.177989,
+      "bestModel": "Gemini 3.5 Flash",
+      "bestScore": -0.691689,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.072811
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
@@ -1939,16 +1999,16 @@ window.NATUREBENCH_DATA = {
           "value": -0.813712
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -1
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -0.978436
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.955947
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
@@ -1959,20 +2019,20 @@ window.NATUREBENCH_DATA = {
           "value": -0.731962
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.177989
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": -0.134605
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
           "value": -0.793739
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": -0.576947
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -2018,8 +2078,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.009413
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.005444
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -2049,12 +2109,12 @@ window.NATUREBENCH_DATA = {
           "value": 0.071132
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": 0.014476
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.026314
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -2100,16 +2160,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Generation/Design",
       "taskDir": "part1",
-      "bestModel": "MiniMax-M3",
-      "bestScore": 1.181878,
+      "bestModel": "Opus 4.7",
+      "bestScore": 0.262516,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
           "value": 0.189081
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.406872
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -2120,32 +2180,32 @@ window.NATUREBENCH_DATA = {
           "value": -1
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -1
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
           "state": "valid",
           "value": -0.549066
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.264176
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
           "value": -0.549066
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.233134
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
           "value": 0.262516
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": 1.181878
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "valid",
@@ -2159,8 +2219,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part2",
-      "bestModel": "Qwen 3.7 Max",
-      "bestScore": 0.078535,
+      "bestModel": "Opus 4.7",
+      "bestScore": 0.034601,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2175,12 +2235,12 @@ window.NATUREBENCH_DATA = {
           "value": -0.003502
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": 0.0253
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -0.4584
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
           "state": "valid",
@@ -2191,8 +2251,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.221536
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.078535
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
           "state": "invalid",
@@ -2207,8 +2267,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.632729
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": 0.066716
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -2336,16 +2396,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Qwen 3.7 Max",
-      "bestScore": 0.567848,
+      "bestModel": "Kimi K2.6",
+      "bestScore": -1,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
           "value": -2.748048
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -1.210074
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -2368,12 +2428,12 @@ window.NATUREBENCH_DATA = {
           "value": -2.378192
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.567848
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.469891
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -2431,8 +2491,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.124368
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.140866
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -2490,8 +2550,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.709681
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.471217
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -2537,8 +2597,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.188826
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.33859
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
@@ -2600,8 +2660,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.021312
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.025132
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
@@ -2635,8 +2695,8 @@ window.NATUREBENCH_DATA = {
       "bestScore": 0.135641,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.04418
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
@@ -2749,8 +2809,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "buggy",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.10873,
+      "bestModel": "GPT-5.4",
+      "bestScore": -0.144325,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2773,28 +2833,28 @@ window.NATUREBENCH_DATA = {
           "value": -0.245389
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.205254
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
           "value": -0.199009
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -0.233575
-        },
-        "GPT-5.5": {
           "state": "invalid",
           "value": null
         },
-        "Opus 4.7": {
+        "GPT-5.5": {
           "state": "valid",
-          "value": -0.10873
+          "value": -0.154371
+        },
+        "Opus 4.7": {
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": -0.225736
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "valid",
@@ -2808,32 +2868,32 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Opus 4.6",
-      "bestScore": -0.2547,
+      "bestModel": null,
+      "bestScore": null,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.2547
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.749989
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.803464
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "invalid",
           "value": null
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -0.870953
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.958737
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "invalid",
@@ -2848,16 +2908,16 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": -0.272825
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": -0.5101
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": -0.965417
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -2883,8 +2943,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.083883
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -0.080931
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
@@ -2899,12 +2959,12 @@ window.NATUREBENCH_DATA = {
           "value": -0.103466
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -0.025449
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.053719
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -2942,8 +3002,8 @@ window.NATUREBENCH_DATA = {
           "value": -206.034066
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -266.648469
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
@@ -2954,16 +3014,16 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": -32.194442
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -31.027349
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -131.507778
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -2985,8 +3045,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": -102.368049,
+      "bestModel": "GLM-5.2",
+      "bestScore": -136.865278,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3021,8 +3081,8 @@ window.NATUREBENCH_DATA = {
           "value": -178.088158
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -102.368049
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -3033,8 +3093,8 @@ window.NATUREBENCH_DATA = {
           "value": -148.610403
         },
         "GLM-5.2": {
-          "state": "invalid",
-          "value": null
+          "state": "valid",
+          "value": -136.865278
         }
       }
     },
@@ -3048,8 +3108,8 @@ window.NATUREBENCH_DATA = {
       "bestScore": -0.045001,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.218108
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
@@ -3103,16 +3163,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Other Specialized",
       "taskDir": "part2",
-      "bestModel": "Opus 4.6",
-      "bestScore": 0.043211,
+      "bestModel": "GLM-5.2",
+      "bestScore": -0.336501,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.043211
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.381441
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -3123,24 +3183,24 @@ window.NATUREBENCH_DATA = {
           "value": -0.782242
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -0.4792
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.248735
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": -0.174833
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
           "value": -0.644829
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.266076
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -3152,7 +3212,7 @@ window.NATUREBENCH_DATA = {
         },
         "GLM-5.2": {
           "state": "valid",
-          "value": -0.819948
+          "value": -0.336501
         }
       }
     },
@@ -3162,8 +3222,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "buggy",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.079227,
+      "bestModel": "Opus 4.7",
+      "bestScore": -0.027163,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3190,8 +3250,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.52082
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.079227
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
@@ -3375,8 +3435,8 @@ window.NATUREBENCH_DATA = {
           "value": -1.07958
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.112349
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -3431,7 +3491,7 @@ window.NATUREBENCH_DATA = {
         },
         "Qwen 3.7 Max": {
           "state": "valid",
-          "value": -0.10373
+          "value": 0.050984
         },
         "GPT-5.5": {
           "state": "valid",
@@ -3516,16 +3576,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.223783,
+      "bestModel": "GLM-5.1",
+      "bestScore": 0.051159,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.018084
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.075662
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -3544,28 +3604,28 @@ window.NATUREBENCH_DATA = {
           "value": 0.051159
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": -0.280843
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.057517
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.223783
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": 0.008618
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": -0.06622
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": 0.0106
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -3587,8 +3647,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.529928
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.990143
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -3634,16 +3694,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.010101,
+      "bestModel": "Kimi K2.6",
+      "bestScore": 0.001352,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.05924
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.00054
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -3662,8 +3722,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.035809
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.010101
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
@@ -3674,8 +3734,8 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": 0.003172
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -3693,8 +3753,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.100466,
+      "bestModel": "GPT-5.5",
+      "bestScore": -0.107651,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3733,8 +3793,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.107651
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": -0.100466
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -3764,8 +3824,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.733515
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.69723
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -3785,7 +3845,7 @@ window.NATUREBENCH_DATA = {
         },
         "Qwen 3.7 Max": {
           "state": "valid",
-          "value": -0.773922
+          "value": -0.740165
         },
         "GPT-5.5": {
           "state": "valid",
@@ -3878,8 +3938,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.1297
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": 0.046515
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -3914,8 +3974,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.186987
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": 0.141435
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "valid",
@@ -3929,8 +3989,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.54351,
+      "bestModel": "Opus 4.7",
+      "bestScore": 0.461563,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3965,8 +4025,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.017332
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.54351
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -3988,8 +4048,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part1",
-      "bestModel": "DeepSeek-V4-Pro",
-      "bestScore": 0.008591,
+      "bestModel": "Kimi K2.6",
+      "bestScore": -0.035927,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4008,8 +4068,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.0952
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": 0.008591
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
           "state": "none",
@@ -4063,12 +4123,12 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -0.858325
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -0.654805
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
           "state": "valid",
@@ -4106,56 +4166,56 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Generation/Design",
       "taskDir": "part1",
-      "bestModel": "Opus 4.6",
-      "bestScore": 0.0205,
+      "bestModel": "DeepSeek-V4-Pro",
+      "bestScore": -0.321796,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.0205
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "invalid",
           "value": null
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.321796
-        },
-        "MiniMax-M2.7": {
           "state": "invalid",
           "value": null
+        },
+        "MiniMax-M2.7": {
+          "state": "valid",
+          "value": -1
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
           "value": -0.321796
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.320424
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "invalid",
           "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -0.321796
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
           "state": "invalid",
           "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": 0.020453
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": -0.321796
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": 0.020453
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4197,8 +4257,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.072079
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.057948
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
           "state": "valid",
@@ -4224,8 +4284,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "DeepSeek-V4-Pro",
-      "bestScore": 0.056342,
+      "bestModel": "Opus 4.7",
+      "bestScore": 0.023661,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4244,20 +4304,20 @@ window.NATUREBENCH_DATA = {
           "value": -0.047752
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": 0.056342
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": 0.031216
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
           "value": 0.007022
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.053481
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
           "state": "valid",
@@ -4342,12 +4402,12 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Generation/Design",
       "taskDir": "part2",
-      "bestModel": "MiniMax-M3",
-      "bestScore": -0.029011,
+      "bestModel": "GLM-5.2",
+      "bestScore": -0.068223,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.154954
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
@@ -4358,8 +4418,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.141917
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -0.1668
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
@@ -4386,8 +4446,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.09337
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": -0.029011
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "valid",
@@ -4433,8 +4493,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.098317
         },
         "Qwen 3.7 Max": {
-          "state": "invalid",
-          "value": null
+          "state": "valid",
+          "value": -0.081904
         },
         "GPT-5.5": {
           "state": "valid",
@@ -4527,36 +4587,36 @@ window.NATUREBENCH_DATA = {
           "value": 0.066559
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.573058
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.91589
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -0.430793
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
           "value": -0.5927
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.369378
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "invalid",
           "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -0.494473
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.573058
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -4637,8 +4697,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Other Specialized",
       "taskDir": "part1",
-      "bestModel": "GPT-5.5",
-      "bestScore": -0.029065,
+      "bestModel": "Kimi K2.6",
+      "bestScore": -0.037066,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4661,8 +4721,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.547832
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.263053
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
@@ -4673,8 +4733,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.243975
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -0.029065
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -4712,8 +4772,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.076884
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -0.883711
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
@@ -4814,8 +4874,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Generation/Design",
       "taskDir": "buggy",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.200449,
+      "bestModel": "GPT-5.5",
+      "bestScore": -0.316554,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4842,8 +4902,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.546816
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": -0.64794
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
@@ -4855,7 +4915,7 @@ window.NATUREBENCH_DATA = {
         },
         "Opus 4.7": {
           "state": "valid",
-          "value": 0.200449
+          "value": -0.575326
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -5058,16 +5118,16 @@ window.NATUREBENCH_DATA = {
           "value": -1.40272
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -1.443432
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "valid",
           "value": -2.321255
         },
         "MiniMax-M2.7": {
-          "state": "valid",
-          "value": -3.424499
+          "state": "invalid",
+          "value": null
         },
         "DeepSeek-V4-Pro": {
           "state": "valid",
@@ -5086,12 +5146,12 @@ window.NATUREBENCH_DATA = {
           "value": -2.020958
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": -1.384002
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": -1.352497
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -5168,20 +5228,20 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Structure Modeling",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.078994,
+      "bestModel": "Opus 4.6",
+      "bestScore": -0.037064,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
           "value": -0.037064
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -0.168425
-        },
-        "Kimi K2.6": {
           "state": "invalid",
           "value": null
+        },
+        "Kimi K2.6": {
+          "state": "valid",
+          "value": -0.999993
         },
         "MiniMax-M2.7": {
           "state": "invalid",
@@ -5196,16 +5256,16 @@ window.NATUREBENCH_DATA = {
           "value": -1
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.058663
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
           "value": -0.86813
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.078994
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -5235,8 +5295,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.036371
         },
         "GPT-5.4": {
-          "state": "invalid",
-          "value": null
+          "state": "valid",
+          "value": 0.061196
         },
         "Kimi K2.6": {
           "state": "valid",
@@ -5263,8 +5323,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.041068
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.038889
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -5440,8 +5500,8 @@ window.NATUREBENCH_DATA = {
           "value": -0.00464
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.001031
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -5463,8 +5523,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "part1",
-      "bestModel": "GLM-5.1",
-      "bestScore": 0.534016,
+      "bestModel": "GPT-5.4",
+      "bestScore": 0.477928,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5487,8 +5547,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.086407
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": 0.534016
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
@@ -5499,8 +5559,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.167689
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.531048
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -5581,16 +5641,16 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Simulation/Operator Learning",
       "taskDir": "part1",
-      "bestModel": "Opus 4.7",
-      "bestScore": -7.346038,
+      "bestModel": "Opus 4.6",
+      "bestScore": -24.9062,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
           "value": -24.9062
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": -21.281593
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
           "state": "none",
@@ -5621,8 +5681,8 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": -7.346038
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -5676,8 +5736,8 @@ window.NATUREBENCH_DATA = {
           "value": -1.219005
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.048074
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
           "state": "valid",
@@ -5758,20 +5818,20 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "GLM-5.2",
-      "bestScore": 0.371982,
+      "bestModel": "Gemini 3.5 Flash",
+      "bestScore": 0.250084,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
           "value": 0.245136
         },
         "GPT-5.4": {
-          "state": "valid",
-          "value": 0.350076
+          "state": "invalid",
+          "value": null
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": 0.350783
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -5790,8 +5850,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.250084
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": -0.136813
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
           "state": "invalid",
@@ -5802,12 +5862,12 @@ window.NATUREBENCH_DATA = {
           "value": -0.2043
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": 0.361382
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
-          "state": "valid",
-          "value": 0.371982
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -5817,8 +5877,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "MiniMax-M3",
-      "bestScore": 0.164551,
+      "bestModel": "GPT-5.5",
+      "bestScore": 0.094202,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5850,7 +5910,7 @@ window.NATUREBENCH_DATA = {
         },
         "Qwen 3.7 Max": {
           "state": "valid",
-          "value": -0.989063
+          "value": 0.047062
         },
         "GPT-5.5": {
           "state": "valid",
@@ -5861,8 +5921,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.078265
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": 0.164551
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "valid",
@@ -5876,20 +5936,20 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.719264,
+      "bestModel": "GPT-5.5",
+      "bestScore": 0.005221,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": 0.012487
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
           "value": -0.105987
         },
         "Kimi K2.6": {
-          "state": "valid",
-          "value": -0.018656
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M2.7": {
           "state": "valid",
@@ -5904,20 +5964,20 @@ window.NATUREBENCH_DATA = {
           "value": -0.487625
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.719264
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
-          "value": 0.006104
+          "value": -0.132025
         },
         "GPT-5.5": {
           "state": "valid",
           "value": 0.005221
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": 0.017463
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -5935,8 +5995,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.278988,
+      "bestModel": "Opus 4.7",
+      "bestScore": 0.274184,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5959,12 +6019,12 @@ window.NATUREBENCH_DATA = {
           "value": -0.157477
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": 0.000355
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": 0.278988
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
           "state": "valid",
@@ -6014,12 +6074,12 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "DeepSeek-V4-Pro": {
-          "state": "valid",
-          "value": -0.017324
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": -0.012931
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
           "state": "valid",
@@ -6038,8 +6098,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.561534
         },
         "MiniMax-M3": {
-          "state": "valid",
-          "value": 0.094
+          "state": "invalid",
+          "value": null
         },
         "GLM-5.2": {
           "state": "invalid",
@@ -6093,8 +6153,8 @@ window.NATUREBENCH_DATA = {
           "value": 0.164982
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": 0.158529
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",
@@ -6230,12 +6290,12 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.171103,
+      "bestModel": "MiniMax-M3",
+      "bestScore": -0.227497,
       "scores": {
         "Opus 4.6": {
-          "state": "valid",
-          "value": -0.0321
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.4": {
           "state": "valid",
@@ -6254,24 +6314,24 @@ window.NATUREBENCH_DATA = {
           "value": -0.603325
         },
         "GLM-5.1": {
-          "state": "valid",
-          "value": 0.097959
+          "state": "invalid",
+          "value": null
         },
         "Gemini 3.5 Flash": {
-          "state": "valid",
-          "value": -0.023611
+          "state": "invalid",
+          "value": null
         },
         "Qwen 3.7 Max": {
-          "state": "valid",
-          "value": 0.006448
+          "state": "invalid",
+          "value": null
         },
         "GPT-5.5": {
-          "state": "valid",
-          "value": 0.171103
+          "state": "invalid",
+          "value": null
         },
         "Opus 4.7": {
-          "state": "valid",
-          "value": -0.050454
+          "state": "invalid",
+          "value": null
         },
         "MiniMax-M3": {
           "state": "valid",

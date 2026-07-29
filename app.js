@@ -17,7 +17,15 @@
     invalid: { label: "Invalid", type: "count", higher: false },
   };
 
-  const binClasses = ["bin-none", "bin-low", "bin-neg", "bin-small", "bin-mid", "bin-high"];
+  const binClasses = [
+    "bin-none",
+    "bin-invalid",
+    "bin-low",
+    "bin-neg",
+    "bin-small",
+    "bin-mid",
+    "bin-high",
+  ];
   const domainBarScaleMax = 40;
 
   const providerLogos = [
@@ -78,21 +86,22 @@
     },
     {
       key: "genomic",
-      role: "Method-layer gap",
+      role: "Validity-audit case",
       title: "Genomic Sequence Prediction",
       caseId: "s41592-024-02523-z",
       model: "GPT-5.5",
       domain: "Genomics & Gene Regulation",
-      status: "judge-valid",
+      status: "judge-invalid",
       metric: "MCC x 18 tasks; Pearson for DeepSTARR",
       bestG: "-0.14087",
+      scoreLabel: "Best raw g · invalid",
       attempts: "258",
       runtime: "1.3h",
       task: "Predict genomic sequence function across 19 classification and regression tasks.",
-      route: "The agent trained compact from-scratch models: k-mer features, ComplementNB, LogisticRegression, Ridge, CNN classifiers and a DeepSTARR-style regressor.",
+      route: "The agent built and iterated fitted models for most sub-tasks, but two final splice-site outputs relied on hand-written predictive rules.",
       paper: "Paper route: large-scale Nucleotide Transformer pretraining and transfer to downstream genomic sequence tasks.",
-      verdict: "Judge-valid because all predictions come from trained models using provided sequences, not format fallbacks or lookup.",
-      takeaway: "The trace is useful because it separates execution competence from missing pretraining scale: many real attempts still plateau below the paper method.",
+      verdict: "The judge identified the hand-written rules in two splice-site outputs as a shortcut and judged the run invalid.",
+      takeaway: "This case shows that a localized shortcut can invalidate a run even when most outputs come from fitted models.",
       progression: [
         ["A1", "-0.414", 16],
         ["A2", "-0.327", 32],
@@ -103,10 +112,11 @@
       ],
       steps: [
         ["Cover", "19 files", "Make every instance evaluable."],
-        ["Speed", "Fast baselines", "Use k-mer and Naive Bayes paths."],
-        ["Specialize", "Task rules", "Add motifs and thresholds."],
-        ["CNN", "Train models", "Add CNN and DeepSTARR scripts."],
-        ["Plateau", "Method gap", "Best remains below pretrained SOTA."],
+        ["Cover", "19 outputs", "Make every instance evaluable."],
+        ["Model", "Most sub-tasks", "Build and iterate fitted sequence models."],
+        ["Tune", "Model selection", "Select fitted-model thresholds and ensemble weights from returned scores."],
+        ["Shortcut", "Two outputs", "Use hand-written splice-site rules."],
+        ["Audit", "Run invalid", "Judge identifies the shortcut and judges the run invalid."],
       ],
     },
     {
@@ -384,7 +394,7 @@
     const topCompletion = [...data.leaderboard].sort((a, b) => b.completionRate - a.completionRate || b.surpassSota - a.surpassSota)[0];
     const cards = [
       [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench"],
-      [data.benchmark.modelCount, "Harness-model configurations", "evaluated configurations"],
+      [data.benchmark.modelCount, "Coding-agent configurations", "evaluated configurations"],
       [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups"],
       [formatPercent(top.surpassSota), "Best Surpass-SOTA", top.name],
       [formatPercent(topMatch.matchSota), "Best Match-SOTA", topMatch.name],
@@ -428,8 +438,8 @@
         </thead>
         <tbody>
           ${rows.map((row, index) => {
-            const crClass = row.completionRate < 90 ? "warn" : "";
-            const invalidClass = row.invalid > 0 ? "warn" : "";
+            const crClass = row.completionRate < 80 ? "warn" : "";
+            const invalidClass = row.invalid > 15 ? "warn" : "";
             return `
               <tr>
                 <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
@@ -484,8 +494,8 @@
     const detailBody = $("leaderboard-body");
     if (detailBody) {
       detailBody.innerHTML = rows.map((row, index) => {
-        const crClass = row.completionRate < 90 ? "warn" : "";
-        const invalidClass = row.invalid > 0 ? "warn" : "";
+        const crClass = row.completionRate < 80 ? "warn" : "";
+        const invalidClass = row.invalid > 15 ? "warn" : "";
         return `
           <tr>
             <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
@@ -881,12 +891,12 @@
       <p class="featured-active-copy">${escapeHtml(item.task)}</p>
       <div class="featured-pills">
         <span class="pill good">${escapeHtml(item.model)}</span>
-        <span class="pill good">${escapeHtml(item.status)}</span>
+        <span class="pill ${item.status.includes("invalid") ? "warn" : "good"}">${escapeHtml(item.status)}</span>
         <span class="pill">${escapeHtml(item.caseId)}</span>
       </div>
       <div class="featured-stat-grid">
         <div class="featured-mini-stat">
-          <span>Best g</span>
+          <span>${escapeHtml(item.scoreLabel || "Best g")}</span>
           <strong>${escapeHtml(item.bestG)}</strong>
           <small>${escapeHtml(item.metric)}</small>
         </div>
@@ -909,7 +919,7 @@
         <div class="line-chart-head">
           <div>
             <h4>g by attempt</h4>
-            <p>Horizontal axis is attempt; the dashed line marks Surpass-SOTA at g&gt;0.1.</p>
+            <p>${item.status.includes("invalid") ? "Raw evaluator gaps by attempt; the run was judged invalid." : "Horizontal axis is attempt; the dashed line marks Surpass-SOTA at g>0.1."}</p>
           </div>
           <span>${escapeHtml(item.caseId)}</span>
         </div>

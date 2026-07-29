@@ -954,7 +954,8 @@ td.board-value {
   height: 100%;
 }
 
-.bin-none { background: color-mix(in srgb, var(--warn) 38%, var(--bg-tertiary)); }
+.bin-none { background: color-mix(in srgb, var(--text-secondary) 24%, var(--bg-tertiary)); }
+.bin-invalid { background: color-mix(in srgb, var(--warn) 58%, var(--bg-tertiary)); }
 .bin-low { background: #7f8b86; }
 .bin-neg { background: #adbab4; }
 .bin-small { background: color-mix(in srgb, var(--accent-primary) 42%, var(--bg-tertiary)); }

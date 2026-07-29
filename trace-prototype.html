@@ -813,6 +813,7 @@
 
     function renderSummary(item) {
       const completeness = item.traceCompleteness || "redacted trace";
+      const judgeInvalid = item.judge === "invalid";
       $("run-summary").innerHTML = `
         <a class="back-link" href="index.html#featured-cases">← Back to case studies</a>
         <section class="run-title">
@@ -821,14 +822,15 @@
         </section>
         <section class="score-block">
           <div class="score-value">${escapeHtml(formatG(item.bestG))}</div>
-          <span class="score-label">best normalized gap g</span>
+          <span class="score-label">${judgeInvalid ? "best raw gap g · invalid" : "best normalized gap g"}</span>
         </section>
         <table class="summary-table">
           <tbody>
             <tr><th>Agent</th><td>${escapeHtml(item.agent)}</td></tr>
             <tr><th>Model</th><td>${escapeHtml(item.model)}</td></tr>
             <tr><th>Harness</th><td>${escapeHtml(item.harness)}</td></tr>
-            <tr><th>Status</th><td>${escapeHtml(item.status)}</td></tr>
+            <tr><th>Run status</th><td>${escapeHtml(item.status)}</td></tr>
+            <tr><th>Judge</th><td>${escapeHtml(item.judge || "")}</td></tr>
             <tr><th>Duration</th><td>${escapeHtml(item.durationLabel)}</td></tr>
             <tr><th>Source events</th><td>${escapeHtml(item.sourceEventCount)}</td></tr>
             <tr><th>Rendered</th><td>${escapeHtml(item.renderedEventCount)}</td></tr>
@@ -925,12 +927,15 @@
     }
 
     function renderMetricsPane(item) {
+      const judgeInvalid = item.judge === "invalid";
       const milestones = metricMilestones(item.submissions || []);
       $("pane-metrics").innerHTML = `
         <div class="metrics-grid">
           <div class="metrics-panel">
             <h2>g by attempt</h2>
-            <p class="trace-copy">The line uses evaluator aggregate_improvement, the same normalized gap g used by the leaderboard. g = 0 is paper SOTA; g &gt; 0.1 is Surpass-SOTA.</p>
+            <p class="trace-copy">${judgeInvalid
+              ? "The line shows raw evaluator aggregate_improvement. The run was judged invalid, so these values are diagnostic only."
+              : "The line uses evaluator aggregate_improvement, the same normalized gap g used by the leaderboard. g = 0 is paper SOTA; g > 0.1 is Surpass-SOTA."}</p>
             <div class="chart-box" id="main-chart"></div>
           </div>
           <div class="metrics-panel">
