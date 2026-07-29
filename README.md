@@ -12,7 +12,9 @@
 
 ## 📰News
 
-- **🏆 [2026-07-07] We update the [results](https://frontisai.github.io/NatureBench/) with 12 harness-model configurations, adding GLM-5.2 and MiniMax-M3.**
+- **⚖️ [2026-07-30] We update the validity judge and use GPT-5.5 to reassess all runs; the [results](https://frontisai.github.io/NatureBench/) have been comprehensively updated.**
+- **🏆 [2026-07-07] We update the [results](https://frontisai.github.io/NatureBench/) with 12 coding-agent configurations, adding GLM-5.2 and MiniMax-M3.**
+- **📦 [2026-07-03] We release the full [NatureBench agent traces](https://huggingface.co/datasets/FrontisAI/NatureBench-traces) on Hugging Face.**
 - **🚀 [2026-06-24] We introduce [NatureBench](https://arxiv.org/abs/2606.24530), a benchmark for scientific ML coding agents on Nature-family tasks.**
 
 ## 📖Overview
@@ -27,10 +29,10 @@ NatureBench is built on **NatureGym**, an automated pipeline that converts a pub
 
 ## 📊Results
 
-Across twelve harness-model configurations, the strongest reaches a 17.8% Surpass-SOTA rate, and success remains uneven across the six scientific domains NatureBench spans.
+Across twelve coding-agent configurations, the strongest reaches a 15.6% Surpass-SOTA rate, and success remains uneven across the six scientific domains NatureBench spans.
 
 <p align="center">
-  <img src="assets/main_results.png" width="840" alt="NatureBench scientific domains and Surpass-SOTA rates across harness-model configurations">
+  <img src="assets/main_results.png" width="840" alt="NatureBench scientific domains and Surpass-SOTA rates across coding-agent configurations">
 </p>
 
 ## 🔧Installation
