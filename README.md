@@ -90,7 +90,7 @@ For comparability, our reported runs use the following setup:
 | Setting | Configuration |
 |---|---|
 | Per-task timeout | A 4-hour agent solve budget (`--timeout 14400`). |
-| Compute | Each `gpu_low` task uses one NVIDIA RTX 3090/4090 (24 GB), each `gpu_high` task uses one NVIDIA A800 (80 GB, A100-class), and the 3 `cpu` tasks use no GPU. |
+| Compute | Each `gpu_low` task uses one NVIDIA RTX 3090/4090 (24 GB), each `gpu_high` task uses one NVIDIA A800 (80 GB, A100-class), and the 3 `cpu` tasks use no GPU. Task-group lists are provided in [`task-set/`](task-set/). |
 | Web search | Disabled for all evaluated agents. |
 
 ## 🌱NatureGym
