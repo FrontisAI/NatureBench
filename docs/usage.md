@@ -210,23 +210,22 @@ When reusing the same `--out-dir`, tasks with prior state require an explicit ch
 
 ### GPU Scheduling
 
-| Scenario | Parameters | Notes |
-|---|---|---|
-| CPU tasks | no GPU parameters | For `--tasks cpu`. |
-| Normal exclusive GPU | `--gpu-devices 0,1,2,3 --max-workers 4` | Each GPU task exclusively occupies one GPU. |
-| Cross-process normal GPU pool | add `--gpu-pool-file /tmp/naturebench_gpu_pool.json` | Multiple evaluation processes must share the same pool file to avoid racing for the same GPU. |
-| Avoid externally busy GPUs | `--gpu-skip-busy-mb` / `--gpu-skip-busy-util` | Checks memory and utilization before acquiring a GPU; keep defaults on shared machines. |
+#### No GPU
 
-```bash
---gpu-devices 0,1,2,3 \
---max-workers 4
-```
+If you choose to run without GPUs, omit all GPU scheduling parameters.
 
-`--max-workers` controls the number of active workers and may exceed the number of available GPUs/slots; workers wait when no GPU is available.
+#### Exclusive GPU
 
-Shared GPU slot pool:
+| Parameter | Usage |
+|---|---|
+| `--gpu-devices` | GPU devices available for exclusive allocation. Each task exclusively occupies one GPU. |
+| `--max-workers` | Number of active workers. It may exceed the number of available GPUs/slots; workers wait when no GPU is available. |
+| `--gpu-pool-file` | Coordinates exclusive GPU allocation across evaluation processes. Use the same pool file for all processes to avoid racing for the same GPU. |
+| `--gpu-skip-busy-mb` / `--gpu-skip-busy-util` | Check memory use and utilization before acquiring a GPU; the defaults are `2000` MB and `80%`, respectively. |
 
-The shared GPU slot pool schedules tasks from a designated task-set onto multiple slots on a single GPU, so you can choose which tasks to co-locate based on their actual GPU-memory and compute footprint.
+#### Shared GPU
+
+The shared GPU slot pool schedules tasks from a designated task set onto multiple slots on a single GPU.
 
 | Parameter | Required | Notes |
 |---|---|---|
@@ -235,7 +234,7 @@ The shared GPU slot pool schedules tasks from a designated task-set onto multipl
 | `--shared-gpu-pool-file` | yes | Cross-process state file for shared slots. |
 | `--shared-gpu-slots` | no, default `5` | Number of task containers allowed concurrently on the shared GPU; specify explicitly for formal runs. |
 
-When normal and shared tasks are mixed in one `--tasks`, tasks listed in `--shared-gpu-task-file` use the shared pool, while other GPU tasks use the normal `--gpu-devices` exclusive pool:
+When exclusive and shared tasks are mixed in one `--tasks`, tasks listed in `--shared-gpu-task-file` use the shared pool, while other GPU tasks use the `--gpu-devices` exclusive pool:
 
 ```bash
 --gpu-devices 0,1,2 \
@@ -246,7 +245,7 @@ When normal and shared tasks are mixed in one `--tasks`, tasks listed in `--shar
 --shared-gpu-pool-file /tmp/naturebench_shared_gpu_pool.json
 ```
 
-If only shared-pool tasks are run, omit normal `--gpu-devices` and make `--tasks` and `--shared-gpu-task-file` point to the same list. The code allows `--shared-gpu-device` to also appear in normal `--gpu-devices`, but it warns because this double-books the physical GPU; unless you know the resource profile, keep the shared GPU out of the normal pool.
+If only shared-pool tasks are run, omit `--gpu-devices` and make `--tasks` and `--shared-gpu-task-file` point to the same list. The code allows `--shared-gpu-device` to also appear in `--gpu-devices`, but it warns because this double-books the physical GPU.
 
 ### Network Proxy Parameters
 
@@ -291,6 +290,8 @@ python run_naturebench.py ... \
 | resume | Continue an existing agent session, preserving task context and evaluator timer history. | `--resume-tasks ...` or `--resume-task-file ...` |
 | force-fresh | Start from scratch and archive old state. | `--force-fresh ...` or `--force-fresh-task-file ...` |
 
+These modes follow the state-handling rules below:
+
 | Rule | Behavior |
 |---|---|
 | Default fresh run | Tasks with no prior state start a new agent session. |
@@ -318,4 +319,9 @@ Each task's result is written under `--out-dir/<case_id>/`:
 | `judge_verdict.json` | Post-hoc validity verdict. Judge failures use `is_valid: null` with a `judge_error` reason. |
 | `workspace/` | Final agent workspace snapshot. |
 
-Batch-level summary is written to `--out-dir/run_summary.json`. It includes `total_tasks`, `successes` (tasks whose return code is success), `scored_tasks` (tasks whose submissions produced a score), `average_best_aggregate_improvement` (averaged only over scored tasks), total duration, and for each task: `status`, `duration`, `best_attempt`, `best_aggregate_improvement`, `best_raw_scores`, `total_attempts`, and judge results.
+Batch-level summary is written to `--out-dir/run_summary.json`:
+
+| Scope | Contents |
+|---|---|
+| Batch | `total_tasks`; `successes` (tasks whose return code is success); `scored_tasks` (tasks whose submissions produced a score); `average_best_aggregate_improvement` (averaged only over scored tasks); `total_duration` (elapsed time for the full batch run). |
+| Per task | `status`; `duration` (elapsed time for the individual task run); `best_attempt`; `best_aggregate_improvement`; `best_raw_scores`; `total_attempts`; `judge` (judge results). |
