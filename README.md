@@ -81,6 +81,8 @@ python run_naturebench.py \
 
 This lists only the parameters you set explicitly; options with sensible defaults are omitted (see [Quick Start defaults](docs/usage.md#quick-start-defaults) for the full list and their values). Adjust `--gpu-devices` / `--max-workers` to your hardware. When running without GPUs, omit `--gpu-devices` and any other GPU scheduling options. The complete parameter reference is in [`docs/usage.md`](docs/usage.md).
 
+The built-in `--agent` options are `claude`, `codex`, and `gemini`; to run your own agent on NatureBench instead, see [`docs/custom-agents.md`](docs/custom-agents.md).
+
 ### Evaluation Setup
 
 For comparability, our reported runs use the following setup:
@@ -90,8 +92,6 @@ For comparability, our reported runs use the following setup:
 | Per-task timeout | A 4-hour agent solve budget (`--timeout 14400`). |
 | Compute | Each `gpu_low` task uses one NVIDIA RTX 3090/4090 (24 GB), each `gpu_high` task uses one NVIDIA A800 (80 GB, A100-class), and the 3 `cpu` tasks use no GPU. |
 | Web search | Disabled for all evaluated agents. |
-
-The built-in `--agent` options are `claude`, `codex`, and `gemini`; to run your own agent on NatureBench instead, see [`docs/custom-agents.md`](docs/custom-agents.md).
 
 ## 🌱NatureGym
 
