@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NatureBench Leaderboard</title>
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#147c72">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,6 +25,7 @@
           <a href="#featured-cases">Featured Cases</a>
           <a href="#domains">Domains</a>
           <a href="#cases">Cases</a>
+          <a href="#citation">Cite</a>
           <!-- RESTORE_METHOD_SECTION: uncomment this nav item when the Method section is ready.
           <a href="#method">Method</a>
           -->
@@ -38,7 +43,7 @@
       <div class="eyebrow">Scientific ML Agent Benchmark</div>
       <h1>Nature<span>Bench</span></h1>
       <p>Can coding agents match the published SOTA of Nature-family papers?</p>
-      <p class="hero-setting">We evaluate 12 coding-agent configurations on 90 Nature-family scientific ML tasks in isolated containers, with web search disabled and a 4-hour budget per task.</p>
+      <p class="hero-setting">We evaluate 12 coding-agent configurations on 90 Nature-family scientific ML tasks in isolated containers.</p>
       <div class="hero-actions">
         <a class="btn resource-btn" href="https://arxiv.org/abs/2606.24530" target="_blank" rel="noopener">
           <img class="resource-logo arxiv-logo" src="assets/logos/arxiv.svg" alt="" aria-hidden="true">
@@ -60,13 +65,58 @@
     <section id="leaderboard" class="band">
       <div class="container">
         <h2 class="section-title">Leaderboard</h2>
-        <p class="section-description metric-primer">
-          <span><strong>g:</strong> SOTA-normalized relative gap, <code>g = dir * (m - m_sota) / |m_sota|</code>; <code>dir</code> handles metric direction.</span>
-          <span><strong>Surpass-SOTA:</strong> share of judge-valid tasks with <code>g &gt; 0.1</code>.</span>
-          <span><strong>Match-SOTA:</strong> share of judge-valid tasks with <code>g &gt;= 0</code>; <code>g = 0</code> matches paper SOTA.</span>
-          <span><strong>CR:</strong> Completion Rate, the valid-score rate.</span>
-          <span><strong>SR:</strong> Score Rate, the any-score rate.</span>
-        </p>
+        <div class="leaderboard-guide">
+          <div class="evaluation-setup" role="region" aria-labelledby="evaluation-setup-title">
+            <div class="evaluation-setup-head">
+              <h3 id="evaluation-setup-title">Evaluation Setup</h3>
+              <span>Reported runs</span>
+            </div>
+            <div class="evaluation-setup-grid">
+              <div class="evaluation-setup-item">
+                <span class="evaluation-setup-label">Per-task timeout</span>
+                <strong>4 hours</strong>
+                <p>Agent solve budget</p>
+              </div>
+              <div class="evaluation-setup-item evaluation-setup-compute">
+                <span class="evaluation-setup-label">Compute</span>
+                <strong>One GPU per GPU task</strong>
+                <p><code>gpu_low</code>: NVIDIA RTX 3090/4090 (24 GB); <code>gpu_high</code>: NVIDIA A800 (80 GB, A100-class); <code>cpu</code>: no GPU.</p>
+                <a href="https://github.com/FrontisAI/NatureBench/tree/main/task-set" target="_blank" rel="noopener">View task-group lists ↗</a>
+              </div>
+              <div class="evaluation-setup-item">
+                <span class="evaluation-setup-label">Web search</span>
+                <strong>Disabled</strong>
+                <p>For all evaluated agents</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-primer" role="region" aria-labelledby="metric-primer-title">
+            <h3 id="metric-primer-title">Metric Definitions</h3>
+            <dl class="metric-definition-list">
+              <div>
+                <dt>g</dt>
+                <dd>SOTA-normalized relative gap, <code>g = dir * (m - m_sota) / |m_sota|</code>; <code>dir</code> handles metric direction.</dd>
+              </div>
+              <div>
+                <dt>Surpass-SOTA</dt>
+                <dd>Share of judge-valid tasks with <code>g &gt; 0.1</code>.</dd>
+              </div>
+              <div>
+                <dt>Match-SOTA</dt>
+                <dd>Share of judge-valid tasks with <code>g &gt;= 0</code>; <code>g = 0</code> matches paper SOTA.</dd>
+              </div>
+              <div>
+                <dt>CR</dt>
+                <dd>Completion Rate, the valid-score rate.</dd>
+              </div>
+              <div>
+                <dt>SR</dt>
+                <dd>Score Rate, the any-score rate.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
 
         <div class="metrics-strip leaderboard-summary" id="summary-metrics" aria-label="Benchmark summary">
           <div class="metric summary-card">
@@ -296,31 +346,30 @@
     </section>
     -->
 
-    <!-- RESTORE_TEAM_CITATION: uncomment when Team and Citation content is ready.
-    <section class="band">
+    <section id="citation" class="citation-section">
       <div class="container">
-        <div class="two-col pending-grid">
-          <div>
-            <h2 class="section-title">Team</h2>
-            <div class="panel blank-panel" aria-hidden="true">
-              <div class="empty-line"></div>
-              <div class="empty-line"></div>
-              <div class="empty-line short"></div>
-            </div>
+        <h2 class="section-title">Cite NatureBench</h2>
+        <p class="section-description">If you use NatureBench in your research, please cite our work.</p>
+        <div class="citation-card">
+          <div class="citation-card-head">
+            <span>BibTeX</span>
+            <button class="citation-copy" id="citation-copy" type="button" aria-describedby="citation-copy-status">
+              Copy
+            </button>
           </div>
-          <div>
-            <h2 class="section-title">Citation</h2>
-            <div class="panel blank-panel" aria-hidden="true">
-              <div class="empty-line"></div>
-              <div class="empty-line"></div>
-              <div class="empty-line"></div>
-              <div class="empty-line short"></div>
-            </div>
-          </div>
+          <pre class="citation-code"><code id="citation-bibtex">@misc{wang2026naturebench,
+  title         = {NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?},
+  author        = {Yuru Wang and Lejun Cheng and Yuxin Zuo and Sihang Zeng and Bingxiang He and Che Jiang and Junlin Yang and Yuchong Wang and Kaikai Zhao and Weifeng Huang and Kai Tian and Zhenzhao Yuan and Jincheng Zhong and Weizhi Wang and Ning Ding and Bowen Zhou and Kaiyan Zhang},
+  year          = {2026},
+  eprint        = {2606.24530},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2606.24530}
+}</code></pre>
+          <p class="citation-copy-status" id="citation-copy-status" role="status" aria-live="polite"></p>
         </div>
       </div>
     </section>
-    -->
   </main>
 
   <footer class="footer">

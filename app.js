@@ -1001,6 +1001,33 @@
         menuToggle.setAttribute("aria-expanded", "false");
       });
     });
+
+    const citationCopy = $("citation-copy");
+    const citationBibtex = $("citation-bibtex");
+    const citationCopyStatus = $("citation-copy-status");
+    if (citationCopy && citationBibtex && citationCopyStatus) {
+      citationCopy.addEventListener("click", async () => {
+        const citation = citationBibtex.textContent.trim();
+        try {
+          await navigator.clipboard.writeText(citation);
+          citationCopy.textContent = "Copied";
+          citationCopyStatus.textContent = "BibTeX copied to clipboard.";
+        } catch {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(citationBibtex);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          citationCopy.textContent = "Selected";
+          citationCopyStatus.textContent = "Clipboard access is unavailable; press Ctrl/Cmd+C to copy the selected BibTeX.";
+        }
+
+        window.setTimeout(() => {
+          citationCopy.textContent = "Copy";
+          citationCopyStatus.textContent = "";
+        }, 2400);
+      });
+    }
   }
 
   function initTheme() {

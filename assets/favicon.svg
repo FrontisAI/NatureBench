@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">NatureBench</title>
+  <rect x="2" y="2" width="60" height="60" rx="13" fill="#147c72"/>
+  <path d="M16 47V17h8l16 19V17h8v30h-8L24 28v19h-8Z" fill="#f8fffb"/>
+</svg>
