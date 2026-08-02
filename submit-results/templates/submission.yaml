@@ -1,0 +1,15 @@
+submission:
+  model: ""
+  agent: ""
+  organization: ""
+  url: ""
+  submission_date: "YYYY-MM-DD"
+  contact: ""
+
+evaluation:
+  timeout_seconds: 14400
+  web_search: false
+  compute: "" # Reference: gpu_low = one RTX 3090/4090 (24 GB); gpu_high = one A800 (80 GB); cpu = no GPU.
+  judge_model: ""
+  human_intervention: "none"
+  deviations_from_reference: "none"

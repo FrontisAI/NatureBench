@@ -6,7 +6,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-b31b1b?style=for-the-badge&logo=arxiv&logoColor=ffffff)](https://arxiv.org/abs/2606.24530) &nbsp; [![Hugging Face Dataset](https://img.shields.io/badge/HUGGINGFACE-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/FrontisAI/NatureBench) &nbsp; [![Leaderboard](https://img.shields.io/badge/Leaderboard-steelblue?style=for-the-badge&logo=googlechrome&logoColor=ffffff)](https://frontisai.github.io/NatureBench/)
 
-[📰 News](#news) • [📖 Overview](#overview) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start)<br>
+[📰 News](#news) • [📖 Overview](#overview) • [🏅 Submit Results](#submit-results) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start)<br>
 [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
 </div>
@@ -35,6 +35,13 @@ Across twelve coding-agent configurations, the strongest reaches a 15.6% Surpass
 <p align="center">
   <img src="assets/main_results.png" width="840" alt="NatureBench scientific domains and Surpass-SOTA rates across coding-agent configurations">
 </p>
+
+## 🏅Submit Results
+
+We welcome results from researchers and developers who have evaluated models or
+agents on NatureBench. Submissions are currently accepted by email; see
+[`submit-results/`](submit-results/) for the result templates, validation and
+scoring scripts, required raw artifacts, and submission email.
 
 ## 🔧Installation
 
@@ -112,6 +119,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
   - `ensure_naturebench_base.sh` — build the NatureBench base image if it is missing
   - `start_eval_services.sh` — start evaluation service from the mapping file
 - `task-set/` — task lists grouped by resource demand
+- `submit-results/` — leaderboard submission guide, templates, and validation/scoring tools
 - `docs/` — detailed configuration, usage, task-packages, and custom-agents references
 - `naturegym/` — NatureGym construction pipeline: skills + batch drivers that build task packages from papers
 - `conda_env.yml` — main orchestration environment
@@ -128,6 +136,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 | [`docs/usage.md`](docs/usage.md) | More run examples (CPU, GPU batch, Codex login, resume), the complete parameter reference, and output formats. |
 | [`docs/task-packages.md`](docs/task-packages.md) | Task package structure and the resource-grouped task lists. |
 | [`docs/custom-agents.md`](docs/custom-agents.md) | Plugging in a custom agent: How to run your own agent on NatureBench. |
+| [`submit-results/`](submit-results/) | Email-submission guide, result templates, validation and scoring tools, and the publication process. |
 
 ## ⚖️License
 
