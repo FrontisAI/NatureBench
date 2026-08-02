@@ -9,7 +9,6 @@
   const metricConfig = {
     surpassSota: { label: "Surpass-SOTA", type: "percent", higher: true, minZero: true },
     matchSota: { label: "Match-SOTA", type: "percent", higher: true, minZero: true },
-    strongSurpassSota: { label: "Strong Surpass", type: "percent", higher: true, minZero: true },
     medianAll: { label: "Median g (all)", type: "score", higher: true },
     meanAll: { label: "Mean g (all)", type: "score", higher: true },
     completionRate: { label: "Completion Rate", type: "percent", higher: true, minZero: true },
@@ -325,7 +324,6 @@
         <th>Harness</th>
         <th>Surpass-SOTA</th>
         <th>Match-SOTA</th>
-        <th>Strong Surpass</th>
         <th>Median g (all)</th>
         <th>Mean g (all)</th>
         <th>Median g (valid)</th>
@@ -394,7 +392,6 @@
     const topCompletion = [...data.leaderboard].sort((a, b) => b.completionRate - a.completionRate || b.surpassSota - a.surpassSota)[0];
     const cards = [
       [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench"],
-      [data.benchmark.modelCount, "Coding-agent configurations", "evaluated configurations"],
       [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups"],
       [formatPercent(top.surpassSota), "Best Surpass-SOTA", top.name],
       [formatPercent(topMatch.matchSota), "Best Match-SOTA", topMatch.name],
@@ -503,7 +500,6 @@
             <td><span class="subtle">${escapeHtml(row.harness)}</span></td>
             <td><span class="pill good">${formatPercent(row.surpassSota)}</span></td>
             <td>${formatPercent(row.matchSota)}</td>
-            <td>${formatPercent(row.strongSurpassSota)}</td>
             <td>${formatScore(row.medianAll)}</td>
             <td>${formatScore(row.meanAll)}</td>
             <td>${formatScore(row.medianValid)}</td>

@@ -765,6 +765,62 @@ tbody tr:hover {
   margin-bottom: 0.8rem;
 }
 
+.submit-results-section {
+  scroll-margin-top: 58px;
+}
+
+.leaderboard-submit-panel {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.05rem 1.15rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 8px;
+  background: linear-gradient(105deg, var(--accent-soft), var(--panel) 64%);
+}
+
+.leaderboard-submit-copy h3 {
+  margin: 0.12rem 0 0.18rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.leaderboard-submit-copy p {
+  max-width: 720px;
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.leaderboard-submit-actions {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.leaderboard-submit-guide {
+  min-height: 34px;
+  padding: 0.4rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--accent-primary);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.leaderboard-submit-guide:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-soft);
+  color: var(--accent-secondary);
+}
+
 .numeric-board-wrap,
 .main-board-wrap,
 .leaderboard-board-wrap {
@@ -2161,23 +2217,16 @@ td.board-value {
 
 .footer {
   padding: 2rem 0;
+  background: var(--bg-primary);
   color: var(--text-secondary);
   font-size: 0.68rem;
   text-align: center;
 }
 
 .footer .container {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-}
-
-.footer-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--text-secondary);
 }
 
 :where(a, button, select, input):focus-visible {
@@ -2204,6 +2253,10 @@ td.board-value {
 @media (max-width: 980px) {
   .metrics-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .leaderboard-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .two-col {
@@ -2338,10 +2391,19 @@ td.board-value {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .leaderboard-summary > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
   .numeric-board-panel .panel-head,
   .main-board-panel .panel-head,
   .leaderboard-board-panel .panel-head {
     padding: 0.9rem 0.9rem 0;
+  }
+
+  .leaderboard-submit-panel {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
   }
 
   .numeric-board,
@@ -2501,19 +2563,20 @@ td.board-value {
     max-height: 620px;
   }
 
-  .footer .container {
-    display: grid;
-    gap: 0.35rem;
-  }
-
-  .footer-dot {
-    display: none;
-  }
 }
 
 @media (max-width: 520px) {
   .summary-cards,
   .leaderboard-summary {
     grid-template-columns: 1fr;
+  }
+
+  .leaderboard-summary > :last-child {
+    grid-column: auto;
+  }
+
+  .leaderboard-submit-guide {
+    width: 100%;
+    justify-content: center;
   }
 }

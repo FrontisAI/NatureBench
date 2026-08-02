@@ -25,6 +25,7 @@
           <a href="#featured-cases">Featured Cases</a>
           <a href="#domains">Domains</a>
           <a href="#cases">Cases</a>
+          <a href="#submit-results">Submit Results</a>
           <a href="#citation">Cite</a>
           <!-- RESTORE_METHOD_SECTION: uncomment this nav item when the Method section is ready.
           <a href="#method">Method</a>
@@ -43,7 +44,7 @@
       <div class="eyebrow">Scientific ML Agent Benchmark</div>
       <h1>Nature<span>Bench</span></h1>
       <p>Can coding agents match the published SOTA of Nature-family papers?</p>
-      <p class="hero-setting">We evaluate 12 coding-agent configurations on 90 Nature-family scientific ML tasks in isolated containers.</p>
+      <p class="hero-setting">We evaluate frontier coding-agent configurations on 90 Nature-family scientific ML tasks in isolated containers.</p>
       <div class="hero-actions">
         <a class="btn resource-btn" href="https://arxiv.org/abs/2606.24530" target="_blank" rel="noopener">
           <img class="resource-logo arxiv-logo" src="assets/logos/arxiv.svg" alt="" aria-hidden="true">
@@ -124,10 +125,6 @@
             <div class="metric-label">Tasks</div>
           </div>
           <div class="metric summary-card">
-            <div class="metric-value">12</div>
-            <div class="metric-label">Coding-agent configurations</div>
-          </div>
-          <div class="metric summary-card">
             <div class="metric-value">6</div>
             <div class="metric-label">Scientific domains</div>
           </div>
@@ -184,7 +181,6 @@
               <select id="rank-metric">
                 <option value="surpassSota">Surpass-SOTA</option>
                 <option value="matchSota">Match-SOTA</option>
-                <option value="strongSurpassSota">Strong Surpass</option>
                 <option value="medianAll">Median g (all)</option>
                 <option value="meanAll">Mean g (all)</option>
                 <option value="completionRate">Completion Rate</option>
@@ -194,7 +190,7 @@
             </div>
           </div>
           <div class="bar-chart" id="leaderboard-chart"></div>
-          <p class="chart-footnote">Secondary comparison view. Surpass-SOTA: valid <em>g</em> &gt; 0.1. Strong Surpass: valid <em>g</em> &gt; 0.5.</p>
+          <p class="chart-footnote">Secondary comparison view. Surpass-SOTA: valid <em>g</em> &gt; 0.1.</p>
         </div>
         -->
 
@@ -227,6 +223,7 @@
           <div class="distribution-chart" id="distribution-chart"></div>
           <div class="legend" id="distribution-legend"></div>
         </div>
+
       </div>
     </section>
 
@@ -346,7 +343,23 @@
     </section>
     -->
 
-    <section id="citation" class="citation-section">
+    <section id="submit-results" class="submit-results-section">
+      <div class="container">
+        <h2 class="section-title">Submit Results</h2>
+        <p class="section-description">We welcome community submissions to the NatureBench leaderboard.</p>
+        <aside class="leaderboard-submit-panel" aria-labelledby="submit-results-title">
+          <div class="leaderboard-submit-copy">
+            <h3 id="submit-results-title">Share your NatureBench results</h3>
+            <p>Results are currently submitted by email and reviewed before they are added to the leaderboard.</p>
+          </div>
+          <div class="leaderboard-submit-actions">
+            <a class="leaderboard-submit-guide" href="https://github.com/FrontisAI/NatureBench/tree/main/submit-results" target="_blank" rel="noopener">Read the submission guide ↗</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="citation" class="citation-section band">
       <div class="container">
         <h2 class="section-title">Cite NatureBench</h2>
         <p class="section-description">If you use NatureBench in your research, please cite our work.</p>
@@ -370,11 +383,12 @@
         </div>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
     <div class="container">
-      <span>NatureBench leaderboard</span>
+      <span>NatureBench Leaderboard</span>
     </div>
   </footer>
 
