@@ -47,7 +47,7 @@ metrics and optionally writes a standalone JSON report.
 ## Send the submission
 
 Remove credentials and private endpoints, archive the directory, and send it
-or a stable download link to **zhangkaiyan@frontis.cn** with the subject:
+or a stable download link to **wangyuru@frontis.cn, zhangkaiyan@frontis.cn** with the subject:
 
 ```text
 [NatureBench Result Submission] <agent> + <model>
