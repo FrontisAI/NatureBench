@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -43,6 +44,8 @@ def collect_attempt_context(
             break
 
     attempts: List[Dict[str, Any]] = []
+    fallback_score: Optional[float] = None
+    fallback_attempt: Optional[int] = None
     submissions_path = task_out_dir / "submissions.jsonl"
     try:
         lines = submissions_path.read_text(
@@ -64,6 +67,28 @@ def collect_attempt_context(
         attempt = record.get("attempt")
         if not isinstance(attempt, int) or isinstance(attempt, bool) or attempt <= 0:
             continue
+        aggregate_improvement = record.get("aggregate_improvement")
+        numeric_score: Optional[float] = None
+        if (
+            isinstance(aggregate_improvement, (int, float))
+            and not isinstance(aggregate_improvement, bool)
+        ):
+            try:
+                candidate_score = float(aggregate_improvement)
+            except OverflowError:
+                pass
+            else:
+                if math.isfinite(candidate_score):
+                    numeric_score = candidate_score
+        if (
+            numeric_score is not None
+            and (
+                fallback_score is None
+                or numeric_score > fallback_score
+            )
+        ):
+            fallback_score = numeric_score
+            fallback_attempt = attempt
         timestamp = record.get("timestamp")
         evaluated_at = normalize_trace_timestamp(timestamp)
         evaluated_at_unix: Optional[float] = None
@@ -83,6 +108,14 @@ def collect_attempt_context(
                 "is_score_attempt": metadata_available and attempt == score_attempt,
             }
         )
+
+    if not metadata_available and fallback_attempt is not None:
+        score_attempt = fallback_attempt
+        metadata_available = True
+        for attempt_record in attempts:
+            attempt_record["is_score_attempt"] = (
+                attempt_record["attempt"] == score_attempt
+            )
 
     focus_start: Optional[float] = None
     focus_end: Optional[float] = None
