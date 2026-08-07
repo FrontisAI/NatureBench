@@ -13,6 +13,7 @@
 
 ## 📰News
 
+- **🏆 [2026-08-07] We add the externally submitted AIBuildAI 2.5 + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/).**
 - **⚖️ [2026-07-30] We update the validity judge and use GPT-5.5 to reassess all runs; the [results](https://frontisai.github.io/NatureBench/) have been comprehensively updated.**
 - **🏆 [2026-07-07] We update the [results](https://frontisai.github.io/NatureBench/) with 12 coding-agent configurations, adding GLM-5.2 and MiniMax-M3.**
 - **📦 [2026-07-03] We release the full [NatureBench agent traces](https://huggingface.co/datasets/FrontisAI/NatureBench-traces) on Hugging Face.**
