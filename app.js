@@ -267,8 +267,12 @@
     return `
       <div class="configuration-popover-head">
         <div>
-          <span>Evaluation configuration</span>
-          <strong>${escapeHtml(configuration.name)} + <span class="agent-name ${agentColorClass(configuration.agent)}">${escapeHtml(configuration.agent)}</span></strong>
+          <span class="configuration-popover-eyebrow">Evaluation configuration</span>
+          <strong class="configuration-popover-title">
+            <span class="configuration-popover-model">${escapeHtml(configuration.name)}</span>
+            <span class="configuration-popover-separator">+</span>
+            <span class="configuration-popover-agent agent-name ${agentColorClass(configuration.agent)}">${escapeHtml(configuration.agent)}</span>
+          </strong>
         </div>
       </div>
       <dl class="configuration-popover-list">

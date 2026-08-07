@@ -930,6 +930,25 @@ tbody tr:hover {
   overflow-x: auto;
 }
 
+.numeric-board-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.numeric-board-wrap:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.numeric-board-table {
+  width: max-content;
+}
+
 .numeric-board,
 .numeric-board-table,
 .main-board-table,
@@ -1119,12 +1138,12 @@ img.provider-logo[src=""] {
   background: color-mix(in srgb, var(--accent-primary) 7%, var(--panel));
 }
 
-.configuration-popover-head span,
-.configuration-popover-head strong {
-  display: block;
+.configuration-popover-head > div {
+  min-width: 0;
 }
 
-.configuration-popover-head span {
+.configuration-popover-eyebrow {
+  display: block;
   margin-bottom: 0.2rem;
   color: var(--text-secondary);
   font-size: 0.58rem;
@@ -1133,9 +1152,25 @@ img.provider-logo[src=""] {
   text-transform: uppercase;
 }
 
-.configuration-popover-head strong {
+.configuration-popover-title {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
   font-size: 0.78rem;
   line-height: 1.45;
+  white-space: nowrap;
+}
+
+.configuration-popover-model {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.configuration-popover-separator,
+.configuration-popover-agent {
+  flex: 0 0 auto;
 }
 
 .configuration-popover-list {
@@ -2796,6 +2831,10 @@ td.board-value {
 
   .table-panel {
     overflow-x: auto;
+  }
+
+  .numeric-board-panel.table-panel {
+    overflow-x: hidden;
   }
 
   .table-panel > table {
