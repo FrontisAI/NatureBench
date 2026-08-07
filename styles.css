@@ -936,8 +936,32 @@ tbody tr:hover {
   overflow-y: hidden;
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent-primary) 62%, var(--border-color)) var(--bg-secondary);
   touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
+}
+
+.numeric-board-wrap.is-scrollable {
+  cursor: grab;
+}
+
+.numeric-board-wrap.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.numeric-board-wrap::-webkit-scrollbar {
+  height: 10px;
+}
+
+.numeric-board-wrap::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.numeric-board-wrap::-webkit-scrollbar-thumb {
+  border: 2px solid var(--bg-secondary);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-primary) 62%, var(--border-color));
 }
 
 .numeric-board-wrap:focus-visible {

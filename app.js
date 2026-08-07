@@ -582,23 +582,24 @@
           <p>Ranked by Surpass-SOTA</p>
         </div>
       </div>
-      <table class="numeric-board-table">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Model</th>
-            <th>Agent</th>
-            <th>Run source</th>
-            <th>Surpass-SOTA</th>
-            <th>Match-SOTA</th>
-            <th>Median g (all)</th>
-            <th>CR</th>
-            <th>SR</th>
-            <th>Invalid</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map((row, index) => {
+      <div class="numeric-board-wrap" role="region" aria-label="Scrollable Main Leaderboard" tabindex="0">
+        <table class="numeric-board-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Model</th>
+              <th>Agent</th>
+              <th>Run source</th>
+              <th>Surpass-SOTA</th>
+              <th>Match-SOTA</th>
+              <th>Median g (all)</th>
+              <th>CR</th>
+              <th>SR</th>
+              <th>Invalid</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row, index) => {
             const crClass = row.completionRate < 80 ? "warn" : "";
             const invalidClass = row.invalid > 15 ? "warn" : "";
             return `
@@ -621,9 +622,10 @@
                 <td><span class="pill ${invalidClass}">${row.invalid}</span></td>
               </tr>
             `;
-          }).join("")}
-        </tbody>
-      </table>
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
     `;
     bindLogoFallbacks(board);
     bindConfigurationTriggers(board);
@@ -1053,7 +1055,7 @@
       <p class="featured-active-copy">${escapeHtml(item.task)}</p>
       <div class="featured-pills">
         <span class="pill good">${escapeHtml(item.model)}</span>
-        <span class="agent-name ${agentColorClass(agentForModel(item.model))}">${escapeHtml(agentForModel(item.model))}</span>
+        <span class="pill">${escapeHtml(agentForModel(item.model))}</span>
         <span class="pill ${item.status.includes("invalid") ? "warn" : "good"}">${escapeHtml(item.status)}</span>
         <span class="pill">${escapeHtml(item.caseId)}</span>
       </div>
@@ -1203,6 +1205,71 @@
           citationCopyStatus.textContent = "";
         }, 2400);
       });
+    }
+
+    const leaderboardScroller = document.querySelector(".numeric-board-wrap");
+    if (leaderboardScroller) {
+      let activePointerId = null;
+      let startX = 0;
+      let startScrollLeft = 0;
+      let moved = false;
+      let suppressClick = false;
+
+      const updateScrollableState = () => {
+        leaderboardScroller.classList.toggle(
+          "is-scrollable",
+          leaderboardScroller.scrollWidth > leaderboardScroller.clientWidth + 1,
+        );
+      };
+
+      const finishDrag = (event) => {
+        if (activePointerId !== event.pointerId) return;
+        if (leaderboardScroller.hasPointerCapture(activePointerId)) {
+          leaderboardScroller.releasePointerCapture(activePointerId);
+        }
+        suppressClick = moved;
+        activePointerId = null;
+        leaderboardScroller.classList.remove("is-dragging");
+        window.setTimeout(() => {
+          suppressClick = false;
+        }, 0);
+      };
+
+      leaderboardScroller.addEventListener("pointerdown", (event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0 || !leaderboardScroller.classList.contains("is-scrollable")) return;
+        activePointerId = event.pointerId;
+        startX = event.clientX;
+        startScrollLeft = leaderboardScroller.scrollLeft;
+        moved = false;
+        leaderboardScroller.setPointerCapture(activePointerId);
+      });
+
+      leaderboardScroller.addEventListener("pointermove", (event) => {
+        if (activePointerId !== event.pointerId) return;
+        const deltaX = event.clientX - startX;
+        if (!moved && Math.abs(deltaX) < 4) return;
+        moved = true;
+        leaderboardScroller.classList.add("is-dragging");
+        leaderboardScroller.scrollLeft = startScrollLeft - deltaX;
+        event.preventDefault();
+      });
+
+      leaderboardScroller.addEventListener("pointerup", finishDrag);
+      leaderboardScroller.addEventListener("pointercancel", finishDrag);
+      leaderboardScroller.addEventListener("click", (event) => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      leaderboardScroller.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        leaderboardScroller.scrollBy({ left: event.key === "ArrowLeft" ? -160 : 160, behavior: "smooth" });
+        event.preventDefault();
+      });
+
+      updateScrollableState();
+      window.addEventListener("resize", updateScrollableState);
     }
   }
 
