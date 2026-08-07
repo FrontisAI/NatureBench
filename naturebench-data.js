@@ -5,43 +5,189 @@ window.NATUREBENCH_DATA = {
   },
   "models": [
     {
-      "name": "Opus 4.6"
+      "name": "Opus 4.6",
+      "id": "opus-4-6-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "GPT-5.4"
+      "name": "GPT-5.4",
+      "id": "gpt-5-4-codex",
+      "agent": "Codex",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "Web search disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "Kimi K2.6"
+      "name": "Kimi K2.6",
+      "id": "kimi-k2-6-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "MiniMax-M2.7"
+      "name": "MiniMax-M2.7",
+      "id": "minimax-m2-7-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "DeepSeek-V4-Pro"
+      "name": "DeepSeek-V4-Pro",
+      "id": "deepseek-v4-pro-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "GLM-5.1"
+      "name": "GLM-5.1",
+      "id": "glm-5-1-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "Gemini 3.5 Flash"
+      "name": "Gemini 3.5 Flash",
+      "id": "gemini-3-5-flash-gemini-cli",
+      "agent": "Gemini CLI",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "Web search disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "Qwen 3.7 Max"
+      "name": "Qwen 3.7 Max",
+      "id": "qwen-3-7-max-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "GPT-5.5"
+      "name": "GPT-5.5",
+      "id": "gpt-5-5-codex",
+      "agent": "Codex",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "Web search disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "Opus 4.7"
+      "name": "Opus 4.7",
+      "id": "opus-4-7-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "MiniMax-M3"
+      "name": "MiniMax-M3",
+      "id": "minimax-m3-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
     },
     {
-      "name": "GLM-5.2"
+      "name": "GLM-5.2",
+      "id": "glm-5-2-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "WebSearch and WebFetch tools disabled",
+      "validityJudge": "GPT-5.5"
+    },
+    {
+      "id": "claude-opus-5-aibuildai-2-5",
+      "name": "Claude Opus 5",
+      "agent": "AIBuildAI 2.5",
+      "runSource": {
+        "label": "AIBuildAI",
+        "url": "https://aibuildai.io"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "4 × A100 80 GB visible during execution; 1 GPU allocated per candidate solution",
+      "externalAccess": "General-purpose web search and webpage fetching disabled; restricted MCP access to Hugging Face model repositories and an internally hosted literature-retrieval service enabled; the literature service was not filtered by task",
+      "validityJudge": "GPT-5.5"
     }
   ],
   "leaderboard": [
+    {
+      "name": "Claude Opus 5",
+      "harness": "AIBuildAI 2.5",
+      "configurationId": "claude-opus-5-aibuildai-2-5",
+      "invalid": 8,
+      "matchSota": 53.333333,
+      "surpassSota": 23.333333,
+      "meanAll": -2.171189,
+      "medianAll": 0.004115,
+      "medianValid": 0.008615,
+      "completionRate": 91.111111,
+      "scoreRate": 100.0
+    },
     {
       "name": "Opus 4.7",
       "harness": "Claude Code",
@@ -52,7 +198,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.03,
       "medianValid": -0.007,
       "completionRate": 86.6667,
-      "scoreRate": 100
+      "scoreRate": 100,
+      "configurationId": "opus-4-7-claude-code"
     },
     {
       "name": "GLM-5.2",
@@ -64,7 +211,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.0813,
       "medianValid": -0.0576,
       "completionRate": 88.8889,
-      "scoreRate": 98.8889
+      "scoreRate": 98.8889,
+      "configurationId": "glm-5-2-claude-code"
     },
     {
       "name": "Opus 4.6",
@@ -76,7 +224,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.1178,
       "medianValid": -0.0825,
       "completionRate": 84.4444,
-      "scoreRate": 100
+      "scoreRate": 100,
+      "configurationId": "opus-4-6-claude-code"
     },
     {
       "name": "Gemini 3.5 Flash",
@@ -88,7 +237,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.2004,
       "medianValid": -0.0842,
       "completionRate": 75.5556,
-      "scoreRate": 98.8889
+      "scoreRate": 98.8889,
+      "configurationId": "gemini-3-5-flash-gemini-cli"
     },
     {
       "name": "Kimi K2.6",
@@ -100,7 +250,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.1693,
       "medianValid": -0.0852,
       "completionRate": 82.2222,
-      "scoreRate": 94.4444
+      "scoreRate": 94.4444,
+      "configurationId": "kimi-k2-6-claude-code"
     },
     {
       "name": "Qwen 3.7 Max",
@@ -112,7 +263,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.2118,
       "medianValid": -0.1122,
       "completionRate": 80,
-      "scoreRate": 98.8889
+      "scoreRate": 98.8889,
+      "configurationId": "qwen-3-7-max-claude-code"
     },
     {
       "name": "MiniMax-M3",
@@ -124,19 +276,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.1601,
       "medianValid": -0.1138,
       "completionRate": 86.6667,
-      "scoreRate": 98.8889
-    },
-    {
-      "name": "GPT-5.4",
-      "harness": "Codex",
-      "invalid": 19,
-      "matchSota": 24.4444,
-      "surpassSota": 6.6667,
-      "meanAll": -3.5879,
-      "medianAll": -0.1721,
-      "medianValid": -0.1062,
-      "completionRate": 78.8889,
-      "scoreRate": 100
+      "scoreRate": 98.8889,
+      "configurationId": "minimax-m3-claude-code"
     },
     {
       "name": "GLM-5.1",
@@ -148,7 +289,21 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.1971,
       "medianValid": -0.1158,
       "completionRate": 78.8889,
-      "scoreRate": 93.3333
+      "scoreRate": 93.3333,
+      "configurationId": "glm-5-1-claude-code"
+    },
+    {
+      "name": "GPT-5.4",
+      "harness": "Codex",
+      "invalid": 19,
+      "matchSota": 24.4444,
+      "surpassSota": 6.6667,
+      "meanAll": -3.5879,
+      "medianAll": -0.1721,
+      "medianValid": -0.1062,
+      "completionRate": 78.8889,
+      "scoreRate": 100,
+      "configurationId": "gpt-5-4-codex"
     },
     {
       "name": "GPT-5.5",
@@ -160,7 +315,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.4616,
       "medianValid": -0.0532,
       "completionRate": 54.4444,
-      "scoreRate": 98.8889
+      "scoreRate": 98.8889,
+      "configurationId": "gpt-5-5-codex"
     },
     {
       "name": "DeepSeek-V4-Pro",
@@ -172,7 +328,8 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.292,
       "medianValid": -0.2245,
       "completionRate": 87.7778,
-      "scoreRate": 98.8889
+      "scoreRate": 98.8889,
+      "configurationId": "deepseek-v4-pro-claude-code"
     },
     {
       "name": "MiniMax-M2.7",
@@ -184,10 +341,51 @@ window.NATUREBENCH_DATA = {
       "medianAll": -0.5008,
       "medianValid": -0.3013,
       "completionRate": 84.4444,
-      "scoreRate": 98.8889
+      "scoreRate": 98.8889,
+      "configurationId": "minimax-m2-7-claude-code"
     }
   ],
   "distributions": [
+    {
+      "name": "Claude Opus 5",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 0,
+          "percent": 0.0
+        },
+        {
+          "label": "Invalid",
+          "count": 8,
+          "percent": 8.9
+        },
+        {
+          "label": "g < -0.5",
+          "count": 12,
+          "percent": 13.3
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 22,
+          "percent": 24.4
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 27,
+          "percent": 30.0
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 19,
+          "percent": 21.1
+        },
+        {
+          "label": "g > 0.5",
+          "count": 2,
+          "percent": 2.2
+        }
+      ]
+    },
     {
       "name": "Opus 4.7",
       "bins": [
@@ -469,17 +667,17 @@ window.NATUREBENCH_DATA = {
       ]
     },
     {
-      "name": "GPT-5.4",
+      "name": "GLM-5.1",
       "bins": [
         {
           "label": "No score",
-          "count": 0,
-          "percent": 0
+          "count": 6,
+          "percent": 6.7
         },
         {
           "label": "Invalid",
-          "count": 19,
-          "percent": 21.1
+          "count": 13,
+          "percent": 14.4
         },
         {
           "label": "g < -0.5",
@@ -509,17 +707,17 @@ window.NATUREBENCH_DATA = {
       ]
     },
     {
-      "name": "GLM-5.1",
+      "name": "GPT-5.4",
       "bins": [
         {
           "label": "No score",
-          "count": 6,
-          "percent": 6.7
+          "count": 0,
+          "percent": 0
         },
         {
           "label": "Invalid",
-          "count": 13,
-          "percent": 14.4
+          "count": 19,
+          "percent": 21.1
         },
         {
           "label": "g < -0.5",
@@ -673,11 +871,15 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Cellular Omics",
       "n": 31,
-      "winner": "GLM-5.2",
-      "winnerSurpassSota": 22.5806,
-      "winnerMatchSota": 41.9355,
-      "winnerMedianAll": -0.041,
+      "winner": "Claude Opus 5",
+      "winnerSurpassSota": 29.032258,
+      "winnerMatchSota": 54.83871,
+      "winnerMedianAll": 0.00379,
       "models": [
+        {
+          "name": "Claude Opus 5",
+          "surpassSota": 29.032258
+        },
         {
           "name": "GLM-5.2",
           "surpassSota": 22.5806
@@ -753,6 +955,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 12.5
         },
         {
+          "name": "Claude Opus 5",
+          "surpassSota": 12.5
+        },
+        {
           "name": "DeepSeek-V4-Pro",
           "surpassSota": 6.25
         },
@@ -807,6 +1013,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 7.1429
         },
         {
+          "name": "Claude Opus 5",
+          "surpassSota": 7.142857
+        },
+        {
           "name": "GPT-5.5",
           "surpassSota": 0
         },
@@ -847,11 +1057,15 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Physical Modeling",
       "n": 13,
-      "winner": "Opus 4.7",
-      "winnerSurpassSota": 30.7692,
-      "winnerMatchSota": 46.1538,
-      "winnerMedianAll": -0.0581,
+      "winner": "Claude Opus 5",
+      "winnerSurpassSota": 46.153846,
+      "winnerMatchSota": 61.538462,
+      "winnerMedianAll": 0.028678,
       "models": [
+        {
+          "name": "Claude Opus 5",
+          "surpassSota": 46.153846
+        },
         {
           "name": "Opus 4.7",
           "surpassSota": 30.7692
@@ -905,11 +1119,15 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Molecular Design",
       "n": 11,
-      "winner": "Opus 4.7",
-      "winnerSurpassSota": 9.0909,
-      "winnerMatchSota": 27.2727,
-      "winnerMedianAll": -0.1349,
+      "winner": "Claude Opus 5",
+      "winnerSurpassSota": 18.181818,
+      "winnerMatchSota": 36.363636,
+      "winnerMedianAll": -0.131112,
       "models": [
+        {
+          "name": "Claude Opus 5",
+          "surpassSota": 18.181818
+        },
         {
           "name": "Opus 4.7",
           "surpassSota": 9.0909
@@ -963,11 +1181,15 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Relational Reasoning",
       "n": 5,
-      "winner": "Opus 4.7",
-      "winnerSurpassSota": 0,
-      "winnerMatchSota": 60,
-      "winnerMedianAll": 0.0128,
+      "winner": "Claude Opus 5",
+      "winnerSurpassSota": 20.0,
+      "winnerMatchSota": 100.0,
+      "winnerMedianAll": 0.058983,
       "models": [
+        {
+          "name": "Claude Opus 5",
+          "surpassSota": 20.0
+        },
         {
           "name": "Opus 4.7",
           "surpassSota": 0
@@ -1026,8 +1248,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.4",
-      "bestScore": 0.079069,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.094366,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -1076,6 +1298,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.038814
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.094366
         }
       }
     },
@@ -1135,6 +1361,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.151785
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.016439
         }
       }
     },
@@ -1144,8 +1374,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Classification",
       "taskDir": "part1",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.00906,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.078587,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1194,6 +1424,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.276865
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.078587
         }
       }
     },
@@ -1253,6 +1487,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.147208
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.161336
         }
       }
     },
@@ -1312,6 +1550,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.015437
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.020581
         }
       }
     },
@@ -1371,6 +1613,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.151442
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.103181
         }
       }
     },
@@ -1430,6 +1676,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.008765
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.00671
         }
       }
     },
@@ -1489,6 +1739,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.111928
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.131725
         }
       }
     },
@@ -1548,6 +1802,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.034784
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.024948
         }
       }
     },
@@ -1607,6 +1865,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.089299
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.489692
         }
       }
     },
@@ -1666,6 +1928,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.461935
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.46089
         }
       }
     },
@@ -1725,6 +1991,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 1.124845
         }
       }
     },
@@ -1784,6 +2054,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.087944
+        },
+        "Claude Opus 5": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -1841,6 +2115,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "Claude Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -1902,6 +2180,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.895638
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.58999
         }
       }
     },
@@ -1961,6 +2243,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.653319
+        },
+        "Claude Opus 5": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -1970,8 +2256,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Structure Modeling",
       "taskDir": "buggy",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": -0.691689,
+      "bestModel": "Claude Opus 5",
+      "bestScore": -0.071098,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -2020,6 +2306,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.071098
         }
       }
     },
@@ -2079,6 +2369,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.014164
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.00379
         }
       }
     },
@@ -2138,6 +2432,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.137577
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.116065
         }
       }
     },
@@ -2197,6 +2495,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.096451
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.23422
         }
       }
     },
@@ -2254,6 +2556,10 @@ window.NATUREBENCH_DATA = {
           "value": -0.632729
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "Claude Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -2315,6 +2621,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.15985
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.181403
         }
       }
     },
@@ -2374,6 +2684,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.030019
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.015784
         }
       }
     },
@@ -2433,6 +2747,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -2.466347
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -3.51809
         }
       }
     },
@@ -2492,6 +2810,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.1324
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.154775
         }
       }
     },
@@ -2551,6 +2873,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.087149
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.199461
         }
       }
     },
@@ -2560,8 +2886,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.029985,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.005455,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -2610,6 +2936,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.133806
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.005455
         }
       }
     },
@@ -2669,6 +2999,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.025899
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.004441
         }
       }
     },
@@ -2728,6 +3062,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.135641
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.123479
         }
       }
     },
@@ -2787,6 +3125,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.857429
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -1.0
         }
       }
     },
@@ -2846,6 +3188,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.239644
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.173422
         }
       }
     },
@@ -2855,8 +3201,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": null,
-      "bestScore": null,
+      "bestModel": "Claude Opus 5",
+      "bestScore": -0.515039,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -2905,6 +3251,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.515039
         }
       }
     },
@@ -2964,6 +3314,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.09184
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.009134
         }
       }
     },
@@ -3023,6 +3377,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -1
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -38.270943
         }
       }
     },
@@ -3032,8 +3390,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "GLM-5.2",
-      "bestScore": -136.865278,
+      "bestModel": "Claude Opus 5",
+      "bestScore": -125.74878,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3082,6 +3440,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -136.865278
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -125.74878
         }
       }
     },
@@ -3141,6 +3503,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.045001
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.193672
         }
       }
     },
@@ -3200,6 +3566,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.336501
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.601041
         }
       }
     },
@@ -3209,8 +3579,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "buggy",
-      "bestModel": "Opus 4.7",
-      "bestScore": -0.027163,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.012456,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3259,6 +3629,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.525238
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.012456
         }
       }
     },
@@ -3268,8 +3642,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.113234,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.120953,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3318,6 +3692,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.01729
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.120953
         }
       }
     },
@@ -3377,6 +3755,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.013571
+        },
+        "Claude Opus 5": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -3436,6 +3818,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -2.278239
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.209762
         }
       }
     },
@@ -3445,8 +3831,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "GLM-5.2",
-      "bestScore": 0.066908,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.069302,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3495,6 +3881,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.066908
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.069302
         }
       }
     },
@@ -3504,8 +3894,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": -0.06171,
+      "bestModel": "Claude Opus 5",
+      "bestScore": -0.06032,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3554,6 +3944,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.075406
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.06032
         }
       }
     },
@@ -3563,8 +3957,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "GLM-5.1",
-      "bestScore": 0.051159,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.108918,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -3613,6 +4007,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.108918
         }
       }
     },
@@ -3672,6 +4070,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.117153
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.991327
         }
       }
     },
@@ -3731,6 +4133,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.001238
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -2.8e-05
         }
       }
     },
@@ -3790,6 +4196,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.135182
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.243134
         }
       }
     },
@@ -3799,8 +4209,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "GLM-5.2",
-      "bestScore": -0.600135,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.156884,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3849,6 +4259,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.600135
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.156884
         }
       }
     },
@@ -3908,6 +4322,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.024795
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.018788
         }
       }
     },
@@ -3967,6 +4385,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.169803
+        },
+        "Claude Opus 5": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4026,6 +4448,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.285609
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.193405
         }
       }
     },
@@ -4085,6 +4511,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.065084
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.038184
         }
       }
     },
@@ -4094,8 +4524,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "buggy",
-      "bestModel": "GPT-5.5",
-      "bestScore": -0.312354,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.058983,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4144,6 +4574,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.696988
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.058983
         }
       }
     },
@@ -4203,6 +4637,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.321796
         }
       }
     },
@@ -4212,8 +4650,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "MiniMax-M3",
-      "bestScore": 0.099903,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.114401,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4262,6 +4700,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.098275
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.114401
         }
       }
     },
@@ -4321,6 +4763,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.018143
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.008097
         }
       }
     },
@@ -4380,6 +4826,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.104916
+        },
+        "Claude Opus 5": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4439,6 +4889,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.068223
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.131112
         }
       }
     },
@@ -4498,6 +4952,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.066633
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.0118
         }
       }
     },
@@ -4507,8 +4965,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.000473,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.079448,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4557,6 +5015,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.011574
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.079448
         }
       }
     },
@@ -4616,6 +5078,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.011789
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.030922
         }
       }
     },
@@ -4675,6 +5141,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.012147
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.010031
         }
       }
     },
@@ -4734,6 +5204,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.185233
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.174783
         }
       }
     },
@@ -4793,6 +5267,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.050845
+        },
+        "Claude Opus 5": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4852,6 +5330,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.110377
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.001044
         }
       }
     },
@@ -4911,6 +5393,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.510041
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.638024
         }
       }
     },
@@ -4970,6 +5456,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.059937
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.17364
         }
       }
     },
@@ -5029,6 +5519,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.001622
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.028096
         }
       }
     },
@@ -5088,6 +5582,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.04102
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.37848
         }
       }
     },
@@ -5147,6 +5645,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -2.765124
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -1.248408
         }
       }
     },
@@ -5206,6 +5708,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.261978
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.119209
         }
       }
     },
@@ -5265,6 +5771,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.996751
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.595261
         }
       }
     },
@@ -5274,8 +5784,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.08966,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.110386,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5324,6 +5834,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.051915
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.110386
         }
       }
     },
@@ -5383,6 +5897,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.484792
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.302791
         }
       }
     },
@@ -5392,8 +5910,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "Opus 4.7",
-      "bestScore": 0.218032,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.219698,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5442,6 +5960,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.132964
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.219698
         }
       }
     },
@@ -5501,6 +6023,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.006784
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.002639
         }
       }
     },
@@ -5510,8 +6036,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "part1",
-      "bestModel": "GPT-5.4",
-      "bestScore": 0.477928,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.686906,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5560,6 +6086,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.369069
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.686906
         }
       }
     },
@@ -5619,6 +6149,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.111179
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.010985
         }
       }
     },
@@ -5628,8 +6162,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Simulation/Operator Learning",
       "taskDir": "part1",
-      "bestModel": "Opus 4.6",
-      "bestScore": -24.9062,
+      "bestModel": "Claude Opus 5",
+      "bestScore": -14.965226,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5678,6 +6212,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -326.385986
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -14.965226
         }
       }
     },
@@ -5737,6 +6275,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -2.008525
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.122065
         }
       }
     },
@@ -5796,6 +6338,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.016707
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.012772
         }
       }
     },
@@ -5805,8 +6351,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.250084,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.287536,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5855,6 +6401,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.287536
         }
       }
     },
@@ -5914,6 +6464,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.04895
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.093389
         }
       }
     },
@@ -5923,8 +6477,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.005221,
+      "bestModel": "Claude Opus 5",
+      "bestScore": 0.031848,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -5973,6 +6527,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.05536
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.031848
         }
       }
     },
@@ -6032,6 +6590,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.233499
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.028678
         }
       }
     },
@@ -6091,6 +6653,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "invalid",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.157199
         }
       }
     },
@@ -6150,6 +6716,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.139117
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.140584
         }
       }
     },
@@ -6209,6 +6779,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.298784
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.374034
         }
       }
     },
@@ -6268,6 +6842,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "none",
           "value": null
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": 0.31485
         }
       }
     },
@@ -6277,8 +6855,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "MiniMax-M3",
-      "bestScore": -0.227497,
+      "bestModel": "Claude Opus 5",
+      "bestScore": -0.063737,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -6327,6 +6905,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.556835
+        },
+        "Claude Opus 5": {
+          "state": "valid",
+          "value": -0.063737
         }
       }
     }

@@ -67,31 +67,6 @@
       <div class="container">
         <h2 class="section-title">Leaderboard</h2>
         <div class="leaderboard-guide">
-          <div class="evaluation-setup" role="region" aria-labelledby="evaluation-setup-title">
-            <div class="evaluation-setup-head">
-              <h3 id="evaluation-setup-title">Evaluation Setup</h3>
-              <span>Reported runs</span>
-            </div>
-            <div class="evaluation-setup-grid">
-              <div class="evaluation-setup-item">
-                <span class="evaluation-setup-label">Per-task timeout</span>
-                <strong>4 hours</strong>
-                <p>Agent solve budget</p>
-              </div>
-              <div class="evaluation-setup-item evaluation-setup-compute">
-                <span class="evaluation-setup-label">Compute</span>
-                <strong>One GPU per GPU task</strong>
-                <p><code>gpu_low</code>: NVIDIA RTX 3090/4090 (24 GB); <code>gpu_high</code>: NVIDIA A800 (80 GB, A100-class); <code>cpu</code>: no GPU.</p>
-                <a href="https://github.com/FrontisAI/NatureBench/tree/main/task-set" target="_blank" rel="noopener">View task-group lists ↗</a>
-              </div>
-              <div class="evaluation-setup-item">
-                <span class="evaluation-setup-label">Web search</span>
-                <strong>Disabled</strong>
-                <p>For all evaluated agents</p>
-              </div>
-            </div>
-          </div>
-
           <div class="metric-primer" role="region" aria-labelledby="metric-primer-title">
             <h3 id="metric-primer-title">Metric Definitions</h3>
             <dl class="metric-definition-list">
@@ -106,6 +81,10 @@
               <div>
                 <dt>Match-SOTA</dt>
                 <dd>Share of judge-valid tasks with <code>g &gt;= 0</code>; <code>g = 0</code> matches paper SOTA.</dd>
+              </div>
+              <div>
+                <dt>Median g (all)</dt>
+                <dd>Median <code>g</code> across all tasks, assigning <code>g = -1</code> to judge-invalid and no-score tasks.</dd>
               </div>
               <div>
                 <dt>CR</dt>
@@ -155,7 +134,8 @@
                 <tr>
                   <th>Rank</th>
                   <th>Model</th>
-                  <th>Harness</th>
+                  <th>Agent</th>
+                  <th>Run source</th>
                   <th>Surpass-SOTA</th>
                   <th>Match-SOTA</th>
                   <th>Median g (all)</th>
@@ -194,10 +174,21 @@
         </div>
         -->
 
+        <div class="panel chart-panel distribution-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Score Distribution</h3>
+              <p>Task-level <em>g</em> bins per configuration</p>
+            </div>
+          </div>
+          <div class="distribution-chart" id="distribution-chart"></div>
+          <div class="legend" id="distribution-legend"></div>
+        </div>
+
         <div class="panel featured-case-panel" id="featured-cases">
           <div class="panel-head featured-case-head">
             <div>
-              <h3>Case Studies</h3>
+              <h3>Featured Cases</h3>
               <p>Representative cases distilled from full agent traces</p>
             </div>
             <div class="featured-count">3 cases</div>
@@ -213,24 +204,13 @@
           <!-- <div class="featured-case-compare" id="featured-case-compare"></div> -->
         </div>
 
-        <div class="panel chart-panel distribution-panel">
-          <div class="panel-head">
-            <div>
-              <h3>Score Distribution</h3>
-              <p>Task-level <em>g</em> bins per configuration</p>
-            </div>
-          </div>
-          <div class="distribution-chart" id="distribution-chart"></div>
-          <div class="legend" id="distribution-legend"></div>
-        </div>
-
       </div>
     </section>
 
     <section id="domains">
       <div class="container">
         <h2 class="section-title">Domain Breakdown</h2>
-        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Domain rankings use the same Surpass-SOTA rule as the overall leaderboard.</p>
+        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Domain rankings use the same Surpass-SOTA rule as the main leaderboard.</p>
 
         <div class="domain-grid" id="domain-grid"></div>
 

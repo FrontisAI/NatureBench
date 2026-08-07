@@ -25,7 +25,7 @@
     "bin-mid",
     "bin-high",
   ];
-  const domainBarScaleMax = 40;
+  const domainBarScaleMax = 50;
 
   const providerLogos = [
     { match: /opus|claude|sonnet|haiku/i, provider: "Claude", monogram: "Cl", src: "assets/logos/claude.svg" },
@@ -164,6 +164,10 @@
 
   const modelOrder = data.leaderboard.map((item) => item.name);
   const modelByName = Object.fromEntries(data.models.map((item) => [item.name, item]));
+  const configurationById = Object.fromEntries(data.models.map((item) => [item.id, item]));
+  let activeConfigurationTrigger = null;
+  let configurationPopoverPinned = false;
+  let configurationHideTimer = null;
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -204,6 +208,156 @@
     return String(value);
   }
 
+  function configurationFor(row) {
+    return configurationById[row.configurationId] || modelByName[row.name] || null;
+  }
+
+  function agentForModel(modelName) {
+    return modelByName[modelName]?.agent || data.leaderboard.find((row) => row.name === modelName)?.harness || "";
+  }
+
+  function agentColorClass(agent) {
+    if (/^claude code\b/i.test(agent)) return "agent-claude";
+    if (/^codex\b/i.test(agent)) return "agent-codex";
+    if (/^gemini cli\b/i.test(agent)) return "agent-gemini";
+    if (/^aibuildai\b/i.test(agent)) return "agent-aibuildai";
+    return "agent-other";
+  }
+
+  function modelAgentMarkup(modelName, { logo = false } = {}) {
+    const agent = agentForModel(modelName);
+    return `
+      <span class="model-agent-identity">
+        ${logo ? modelLogoMarkup(modelName) : ""}
+        <span class="model-agent-copy">
+          <span class="method-name">${escapeHtml(modelName)}</span>
+          ${agent ? `<span class="agent-subline ${agentColorClass(agent)}">${escapeHtml(agent)}</span>` : ""}
+        </span>
+      </span>
+    `;
+  }
+
+  function configurationTriggerMarkup(row) {
+    const configuration = configurationFor(row);
+    if (!configuration) return "";
+    return `
+      <button
+        class="configuration-trigger"
+        type="button"
+        data-configuration-trigger="${escapeHtml(configuration.id)}"
+        aria-label="View configuration for ${escapeHtml(row.name)} and ${escapeHtml(row.harness)}"
+        aria-expanded="false"
+      >i</button>
+    `;
+  }
+
+  function runSourceMarkup(row) {
+    const source = configurationFor(row)?.runSource;
+    if (!source) return "";
+    if (source.url) {
+      return `<a class="run-source-link" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">${escapeHtml(source.label)} ↗</a>`;
+    }
+    return `<span class="run-source-label">${escapeHtml(source.label)}</span>`;
+  }
+
+  function configurationPopoverMarkup(configuration) {
+    const computeLink = configuration.computeUrl
+      ? ` <a href="${escapeHtml(configuration.computeUrl)}" target="_blank" rel="noopener">Task lists ↗</a>`
+      : "";
+    return `
+      <div class="configuration-popover-head">
+        <div>
+          <span>Evaluation configuration</span>
+          <strong>${escapeHtml(configuration.name)} + <span class="agent-name ${agentColorClass(configuration.agent)}">${escapeHtml(configuration.agent)}</span></strong>
+        </div>
+      </div>
+      <dl class="configuration-popover-list">
+        <div><dt>Solving budget</dt><dd>${escapeHtml(configuration.solvingBudget)}</dd></div>
+        <div><dt>Compute</dt><dd>${escapeHtml(configuration.compute)}${computeLink}</dd></div>
+        <div><dt>External access</dt><dd>${escapeHtml(configuration.externalAccess)}</dd></div>
+        <div><dt>Validity judge</dt><dd>${escapeHtml(configuration.validityJudge)}</dd></div>
+      </dl>
+    `;
+  }
+
+  function ensureConfigurationPopover() {
+    let popover = $("configuration-popover");
+    if (popover) return popover;
+    popover = document.createElement("aside");
+    popover.id = "configuration-popover";
+    popover.className = "configuration-popover";
+    popover.hidden = true;
+    popover.addEventListener("pointerenter", () => window.clearTimeout(configurationHideTimer));
+    popover.addEventListener("pointerleave", () => scheduleConfigurationPopoverHide());
+    popover.addEventListener("focusin", () => window.clearTimeout(configurationHideTimer));
+    popover.addEventListener("focusout", () => scheduleConfigurationPopoverHide());
+    document.body.appendChild(popover);
+    return popover;
+  }
+
+  function positionConfigurationPopover(trigger, popover) {
+    const margin = 12;
+    const triggerRect = trigger.getBoundingClientRect();
+    const popoverRect = popover.getBoundingClientRect();
+    const left = clamp(triggerRect.left, margin, window.innerWidth - popoverRect.width - margin);
+    let top = triggerRect.bottom + 8;
+    if (top + popoverRect.height > window.innerHeight - margin) {
+      top = Math.max(margin, triggerRect.top - popoverRect.height - 8);
+    }
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+  }
+
+  function showConfigurationPopover(trigger, pinned = false) {
+    const configuration = configurationById[trigger.dataset.configurationTrigger];
+    if (!configuration) return;
+    window.clearTimeout(configurationHideTimer);
+    if (activeConfigurationTrigger && activeConfigurationTrigger !== trigger) {
+      activeConfigurationTrigger.setAttribute("aria-expanded", "false");
+    }
+    activeConfigurationTrigger = trigger;
+    configurationPopoverPinned = pinned;
+    trigger.setAttribute("aria-expanded", "true");
+    const popover = ensureConfigurationPopover();
+    popover.innerHTML = configurationPopoverMarkup(configuration);
+    popover.hidden = false;
+    positionConfigurationPopover(trigger, popover);
+  }
+
+  function hideConfigurationPopover() {
+    window.clearTimeout(configurationHideTimer);
+    if (activeConfigurationTrigger) activeConfigurationTrigger.setAttribute("aria-expanded", "false");
+    activeConfigurationTrigger = null;
+    configurationPopoverPinned = false;
+    const popover = $("configuration-popover");
+    if (popover) popover.hidden = true;
+  }
+
+  function scheduleConfigurationPopoverHide() {
+    if (configurationPopoverPinned) return;
+    window.clearTimeout(configurationHideTimer);
+    configurationHideTimer = window.setTimeout(() => {
+      const popover = $("configuration-popover");
+      if (activeConfigurationTrigger?.matches(":hover, :focus") || popover?.matches(":hover, :focus-within")) return;
+      hideConfigurationPopover();
+    }, 120);
+  }
+
+  function bindConfigurationTriggers(root) {
+    root.querySelectorAll("[data-configuration-trigger]").forEach((trigger) => {
+      trigger.addEventListener("pointerenter", () => showConfigurationPopover(trigger));
+      trigger.addEventListener("pointerleave", scheduleConfigurationPopoverHide);
+      trigger.addEventListener("focus", () => showConfigurationPopover(trigger));
+      trigger.addEventListener("blur", scheduleConfigurationPopoverHide);
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isActive = activeConfigurationTrigger === trigger && configurationPopoverPinned;
+        if (isActive) hideConfigurationPopover();
+        else showConfigurationPopover(trigger, true);
+      });
+    });
+  }
+
   function providerForModel(modelName) {
     const match = providerLogos.find((item) => item.match.test(modelName));
     if (match) return match;
@@ -218,6 +372,7 @@
   }
 
   function modelColor(modelName) {
+    if (/^aibuildai\b/i.test(agentForModel(modelName))) return "#147c72";
     return modelColors.find((item) => item.match.test(modelName))?.color || "#147c72";
   }
 
@@ -321,7 +476,8 @@
       leaderboardHead.innerHTML = `
         <th>Rank</th>
         <th>Model</th>
-        <th>Harness</th>
+        <th>Agent</th>
+        <th>Run source</th>
         <th>Surpass-SOTA</th>
         <th>Match-SOTA</th>
         <th>Median g (all)</th>
@@ -391,18 +547,21 @@
     const topMatch = [...data.leaderboard].sort((a, b) => b.matchSota - a.matchSota || b.surpassSota - a.surpassSota)[0];
     const topCompletion = [...data.leaderboard].sort((a, b) => b.completionRate - a.completionRate || b.surpassSota - a.surpassSota)[0];
     const cards = [
-      [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench"],
-      [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups"],
-      [formatPercent(top.surpassSota), "Best Surpass-SOTA", top.name],
-      [formatPercent(topMatch.matchSota), "Best Match-SOTA", topMatch.name],
-      [formatPercent(topCompletion.completionRate), "Top completion", topCompletion.name],
+      [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench", ""],
+      [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups", ""],
+      [formatPercent(top.surpassSota), "Best Surpass-SOTA", top.name, top.harness],
+      [formatPercent(topMatch.matchSota), "Best Match-SOTA", topMatch.name, topMatch.harness],
+      [formatPercent(topCompletion.completionRate), "Top completion", topCompletion.name, topCompletion.harness],
     ];
 
-    summary.innerHTML = cards.map(([value, label, note]) => `
+    summary.innerHTML = cards.map(([value, label, note, agent]) => `
       <div class="metric numeric-summary-card">
         <div class="metric-value">${escapeHtml(value)}</div>
         <div class="metric-label">${escapeHtml(label)}</div>
-        <div class="metric-note">${escapeHtml(note)}</div>
+        <div class="metric-note">
+          <span>${escapeHtml(note)}</span>
+          ${agent ? `<small class="summary-agent ${agentColorClass(agent)}">${escapeHtml(agent)}</small>` : ""}
+        </div>
       </div>
     `).join("");
   }
@@ -416,7 +575,7 @@
       <div class="panel-head numeric-board-head">
         <div>
           <h3 id="numeric-leaderboard-title">Main Leaderboard</h3>
-          <p>Ranked by Surpass-SOTA. CR = Completion Rate, valid-score rate; SR = Score Rate, any-score rate.</p>
+          <p>Ranked by Surpass-SOTA</p>
         </div>
       </div>
       <table class="numeric-board-table">
@@ -424,7 +583,8 @@
           <tr>
             <th>Rank</th>
             <th>Model</th>
-            <th>Harness</th>
+            <th>Agent</th>
+            <th>Run source</th>
             <th>Surpass-SOTA</th>
             <th>Match-SOTA</th>
             <th>Median g (all)</th>
@@ -444,9 +604,11 @@
                   <div class="model-cell">
                     ${modelLogoMarkup(row.name)}
                     <span class="method-name">${escapeHtml(row.name)}</span>
+                    ${configurationTriggerMarkup(row)}
                   </div>
                 </td>
-                <td><span class="subtle">${escapeHtml(row.harness)}</span></td>
+                <td><span class="agent-name ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</span></td>
+                <td>${runSourceMarkup(row)}</td>
                 <td><span class="pill good numeric-primary">${formatPercent(row.surpassSota)}</span></td>
                 <td>${formatPercent(row.matchSota)}</td>
                 <td>${formatScore(row.medianAll)}</td>
@@ -460,6 +622,7 @@
       </table>
     `;
     bindLogoFallbacks(board);
+    bindConfigurationTriggers(board);
   }
 
   function renderLeaderboard() {
@@ -496,8 +659,9 @@
         return `
           <tr>
             <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
-            <td><span class="method-name">${escapeHtml(row.name)}</span></td>
-            <td><span class="subtle">${escapeHtml(row.harness)}</span></td>
+            <td><span class="model-cell"><span class="method-name">${escapeHtml(row.name)}</span>${configurationTriggerMarkup(row)}</span></td>
+            <td><span class="agent-name ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</span></td>
+            <td>${runSourceMarkup(row)}</td>
             <td><span class="pill good">${formatPercent(row.surpassSota)}</span></td>
             <td>${formatPercent(row.matchSota)}</td>
             <td>${formatScore(row.medianAll)}</td>
@@ -509,6 +673,7 @@
           </tr>
         `;
       }).join("");
+      bindConfigurationTriggers(detailBody);
     }
   }
 
@@ -519,9 +684,8 @@
       const surpass = data.leaderboard.find((item) => item.name === row.name)?.surpassSota ?? 0;
       return `
         <div class="distribution-row">
-          <div class="distribution-name model-cell" title="${escapeHtml(row.name)}">
-            ${modelLogoMarkup(row.name)}
-            <span class="method-name">${escapeHtml(row.name)}</span>
+          <div class="distribution-name" title="${escapeHtml(row.name)} · ${escapeHtml(agentForModel(row.name))}">
+            ${modelAgentMarkup(row.name, { logo: true })}
           </div>
           <div class="stacked-bar" aria-label="${escapeHtml(row.name)} score distribution">
             ${row.bins.map((bin, index) => `
@@ -549,6 +713,7 @@
         <div class="domain-count">N=${domain.n}</div>
         <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner</div>
         <div class="domain-winner">${escapeHtml(domain.winner)}</div>
+        <div class="domain-winner-agent ${agentColorClass(agentForModel(domain.winner))}">${escapeHtml(agentForModel(domain.winner))}</div>
         <div class="domain-primary">Surpass-SOTA ${formatPercent(domain.winnerSurpassSota)}</div>
         <div class="mini-meter" aria-hidden="true"><span style="--w:${domain.winnerSurpassSota}%"></span></div>
         <div class="domain-stat">
@@ -584,18 +749,15 @@
     chart.innerHTML = `
       <div class="domain-scale-note">Surpass-SOTA rate, fixed 0-${domainBarScaleMax}% scale</div>
       <div class="domain-scale-axis" aria-hidden="true">
-        ${[0, 10, 20, 30, 40].map((tick) => `<span>${tick}</span>`).join("")}
+        ${[0, 10, 20, 30, 40, 50].map((tick) => `<span>${tick}</span>`).join("")}
       </div>
       ${domain.models.map((row, index) => {
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
         return `
           <div class="bar-row model-color-row" style="--model-color:${modelColor(row.name)}">
-            <div class="bar-name" title="${escapeHtml(row.name)}">
+            <div class="bar-name" title="${escapeHtml(row.name)} · ${escapeHtml(agentForModel(row.name))}">
               <span class="rank-dot">${index + 1}</span>
-              <span class="bar-model-identity model-cell">
-                ${modelLogoMarkup(row.name)}
-                <span class="method-name">${escapeHtml(row.name)}</span>
-              </span>
+              <span class="bar-model-identity">${modelAgentMarkup(row.name, { logo: true })}</span>
             </div>
             <div class="bar-track" aria-hidden="true">
               <div class="bar-fill" style="--w:${width}%"></div>
@@ -645,7 +807,7 @@
       <tr>
         <td>${escapeHtml(domain.domain)}</td>
         <td>${domain.n}</td>
-        <td><span class="method-name">${escapeHtml(domain.winner)}</span></td>
+        <td>${modelAgentMarkup(domain.winner)}</td>
         <td><span class="pill good">${formatPercent(domain.winnerSurpassSota)}</span></td>
         <td>${formatPercent(domain.winnerMatchSota)}</td>
         <td>${formatScore(domain.winnerMedianAll)}</td>
@@ -718,7 +880,7 @@
       <div class="case-lookup-best">
         <span>Best configuration</span>
         <strong>${row.bestModel ? escapeHtml(row.bestModel) : ""}</strong>
-        <small>${row.bestModel ? `g ${formatScore(row.bestScore)}` : ""}</small>
+        <small>${row.bestModel ? `<span class="agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span> · g ${formatScore(row.bestScore)}` : ""}</small>
       </div>
     `;
   }
@@ -730,7 +892,7 @@
         <th>Domain</th>
         <th>Task</th>
         <th>Best</th>
-        ${modelOrder.map((model) => `<th>${escapeHtml(model)}</th>`).join("")}
+        ${modelOrder.map((model) => `<th>${modelAgentMarkup(model)}</th>`).join("")}
       </tr>
     `;
 
@@ -755,7 +917,7 @@
         </td>
         <td>${escapeHtml(row.domain)}</td>
         <td>${escapeHtml(row.mlTaskType)}</td>
-        <td>${row.bestModel ? `${escapeHtml(row.bestModel)}<div class="case-meta">${formatScore(row.bestScore)}</div>` : ""}</td>
+        <td class="case-best-cell">${row.bestModel ? `<div class="case-best-identity">${modelAgentMarkup(row.bestModel)}</div><div class="case-meta">g ${formatScore(row.bestScore)}</div>` : ""}</td>
         ${modelOrder.map((model) => {
           const score = row.scores[model];
           const classes = [
@@ -766,7 +928,7 @@
             row.bestModel === model ? "best" : "",
           ].filter(Boolean).join(" ");
           return `
-            <td class="${classes}" style="${scoreBackground(score)}" title="${escapeHtml(model)} · ${escapeHtml(row.caseId)} · ${scoreText(score)}">
+            <td class="${classes}" style="${scoreBackground(score)}" title="${escapeHtml(model)} · ${escapeHtml(agentForModel(model))} · ${escapeHtml(row.caseId)} · ${scoreText(score)}">
               ${escapeHtml(scoreText(score))}
             </td>
           `;
@@ -868,7 +1030,7 @@
       <button class="featured-case-tab ${item.key === state.featuredCase ? "active" : ""}" data-featured-case="${escapeHtml(item.key)}">
         <span>${escapeHtml(item.role)}</span>
         <strong>${escapeHtml(item.title)}</strong>
-        <small>${escapeHtml(item.model)} · ${escapeHtml(item.bestG)}</small>
+        <small>${escapeHtml(item.model)} · <span class="agent-name ${agentColorClass(agentForModel(item.model))}">${escapeHtml(agentForModel(item.model))}</span> · ${escapeHtml(item.bestG)}</small>
       </button>
     `).join("");
 
@@ -887,6 +1049,7 @@
       <p class="featured-active-copy">${escapeHtml(item.task)}</p>
       <div class="featured-pills">
         <span class="pill good">${escapeHtml(item.model)}</span>
+        <span class="agent-name ${agentColorClass(agentForModel(item.model))}">${escapeHtml(agentForModel(item.model))}</span>
         <span class="pill ${item.status.includes("invalid") ? "warn" : "good"}">${escapeHtml(item.status)}</span>
         <span class="pill">${escapeHtml(item.caseId)}</span>
       </div>
@@ -950,6 +1113,19 @@
   }
 
   function bindEvents() {
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest("[data-configuration-trigger], #configuration-popover")) {
+        hideConfigurationPopover();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") hideConfigurationPopover();
+    });
+
+    window.addEventListener("resize", hideConfigurationPopover);
+    document.addEventListener("scroll", hideConfigurationPopover, true);
+
     const rankMetric = $("rank-metric");
     if (rankMetric) {
       rankMetric.addEventListener("change", (event) => {
