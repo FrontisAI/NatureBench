@@ -56,10 +56,8 @@ class LumenAdapter(AgentAdapter):
         if ctx.is_resume:
             return _RESUME_PROMPT
         return ClaudeAgent(model_name=ctx.model, mode=ctx.mode).build_system_prompt({
-            "task_name": ctx.task_name,
-            "batch_name": ctx.batch_name,
             "eval_service_url": ctx.eval_service_url,
-            "eval_output_dir": ctx.eval_output_dir,
+            "eval_token": ctx.eval_token,
             "time_limit_minutes": ctx.time_limit_minutes,
         })
 

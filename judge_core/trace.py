@@ -1,4 +1,4 @@
-"""Extract decision-relevant evidence from supported agent execution traces."""
+"""Extract semantic evidence from supported agent execution traces."""
 
 from __future__ import annotations
 
@@ -6,12 +6,20 @@ import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, NamedTuple, Optional
 
 from judge_core.policy import MAX_LOG_EXCERPT_BYTES, MAX_TRACE_SNIPPET_CHARS
 from judge_core.sources import clip_text_bytes
 
-TraceRecord = Tuple[Optional[float], str]
+
+class TraceRecord(NamedTuple):
+    """One parsed semantic trace record and its overflow relevance flag."""
+
+    timestamp: Optional[float]
+    text: str
+    relevance_match: bool
+
+
 TraceExtractor = Callable[[Dict[str, Any]], Optional[str]]
 
 
@@ -174,7 +182,7 @@ def _extract_snippet_codex(obj: Dict[str, Any]) -> Optional[str]:
         command = item.get("command", "")
         output = item.get("aggregated_output") or item.get("output") or ""
         exit_code = item.get("exit_code", "")
-        snippet = "[cmd] " + _clip_trace_text(command, max_chars=500)
+        snippet = "[cmd] " + _clip_trace_text(command)
         if output:
             snippet += (
                 " | [out exit="
@@ -332,7 +340,6 @@ _EXTRACTORS: Dict[str, TraceExtractor] = {
     "gemini_chat": _extract_snippet_gemini_chat,
 }
 
-_STRUCTURAL_RE = re.compile(r"\[(tool_use|tool_result|cmd\]|out |file_change)")
 _TRACE_RELEVANCE_RE = re.compile(
     r"(\.fit\(|\.train\(|backward\(|optimizer|loss|model\b|"
     r"hardcode|hard-code|constant|random\.|np\.random|"
@@ -340,21 +347,39 @@ _TRACE_RELEVANCE_RE = re.compile(
     r"/evaluate|/best_score|run\.py|workspace|"
     r"submission|prediction|output_dir|requests\.|"
     r"curl|api\.|openai|anthropic|gpt|claude|gemini|"
-    r"\[cmd\]|\[out|\[tool_use|\[tool_result|\[file_change|\[result|\[message)",
+    r"source.?paper|paper\b|doi(?:\.org)?|nature\.com|arxiv|pubmed|"
+    r"supplementary|github|repository|implementation|git\s+clone|"
+    r"checkpoint|precomputed|weights?\b|hugging\s*face|wget|download)",
     re.IGNORECASE,
 )
 
 
-def _is_structural(snippet: str) -> bool:
-    """Return whether a snippet records a concrete structural action."""
-    return bool(_STRUCTURAL_RE.search(snippet))
+def _compile_trace_relevance_re(
+    relevance_terms: Iterable[str],
+) -> re.Pattern[str]:
+    """Combine fixed overflow terms with task-specific paper identifiers."""
+    dynamic_patterns = []
+    for term in relevance_terms:
+        normalized = term.strip()
+        if not normalized:
+            continue
+        dynamic_patterns.append(
+            re.escape(normalized).replace(r"\ ", r"\s+")
+        )
+    if not dynamic_patterns:
+        return _TRACE_RELEVANCE_RE
+    return re.compile(
+        "(?:" + _TRACE_RELEVANCE_RE.pattern + "|" + "|".join(dynamic_patterns) + ")",
+        re.IGNORECASE,
+    )
 
 
 def _build_trace_record(
     obj: Dict[str, Any],
     trace_format: Optional[str] = None,
+    relevance_re: re.Pattern[str] = _TRACE_RELEVANCE_RE,
 ) -> Optional[TraceRecord]:
-    """Build one retained trace record for display and time-window matching."""
+    """Build one semantic trace record without keyword-based deletion."""
     snippet = None
     extractor = _EXTRACTORS.get(trace_format) if trace_format else None
     if extractor is not None:
@@ -367,10 +392,12 @@ def _build_trace_record(
     if not snippet or not snippet.strip():
         return None
     raw_snippet = snippet.strip()
-    if not _is_structural(raw_snippet) and not _TRACE_RELEVANCE_RE.search(raw_snippet):
-        return None
     display_snippet = _timestamp_trace_snippet(obj, raw_snippet)
-    return _trace_timestamp_epoch(obj), _clip_trace_text(display_snippet)
+    return TraceRecord(
+        _trace_timestamp_epoch(obj),
+        _clip_trace_text(display_snippet),
+        bool(relevance_re.search(raw_snippet)),
+    )
 
 
 def _slice_utf8(text: str, max_bytes: int, from_end: bool = False) -> str:
@@ -405,29 +432,66 @@ def _fit_focus_records(records: List[str], max_bytes: int) -> str:
     )
 
 
-def _truncate_trace_records(
+def _render_trace_selection(
+    records: List[TraceRecord],
+    selected_indices: set[int],
+) -> str:
+    """Render selected records in original order with explicit gap markers."""
+    lines: List[str] = []
+    previous_index = -1
+    for index in sorted(selected_indices):
+        omitted = index - previous_index - 1
+        if omitted > 0:
+            lines.append(f"... [{omitted} trace records omitted] ...")
+        lines.append(records[index].text)
+        previous_index = index
+    trailing_omitted = len(records) - previous_index - 1
+    if trailing_omitted > 0:
+        lines.append(f"... [{trailing_omitted} trace records omitted] ...")
+    return "\n---\n".join(lines)
+
+
+def _fill_trace_selection(
+    records: List[TraceRecord],
+    selected_indices: set[int],
+    candidate_indices: set[int],
+    max_bytes: int,
+) -> str:
+    """Use remaining space only for explicitly allowed context records."""
+    selected = set(selected_indices)
+    result = _render_trace_selection(records, selected)
+    for index in sorted(candidate_indices - selected):
+        trial_indices = selected | {index}
+        candidate = _render_trace_selection(records, trial_indices)
+        if len(candidate.encode("utf-8")) <= max_bytes:
+            selected = trial_indices
+            result = candidate
+    return result
+
+
+def _time_truncate_trace_records(
     records: List[TraceRecord],
     max_bytes: int,
     focus_start: Optional[float],
     focus_end: Optional[float],
 ) -> str:
-    """Use a score-attempt window only when every retained record is timestamped."""
+    """Apply head/SCORE_ATTEMPT/tail cropping to an oversized evidence set."""
     separator = "\n---\n"
-    full = separator.join(text for _timestamp, text in records)
+    full = separator.join(record.text for record in records)
     if len(full.encode("utf-8")) <= max_bytes:
         return full
 
     focus_records: List[str] = []
     timestamps_complete = bool(records) and all(
-        timestamp is not None for timestamp, _text in records
+        record.timestamp is not None for record in records
     )
     if timestamps_complete and focus_end is not None:
         focus_records = [
-            text
-            for timestamp, text in records
-            if timestamp is not None
-            and (focus_start is None or timestamp >= focus_start)
-            and timestamp <= focus_end + 5.0
+            record.text
+            for record in records
+            if record.timestamp is not None
+            and (focus_start is None or record.timestamp >= focus_start)
+            and record.timestamp <= focus_end + 5.0
         ]
 
     if focus_records:
@@ -451,8 +515,8 @@ def _truncate_trace_records(
     available = max(0, max_bytes - len(marker.encode("utf-8")))
     head_budget = available // 2
     tail_budget = available - head_budget
-    first_record = records[0][1] if records else ""
-    last_record = records[-1][1] if records else ""
+    first_record = records[0].text if records else ""
+    last_record = records[-1].text if records else ""
     result = (
         clip_text_bytes(first_record, head_budget)
         + marker
@@ -461,22 +525,87 @@ def _truncate_trace_records(
     return clip_text_bytes(result, max_bytes)
 
 
+def _truncate_trace_records(
+    records: List[TraceRecord],
+    max_bytes: int,
+    focus_start: Optional[float],
+    focus_end: Optional[float],
+) -> str:
+    """Return all semantic records unless the shared trace budget is exceeded."""
+    separator = "\n---\n"
+    full = separator.join(record.text for record in records)
+    if len(full.encode("utf-8")) <= max_bytes:
+        return full
+    if not records:
+        return ""
+
+    timestamps_complete = all(
+        record.timestamp is not None for record in records
+    )
+    focus_indices: set[int] = set()
+    if timestamps_complete and focus_end is not None:
+        focus_indices = {
+            index
+            for index, record in enumerate(records)
+            if record.timestamp is not None
+            and (focus_start is None or record.timestamp >= focus_start)
+            and record.timestamp <= focus_end + 5.0
+        }
+
+    keyword_indices = {
+        index
+        for index, record in enumerate(records)
+        if record.relevance_match
+    }
+    anchor_indices = keyword_indices | focus_indices | {0, len(records) - 1}
+    expanded_indices = set(anchor_indices)
+    for index in keyword_indices:
+        if index > 0:
+            expanded_indices.add(index - 1)
+        if index + 1 < len(records):
+            expanded_indices.add(index + 1)
+
+    expanded = _render_trace_selection(records, expanded_indices)
+    if len(expanded.encode("utf-8")) <= max_bytes:
+        return expanded
+
+    anchors = _render_trace_selection(records, anchor_indices)
+    if len(anchors.encode("utf-8")) <= max_bytes:
+        keyword_context_indices = expanded_indices - anchor_indices
+        return _fill_trace_selection(
+            records,
+            anchor_indices,
+            keyword_context_indices,
+            max_bytes,
+        )
+
+    anchor_records = [records[index] for index in sorted(anchor_indices)]
+    return _time_truncate_trace_records(
+        anchor_records,
+        max_bytes,
+        focus_start,
+        focus_end,
+    )
+
+
 def excerpt_agent_log(
     log_path: Path,
     max_bytes: int = MAX_LOG_EXCERPT_BYTES,
     focus_start: Optional[float] = None,
     focus_end: Optional[float] = None,
+    relevance_terms: Iterable[str] = (),
 ) -> str:
-    """Extract timestamped, decision-relevant turns from an agent log.
+    """Extract timestamped semantic turns from an agent log.
 
-    Structural actions are retained regardless of keywords. Relevant free text
-    is keyword-filtered. If the excerpt exceeds its budget, the collector keeps
-    the trace head, the score-attempt interval when known, and the trace tail.
+    All parsed semantic records are retained when they fit. Keywords are used
+    only after overflow, together with the trace head, score-attempt interval,
+    and trace tail.
     """
     if log_path is None or not log_path.exists():
         return ""
     snippets: List[TraceRecord] = []
     trace_format = None
+    relevance_re = _compile_trace_relevance_re(relevance_terms)
 
     try:
         with open(log_path, "rb") as probe:
@@ -498,7 +627,11 @@ def excerpt_agent_log(
             for message in document.get("messages") or []:
                 if not isinstance(message, dict):
                     continue
-                trace_record = _build_trace_record(message, "gemini_chat")
+                trace_record = _build_trace_record(
+                    message,
+                    "gemini_chat",
+                    relevance_re,
+                )
                 if trace_record is not None:
                     snippets.append(trace_record)
         skip_line_pass = True
@@ -530,7 +663,11 @@ def excerpt_agent_log(
                     detected = _detect_format(obj)
                     if detected != "unknown":
                         trace_format = detected
-                trace_record = _build_trace_record(obj, trace_format)
+                trace_record = _build_trace_record(
+                    obj,
+                    trace_format,
+                    relevance_re,
+                )
                 if trace_record is not None:
                     snippets.append(trace_record)
         finally:

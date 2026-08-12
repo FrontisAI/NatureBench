@@ -23,10 +23,8 @@ from .gemini import GeminiAgent
 def _task_info(ctx: AgentRunContext) -> Dict[str, Any]:
     """Reconstruct the prompt-template fields the *Agent classes expect."""
     return {
-        "task_name": ctx.task_name,
-        "batch_name": ctx.batch_name,
         "eval_service_url": ctx.eval_service_url,
-        "eval_output_dir": ctx.eval_output_dir,
+        "eval_token": ctx.eval_token,
         "time_limit_minutes": ctx.time_limit_minutes,
     }
 

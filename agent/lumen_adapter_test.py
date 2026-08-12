@@ -24,6 +24,7 @@ def _ctx(**overrides) -> AgentRunContext:
         batch_name="some_batch",
         eval_service_url="http://host.docker.internal:9000",
         eval_output_dir="/workspace/output",
+        eval_token="opaque-evaluation-token",
         time_limit_minutes=60,
     )
     base.update(overrides)
@@ -39,7 +40,9 @@ def test_system_prompt_carries_eval_protocol():
     ctx = _ctx()
     prompt = REGISTRY.get("lumen").system_prompt(ctx)
     assert ctx.eval_service_url in prompt
-    assert ctx.task_name in prompt
+    assert ctx.eval_token in prompt
+    assert ctx.task_name not in prompt
+    assert ctx.batch_name not in prompt
     assert "/evaluate" in prompt
 
 

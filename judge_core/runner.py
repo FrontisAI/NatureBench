@@ -13,6 +13,7 @@ from agent.adapter import REGISTRY
 from judge_core.attempts import (
     build_user_prompt_with_context,
     collect_attempt_context,
+    collect_source_paper_context,
     collect_task_context,
     missing_context_files,
 )
@@ -41,10 +42,25 @@ Verdict = dict[str, Any]
 TaskTarget = tuple[str, Path]
 
 
+def _source_paper_trace_terms(
+    source_paper_context: dict[str, str],
+) -> tuple[str, ...]:
+    """Return equal-priority title/DOI terms for overflow trace selection."""
+    title = source_paper_context.get("title", "").strip()
+    doi = source_paper_context.get("doi", "").strip()
+    terms = [term for term in (title, doi) if term]
+    if "/" in doi:
+        doi_suffix = doi.split("/", 1)[1].strip()
+        if doi_suffix:
+            terms.append(doi_suffix)
+    return tuple(terms)
+
+
 def collect_judge_inputs(
     task_out_dir: Path,
     agent_name: str = "claude",
     task_name: str | None = None,
+    trace_relevance_terms: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Collect source, attempt, and adapter-selected transcript evidence."""
     workspace_dir = task_out_dir / "workspace"
@@ -70,6 +86,7 @@ def collect_judge_inputs(
                 max_bytes=MAX_LOG_EXCERPT_BYTES,
                 focus_start=attempt_context.get("focus_start"),
                 focus_end=attempt_context.get("focus_end"),
+                relevance_terms=trace_relevance_terms,
             )
             if custom_excerpt is None
             else custom_excerpt
@@ -93,11 +110,15 @@ def collect_judge_inputs_with_context(
     task_name: str | None = None,
 ) -> dict[str, Any]:
     """Collect task documentation together with source and transcript evidence."""
+    resolved_task_name = task_name or task_out_dir.name
+    source_paper_context = collect_source_paper_context(resolved_task_name)
     inputs = collect_judge_inputs(
         task_out_dir,
         agent_name=agent_name,
         task_name=task_name,
+        trace_relevance_terms=_source_paper_trace_terms(source_paper_context),
     )
+    inputs["source_paper_context"] = source_paper_context
     inputs["task_context"] = collect_task_context(task_problem_dir)
     return inputs
 

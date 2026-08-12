@@ -41,6 +41,7 @@ class AgentRunContext:
     batch_name: str = ""
     eval_service_url: str = ""
     eval_output_dir: str = ""
+    eval_token: str = ""
     time_limit_minutes: int = 60
     # Host-side per-run directories (useful for an agent that mounts a per-task
     # path via ``docker_mounts``).

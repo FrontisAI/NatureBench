@@ -45,12 +45,11 @@ After running your code and generating output files in `/workspace/output/`, cal
 ```bash
 curl -s -X POST {eval_service_url}/evaluate \\
   -H "Content-Type: application/json" \\
-  -d '{{"task_name": "{task_name}", "batch_name": "{batch_name}", "output_dir": "{eval_output_dir}"}}'
+  -d '{{"eval_token": "{eval_token}"}}'
 ```
 Returns JSON with your scores:
 ```json
 {{
-  "task_name": "...",
   "attempt": 1,
   "raw_scores": {{"instance_name": {{"metric": value}}}},
   "per_instance_improvement": {{"instance_name": 0.12}},
@@ -65,13 +64,13 @@ Your **final task score is `best_aggregate_improvement`** (the highest value acr
 
 **How to check your best score**:
 ```bash
-curl -s "{eval_service_url}/best_score?task_name={task_name}&batch_name={batch_name}"
+curl -s "{eval_service_url}/best_score?eval_token={eval_token}"
 ```
 Returns: `{{"best_attempt": 2, "best_aggregate_improvement": 0.12, "best_per_instance_improvement": {{...}}, "best_raw_scores": {{...}}, "total_attempts": 3}}`
 
 **How to check remaining time**:
 ```bash
-curl -s "{eval_service_url}/time_remaining?task_name={task_name}&batch_name={batch_name}"
+curl -s "{eval_service_url}/time_remaining?eval_token={eval_token}"
 ```
 Returns: `{{"elapsed_seconds": 120.5, "remaining_seconds": 1079.5, "timeout_seconds": 1200}}`
 
@@ -138,18 +137,18 @@ After running your code and generating output files in `/workspace/output/`, cal
 ```bash
 curl -s -X POST {eval_service_url}/evaluate \\
   -H "Content-Type: application/json" \\
-  -d '{{"task_name": "{task_name}", "batch_name": "{batch_name}", "output_dir": "{eval_output_dir}"}}'
+  -d '{{"eval_token": "{eval_token}"}}'
 ```
 Returns JSON with your scores. `aggregate_improvement` is normalized against SOTA (0 = match, >0 = beat, <0 = below). Your final score is `best_aggregate_improvement` (max over all attempts).
 
 **How to check your best score**:
 ```bash
-curl -s "{eval_service_url}/best_score?task_name={task_name}&batch_name={batch_name}"
+curl -s "{eval_service_url}/best_score?eval_token={eval_token}"
 ```
 
 **How to check remaining time**:
 ```bash
-curl -s "{eval_service_url}/time_remaining?task_name={task_name}&batch_name={batch_name}"
+curl -s "{eval_service_url}/time_remaining?eval_token={eval_token}"
 ```
 
 # Time Limit
@@ -224,12 +223,11 @@ After running your code and generating output files in `/workspace/output/`, cal
 ```bash
 curl -s -X POST {eval_service_url}/evaluate \\
   -H "Content-Type: application/json" \\
-  -d '{{"task_name": "{task_name}", "batch_name": "{batch_name}", "output_dir": "{eval_output_dir}"}}'
+  -d '{{"eval_token": "{eval_token}"}}'
 ```
 Returns JSON with your scores:
 ```json
 {{
-  "task_name": "...",
   "attempt": 1,
   "raw_scores": {{"instance_name": {{"metric": value}}}},
   "per_instance_improvement": {{"instance_name": 0.12}},
@@ -244,13 +242,13 @@ Returns JSON with your scores:
 
 **How to check your best score**:
 ```bash
-curl -s "{eval_service_url}/best_score?task_name={task_name}&batch_name={batch_name}"
+curl -s "{eval_service_url}/best_score?eval_token={eval_token}"
 ```
 Returns: `{{"best_attempt": 2, "best_aggregate_improvement": 0.12, "best_per_instance_improvement": {{...}}, "best_raw_scores": {{...}}, "total_attempts": 3}}`
 
 **How to check remaining time**:
 ```bash
-curl -s "{eval_service_url}/time_remaining?task_name={task_name}&batch_name={batch_name}"
+curl -s "{eval_service_url}/time_remaining?eval_token={eval_token}"
 ```
 Returns: `{{"elapsed_seconds": 120.5, "remaining_seconds": 1079.5, "timeout_seconds": 1200}}`
 
@@ -321,10 +319,8 @@ class GeminiAgent:
         self.logger = logging.getLogger("cns_bench.agent.GeminiAgent")
 
     def build_system_prompt(self, task: Dict[str, Any]) -> str:
-        task_name = task.get("task_name", "unknown")
-        batch_name = task.get("batch_name", "default")
         eval_service_url = task.get("eval_service_url", "http://host.docker.internal:8321")
-        eval_output_dir = task.get("eval_output_dir", "/workspace/output")
+        eval_token = task.get("eval_token", "")
         time_limit_minutes = task.get("time_limit_minutes", 60)
 
         if self.mode == "reproduce":
@@ -334,10 +330,8 @@ class GeminiAgent:
         else:
             base_prompt = GEMINI_BASE_PROMPT
         return base_prompt.format(
-            task_name=task_name,
-            batch_name=batch_name,
             eval_service_url=eval_service_url,
-            eval_output_dir=eval_output_dir,
+            eval_token=eval_token,
             time_limit_minutes=time_limit_minutes,
         )
 

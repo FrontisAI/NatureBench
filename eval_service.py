@@ -125,6 +125,8 @@ class ScoreTracker:
     def __init__(self) -> None:
         # key: (task_name, batch_name) -> TaskState
         self._tasks: Dict[Tuple[str, str], TaskState] = {}
+        # Opaque agent-facing token -> internal task key.
+        self._eval_tokens: Dict[str, Tuple[str, str]] = {}
         self._lock = threading.Lock()
 
     def register_task(self, task_name: str, data_dir: Path,
@@ -132,6 +134,7 @@ class ScoreTracker:
                        timeout: Optional[int] = None,
                        out_dir: Optional[Path] = None,
                        batch_name: Optional[str] = None,
+                       eval_token: Optional[str] = None,
                        force: bool = False) -> Tuple[Dict[str, Dict[str, Any]], List[str]]:
         """Register a task.
 
@@ -146,6 +149,15 @@ class ScoreTracker:
         bn = batch_name or self.DEFAULT_BATCH
         key = (task_name, bn)
         with self._lock:
+            if eval_token:
+                mapped_key = self._eval_tokens.get(eval_token)
+                if mapped_key is not None and mapped_key != key:
+                    raise ValueError("eval_token is already registered to another task")
+                # A force-fresh run may replace the token for the same task key.
+                for old_token, old_key in list(self._eval_tokens.items()):
+                    if old_key == key and old_token != eval_token:
+                        del self._eval_tokens[old_token]
+                self._eval_tokens[eval_token] = key
             existing = self._tasks.get(key)
             if existing is not None and not force:
                 # Re-register without force: never overwrite live timer state.
@@ -177,6 +189,15 @@ class ScoreTracker:
     def get_task(self, task_name: str, batch_name: Optional[str] = None) -> Optional[TaskState]:
         bn = batch_name or self.DEFAULT_BATCH
         return self._tasks.get((task_name, bn))
+
+    def resolve_eval_token(self, eval_token: str) -> Optional[Tuple[str, str, TaskState]]:
+        """Resolve an opaque agent token to its internal task state."""
+        with self._lock:
+            key = self._eval_tokens.get(eval_token)
+            state = self._tasks.get(key) if key is not None else None
+        if key is None or state is None:
+            return None
+        return key[0], key[1], state
 
     def all_results(self) -> Dict[str, Any]:
         """Return nested dict {batch_name: {task_name: result_dict}}."""
@@ -547,47 +568,66 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
 
         if parsed.path == "/best_score":
             params = parse_qs(parsed.query)
-            task_name = params.get("task_name", [None])[0]
-            if not task_name:
-                self._send_json(400, {"error": "missing task_name parameter"})
-                return
-            state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
-            if state is None:
-                self._send_json(404, {"error": f"task {task_name} not registered"})
-                return
+            eval_token = params.get("eval_token", [None])[0]
+            token_request = bool(eval_token)
+            if token_request:
+                resolved = self.tracker.resolve_eval_token(eval_token)
+                if resolved is None:
+                    self._send_json(404, {"error": "eval_token not registered"})
+                    return
+                task_name, _batch_name, state = resolved
+            else:
+                task_name = params.get("task_name", [None])[0]
+                if not task_name:
+                    self._send_json(400, {"error": "missing eval_token or task_name parameter"})
+                    return
+                state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
+                if state is None:
+                    self._send_json(404, {"error": f"task {task_name} not registered"})
+                    return
             best_rec = None
             if state.best_attempt is not None:
                 idx = state.best_attempt - 1
                 if 0 <= idx < len(state.submissions):
                     best_rec = state.submissions[idx]
-            self._send_json(200, {
-                "task_name": task_name,
+            response = {
                 "best_attempt": state.best_attempt,
                 "best_aggregate_improvement": state.best_aggregate_improvement,
                 "best_per_instance_improvement": best_rec.per_instance_improvement if best_rec else {},
                 "best_raw_scores": best_rec.raw_scores if best_rec else {},
                 "total_attempts": len(state.submissions),
-            })
+            }
+            if not token_request:
+                response["task_name"] = task_name
+            self._send_json(200, response)
             return
 
         if parsed.path == "/time_remaining":
             params = parse_qs(parsed.query)
-            task_name = params.get("task_name", [None])[0]
-            if not task_name:
-                self._send_json(400, {"error": "missing task_name parameter"})
-                return
-            state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
-            if state is None:
-                self._send_json(404, {"error": f"task {task_name} not registered"})
-                return
+            eval_token = params.get("eval_token", [None])[0]
+            token_request = bool(eval_token)
+            if token_request:
+                resolved = self.tracker.resolve_eval_token(eval_token)
+                if resolved is None:
+                    self._send_json(404, {"error": "eval_token not registered"})
+                    return
+                task_name, _batch_name, state = resolved
+            else:
+                task_name = params.get("task_name", [None])[0]
+                if not task_name:
+                    self._send_json(400, {"error": "missing eval_token or task_name parameter"})
+                    return
+                state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
+                if state is None:
+                    self._send_json(404, {"error": f"task {task_name} not registered"})
+                    return
             elapsed = state.get_effective_elapsed()
             remaining = max(0, state.timeout - elapsed) if state.timeout else None
             # Compute the current cumulative pause time (including the ongoing pause)
             cur_paused = state.total_paused
             if state.pause_start is not None:
                 cur_paused += time.time() - state.pause_start
-            self._send_json(200, {
-                "task_name": task_name,
+            response = {
                 "elapsed_seconds": round(elapsed, 1),
                 "remaining_seconds": round(remaining, 1) if remaining is not None else None,
                 "timeout_seconds": state.timeout,
@@ -595,11 +635,10 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 "total_paused_seconds": round(cur_paused, 1),
                 "should_skip": state.should_skip,
                 "consecutive_failures": state.consecutive_failures,
-            })
-            return
-
-        if parsed.path == "/all_results":
-            self._send_json(200, self.tracker.all_results())
+            }
+            if not token_request:
+                response["task_name"] = task_name
+            self._send_json(200, response)
             return
 
         self._send_json(404, {"error": "unknown endpoint"})
@@ -656,25 +695,38 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": f"JSON failed to parse: {e}"})
             return
 
-        task_name = body.get("task_name")
-        if not task_name:
-            self._send_json(400, {"error": "missing task_name"})
-            return
-
-        state = self.tracker.get_task(task_name, batch_name=body.get("batch_name") if body else None)
-        if state is None:
-            self._send_json(404, {"error": f"task {task_name} not registered"})
-            return
+        eval_token = body.get("eval_token")
+        token_request = bool(eval_token)
+        if token_request:
+            resolved = self.tracker.resolve_eval_token(eval_token)
+            if resolved is None:
+                self._send_json(404, {"error": "eval_token not registered"})
+                return
+            task_name, _batch_name, state = resolved
+        else:
+            task_name = body.get("task_name")
+            if not task_name:
+                self._send_json(400, {"error": "missing eval_token or task_name"})
+                return
+            state = self.tracker.get_task(task_name, batch_name=body.get("batch_name") if body else None)
+            if state is None:
+                self._send_json(404, {"error": f"task {task_name} not registered"})
+                return
 
         # Pause this task's countdown (evaluation time does not count toward agent solve time)
         state.pause_timer()
         try:
-            output_dir_str = body.get("output_dir")
-            if not output_dir_str:
-                self._send_json(400, {"error": "missing output_dir"})
-                return
-
-            output_dir = Path(output_dir_str)
+            if token_request:
+                if state.out_dir is None:
+                    self._send_json(500, {"error": "registered task has no output directory"})
+                    return
+                output_dir = state.out_dir / "workspace" / "output"
+            else:
+                output_dir_str = body.get("output_dir")
+                if not output_dir_str:
+                    self._send_json(400, {"error": "missing output_dir"})
+                    return
+                output_dir = Path(output_dir_str)
             if not output_dir.exists():
                 self._send_json(400, {"error": f"output_dir does not exist: {output_dir}"})
                 return
@@ -735,15 +787,17 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 state.best_aggregate_improvement,
             )
 
-            self._send_json(200, {
-                "task_name": task_name,
+            response = {
                 "attempt": attempt,
                 "raw_scores": results,
                 "per_instance_improvement": per_instance_improvement,
                 "aggregate_improvement": aggregate_improvement,
                 "best_aggregate_improvement": state.best_aggregate_improvement,
                 "best_attempt": state.best_attempt,
-            })
+            }
+            if not token_request:
+                response["task_name"] = task_name
+            self._send_json(200, response)
 
         except Exception as e:
             logger.error("[%s] evaluation failed: %s", task_name, traceback.format_exc())
@@ -838,11 +892,20 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 logger.warning("[%s] failed to create out_dir (%s): %s", task_name, out_dir, e)
                 out_dir = None
         batch_name = body.get("batch_name")
+        eval_token = body.get("eval_token")
         force = bool(body.get("force", False))
-        primary_table, issues = self.tracker.register_task(
-            task_name, data_dir, timeout=timeout, out_dir=out_dir,
-            batch_name=batch_name, force=force,
-        )
+        try:
+            primary_table, issues = self.tracker.register_task(
+                task_name, data_dir, timeout=timeout, out_dir=out_dir,
+                batch_name=batch_name, eval_token=eval_token, force=force,
+            )
+        except ValueError as e:
+            self._send_json(409, {
+                "status": "error",
+                "error_code": "eval_token_conflict",
+                "error": str(e),
+            })
+            return
         for msg in issues:
             logger.warning("[%s] METADATA: %s", task_name, msg)
         if not primary_table:

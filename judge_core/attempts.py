@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from functools import lru_cache
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -14,6 +15,48 @@ from judge_core.policy import (
 )
 from judge_core.sources import clip_text_bytes, read_clip
 from judge_core.trace import normalize_trace_timestamp
+
+
+SOURCE_PAPER_INDEX_PATH = (
+    Path(__file__).resolve().parent.parent / "judge_source_papers.jsonl"
+)
+
+
+@lru_cache(maxsize=1)
+def _load_source_paper_index() -> Dict[str, Dict[str, str]]:
+    """Load the bundled source-paper identifiers used only by the judge."""
+    try:
+        lines = SOURCE_PAPER_INDEX_PATH.read_text(
+            encoding="utf-8",
+            errors="replace",
+        ).splitlines()
+    except OSError:
+        return {}
+
+    index: Dict[str, Dict[str, str]] = {}
+    for line in lines:
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(record, dict):
+            continue
+        case_id = record.get("case_id")
+        title = record.get("paper_title")
+        doi = record.get("paper_doi")
+        if not all(isinstance(value, str) and value.strip() for value in (case_id, title, doi)):
+            continue
+        index[case_id.strip()] = {
+            "title": title.strip(),
+            "doi": doi.strip(),
+        }
+    return index
+
+
+def collect_source_paper_context(task_name: str) -> Dict[str, str]:
+    """Return judge-only source-paper title and DOI for one benchmark task."""
+    context = _load_source_paper_index().get(task_name)
+    return dict(context) if context is not None else {}
 
 
 def collect_attempt_context(
@@ -314,6 +357,16 @@ def collect_task_context(task_problem_dir: Path) -> Dict[str, str]:
 def build_user_prompt_with_context(inputs: Dict[str, Any]) -> str:
     """Format task definition, score attempt, supplementary source, and trace."""
     parts: List[str] = []
+    source_paper = inputs.get("source_paper_context", {})
+    source_title = source_paper.get("title")
+    source_doi = source_paper.get("doi")
+    if source_title and source_doi:
+        parts.append(
+            "## Withheld source paper\n\n"
+            f"Title: {source_title}\n"
+            f"DOI: {source_doi}\n"
+        )
+
     context = inputs.get("task_context", {})
     parts.append("## Task specification (problem/README.md)\n")
     if context.get("readme"):

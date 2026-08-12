@@ -22,6 +22,7 @@ import os
 import platform
 import queue
 import re
+import secrets
 import shlex
 import shutil
 import subprocess
@@ -596,6 +597,56 @@ def _has_prior_state(task_out_dir: Path) -> bool:
         if (task_out_dir / name).exists():
             return True
     return False
+
+
+def _load_or_create_eval_token(task_out_dir: Path) -> str:
+    """Return the stable opaque token used by this task's agent session."""
+    task_out_dir.mkdir(parents=True, exist_ok=True)
+    token_path = task_out_dir / "eval_token.txt"
+    if token_path.exists():
+        token = token_path.read_text(encoding="utf-8").strip()
+        if token:
+            return token
+
+    return _replace_eval_token(task_out_dir)
+
+
+def _replace_eval_token(task_out_dir: Path) -> str:
+    """Generate and atomically persist a new opaque evaluation token."""
+    task_out_dir.mkdir(parents=True, exist_ok=True)
+    token_path = task_out_dir / "eval_token.txt"
+    token = secrets.token_urlsafe(32)
+    tmp_path = task_out_dir / ".eval_token.txt.tmp"
+    tmp_path.write_text(token + "\n", encoding="utf-8")
+    tmp_path.replace(token_path)
+    return token
+
+
+def _build_resume_eval_notice(
+    eval_service_url: str,
+    eval_token: str,
+    *,
+    include_submit: bool = False,
+) -> str:
+    """Provide resumed agents with the current opaque evaluation protocol."""
+    submit = ""
+    if include_submit:
+        submit = (
+            f'\nSubmit the most recent evaluation with:\n'
+            f'curl -s -X POST {eval_service_url}/submit '
+            f'-H "Content-Type: application/json" '
+            f'-d \'{{"eval_token":"{eval_token}"}}\'\n'
+        )
+    return (
+        "\n\n[EVALUATION ACCESS]\n"
+        f'Check service health: curl -s "{eval_service_url}/health"\n'
+        f'Evaluate with: curl -s -X POST {eval_service_url}/evaluate '
+        f'-H "Content-Type: application/json" '
+        f'-d \'{{"eval_token":"{eval_token}"}}\'\n'
+        f'Check best score: curl -s "{eval_service_url}/best_score?eval_token={eval_token}"\n'
+        f'Check remaining time: curl -s "{eval_service_url}/time_remaining?eval_token={eval_token}"\n'
+        f"{submit}"
+    )
 
 
 def _archive_prior_state_for_force_fresh(task_out_dir: Path, task_name: str) -> None:
@@ -1348,6 +1399,11 @@ def _monitor_and_kill(
             logger.debug("[%s] Monitor poll failed: %s", task_name, e)
 
 
+def _select_eval_batch_name(use_external_eval: bool, out_dir: Path) -> Optional[str]:
+    """Use a named namespace externally and ScoreTracker.DEFAULT_BATCH internally."""
+    return out_dir.name if use_external_eval else None
+
+
 def _run_single_task(
     task_name: str,
     data_dir: Path,
@@ -1363,6 +1419,8 @@ def _run_single_task(
     base_image: str = "naturebench-base:v3",
     dockerfile_name: str = "Dockerfile.v3",
     *,
+    eval_token: str,
+    eval_batch_name: Optional[str] = None,
     is_resume: bool = False,
     setup_timeout: int = 14400,
     codex_auth_dir: Optional[Path] = None,
@@ -1479,13 +1537,10 @@ def _run_single_task(
             logger.debug("[%s] codex device-auth state ready at %s", task_name, task_codex_state_dir)
 
         # 2. Build agent prompt
-        eval_output_dir = str(output_dir.resolve())  # Host path for eval service
         time_limit_minutes = max(1, timeout // 60)
         task_info = {
-            "task_name": task_name,
-            "batch_name": out_dir.name,
             "eval_service_url": eval_service_url,
-            "eval_output_dir": eval_output_dir,
+            "eval_token": eval_token,
             "time_limit_minutes": time_limit_minutes,
         }
 
@@ -1504,7 +1559,7 @@ def _run_single_task(
             task_out_dir=task_out_dir,
             workspace_dir=workspace_dir,
             eval_service_url=eval_service_url,
-            eval_output_dir=eval_output_dir,
+            eval_token=eval_token,
             time_limit_minutes=time_limit_minutes,
             is_resume=is_resume,
             session_id=(claude_session_id if claude_session_id is not None else gemini_session_id),
@@ -1514,6 +1569,11 @@ def _run_single_task(
             codex_state_active=(task_codex_state_dir is not None),
         )
         agent_ctx.system_prompt = adapter.system_prompt(agent_ctx)
+        if is_resume:
+            agent_ctx.system_prompt += _build_resume_eval_notice(
+                eval_service_url,
+                eval_token,
+            )
         system_prompt = agent_ctx.system_prompt
         agent_cmd = adapter.build_command(agent_ctx)
 
@@ -1791,9 +1851,9 @@ def _run_single_task(
             # Notify external eval service so /time_remaining works.
             # Resume runs continue the existing timer; fresh runs (re)start it.
             if is_resume:
-                _notify_timer_resume(eval_service_url, task_name, batch_name=out_dir.name)
+                _notify_timer_resume(eval_service_url, task_name, batch_name=eval_batch_name)
             else:
-                _notify_timer_start_from_url(eval_service_url, task_name, batch_name=out_dir.name)
+                _notify_timer_start_from_url(eval_service_url, task_name, batch_name=eval_batch_name)
 
             # Phase 4: Run agent inside the container (with timeout via monitor thread)
             agent_cmd_str = " ".join(shlex.quote(a) for a in agent_cmd)
@@ -1813,7 +1873,7 @@ def _run_single_task(
                     target=_monitor_and_kill,
                     args=(proc, task_name, container_name,
                           eval_service_url, timeout),
-                    kwargs={"stop_reason": stop_reason, "batch_name": out_dir.name},
+                    kwargs={"stop_reason": stop_reason, "batch_name": eval_batch_name},
                     daemon=True,
                 )
                 monitor.start()
@@ -1868,9 +1928,9 @@ def _run_single_task(
             # Notify external eval service. Resume runs continue the existing
             # timer; fresh runs (re)start it.
             if is_resume:
-                _notify_timer_resume(eval_service_url, task_name, batch_name=out_dir.name)
+                _notify_timer_resume(eval_service_url, task_name, batch_name=eval_batch_name)
             else:
-                _notify_timer_start_from_url(eval_service_url, task_name, batch_name=out_dir.name)
+                _notify_timer_start_from_url(eval_service_url, task_name, batch_name=eval_batch_name)
 
             with open(log_path, "w", encoding="utf-8") as f_out, \
                  open(err_path, "w", encoding="utf-8") as f_err:
@@ -1884,7 +1944,7 @@ def _run_single_task(
                     target=_monitor_and_kill,
                     args=(proc, task_name, container_name,
                           eval_service_url, timeout),
-                    kwargs={"stop_reason": stop_reason, "batch_name": out_dir.name},
+                    kwargs={"stop_reason": stop_reason, "batch_name": eval_batch_name},
                     daemon=True,
                 )
                 monitor.start()
@@ -1983,7 +2043,7 @@ def _run_single_task(
     _wait_eval_drain(
         eval_service_url,
         task_name,
-        batch_name=out_dir.name,
+        batch_name=eval_batch_name,
         poll_interval=2.0,
     )
 
@@ -1994,7 +2054,7 @@ def _run_single_task(
     # timer is already paused, the call is rejected/no-op safely. We do not
     # gate this on the per-task status because the eval-analysis taxonomy
     # allows even `success` cases (D/F) to be resumed later by user choice.
-    _notify_timer_pause(eval_service_url, task_name, batch_name=out_dir.name)
+    _notify_timer_pause(eval_service_url, task_name, batch_name=eval_batch_name)
 
     this_run_duration = time.time() - task_start
 
@@ -2031,7 +2091,8 @@ def _build_summary(
     total_duration: float,
 ) -> Dict[str, Any]:
     """Build a summary combining task results with eval service scores."""
-    all_scores = score_tracker.all_results()
+    all_scores_by_batch = score_tracker.all_results()
+    all_scores = all_scores_by_batch.get(ScoreTracker.DEFAULT_BATCH, {})
 
     # Merge scores into results (don't overwrite values already set by external fetch)
     for r in results:
@@ -2097,6 +2158,7 @@ def _register_task_with_service(
     port: int, task_name: str, data_dir: str, timeout: int,
     out_dir: Optional[str] = None,
     batch_name: Optional[str] = None,
+    eval_token: Optional[str] = None,
     force: bool = False,
 ) -> Tuple[str, Optional[Dict[str, Any]]]:
     """Register a task with an external eval service via POST /register.
@@ -2116,6 +2178,8 @@ def _register_task_with_service(
         payload_dict["out_dir"] = out_dir
     if batch_name:
         payload_dict["batch_name"] = batch_name
+    if eval_token:
+        payload_dict["eval_token"] = eval_token
     if force:
         payload_dict["force"] = True
     payload = json.dumps(payload_dict).encode("utf-8")
@@ -2137,6 +2201,49 @@ def _register_task_with_service(
         logger.error("Failed to register %s with eval service at port %d: %s",
                      task_name, port, e)
         return ("error", None)
+
+
+def _register_task_with_token_retry(
+    port: int,
+    task_name: str,
+    data_dir: str,
+    timeout: int,
+    *,
+    task_out_dir: Path,
+    out_dir: Optional[str] = None,
+    batch_name: Optional[str] = None,
+    eval_token: str,
+    force: bool = False,
+    max_attempts: int = 5,
+) -> Tuple[str, Optional[Dict[str, Any]], str]:
+    """Register a task, replacing only tokens rejected as cross-task collisions."""
+    current_token = eval_token
+    for attempt in range(1, max_attempts + 1):
+        status, payload = _register_task_with_service(
+            port,
+            task_name,
+            data_dir,
+            timeout,
+            out_dir=out_dir,
+            batch_name=batch_name,
+            eval_token=current_token,
+            force=force,
+        )
+        if (payload or {}).get("error_code") != "eval_token_conflict":
+            return status, payload, current_token
+        if attempt == max_attempts:
+            logger.error(
+                "[%s] Evaluation token still conflicts after %d registration attempts",
+                task_name,
+                max_attempts,
+            )
+            return status, payload, current_token
+        current_token = _replace_eval_token(task_out_dir)
+        logger.warning(
+            "[%s] Evaluation token collision; generated a replacement and retrying registration",
+            task_name,
+        )
+    return "error", None, current_token
 
 
 def _fetch_score_from_service(port: int, task_name: str,
@@ -2682,6 +2789,7 @@ def main() -> None:
     # Track tasks rejected at register time (incomplete metadata / bad sota) so
     # we can skip running the agent for them and still report them in summary.
     pre_reject: Dict[str, Dict[str, Any]] = {}
+    eval_tokens: Dict[str, str] = {}
 
     if use_external_eval:
         # External mode: register tasks with the correct eval service
@@ -2693,13 +2801,17 @@ def main() -> None:
             port = task_port_map.get(task_name, default_eval_port)
             task_out_dir = out_dir / task_name
             task_out_dir.mkdir(parents=True, exist_ok=True)
+            eval_token = _load_or_create_eval_token(task_out_dir)
             need_force = task_name in force_fresh_set
-            status, payload = _register_task_with_service(
+            status, payload, eval_token = _register_task_with_token_retry(
                 port, task_name, str(task_path), timeout,
+                task_out_dir=task_out_dir,
                 out_dir=str(task_out_dir.resolve()),
                 batch_name=out_dir.name,
+                eval_token=eval_token,
                 force=need_force,
             )
+            eval_tokens[task_name] = eval_token
             if status == "ok":
                 logger.info(
                     "[%s] Registered with eval service on port %d%s",
@@ -2708,6 +2820,7 @@ def main() -> None:
                 # Also register locally for timer tracking
                 tracker.register_task(
                     task_name, task_path, timeout=timeout, out_dir=task_out_dir,
+                    eval_token=eval_token,
                     force=need_force,
                 )
             elif status == "incomplete_metadata":
@@ -2736,8 +2849,11 @@ def main() -> None:
             if task_path.exists():
                 task_out_dir = out_dir / task_name
                 task_out_dir.mkdir(parents=True, exist_ok=True)
+                eval_token = _load_or_create_eval_token(task_out_dir)
+                eval_tokens[task_name] = eval_token
                 tbl, issues = tracker.register_task(
                     task_name, task_path, timeout=timeout, out_dir=task_out_dir,
+                    eval_token=eval_token,
                     force=task_name in force_fresh_set,
                 )
                 for msg in issues:
@@ -2759,6 +2875,8 @@ def main() -> None:
     def _get_eval_url(task_name: str) -> str:
         port = task_port_map.get(task_name, default_eval_port)
         return f"http://host.docker.internal:{port}"
+
+    eval_batch_name = _select_eval_batch_name(use_external_eval, out_dir)
 
     # --- Run tasks ---
     total_start = time.time()
@@ -2843,6 +2961,8 @@ def main() -> None:
                     skip_build=skip_build,
                     base_image=base_image,
                     dockerfile_name=dockerfile_name,
+                    eval_token=eval_tokens[task_name],
+                    eval_batch_name=eval_batch_name,
                     is_resume=is_resume,
                     setup_timeout=setup_timeout,
                     codex_auth_dir=codex_auth_dir,
@@ -2873,6 +2993,8 @@ def main() -> None:
                         skip_build,
                         base_image,
                         dockerfile_name,
+                        eval_token=eval_tokens[task_name],
+                        eval_batch_name=eval_batch_name,
                         is_resume=_decide_resume(task_name),
                         setup_timeout=setup_timeout,
                         codex_auth_dir=codex_auth_dir,

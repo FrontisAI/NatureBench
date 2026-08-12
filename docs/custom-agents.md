@@ -29,24 +29,42 @@ Inside the task container the agent is given:
   per instance.
 - `EVAL_SERVICE_URL` — base URL of the host-side eval service.
 
-To get a score, the agent submits its output directory:
+NatureBench provides each task run with a random opaque token instead of
+exposing task identifiers that could reveal the source paper. The agent
+must include this token in each evaluation service request so that the service can
+identify the corresponding task and batch. The token is supplied when the task
+run is registered with the evaluation service, before the agent starts.
 
-```bash
-curl -s -X POST "$EVAL_SERVICE_URL/evaluate" \
-  -H "Content-Type: application/json" \
-  -d '{"task_name": "<task>", "batch_name": "<batch>", "output_dir": "/workspace/output"}'
-```
+The evaluation service provides four commands for the agent:
 
-The response includes `aggregate_improvement` (the SOTA-normalized score)
-and `best_aggregate_improvement` (the highest score across all attempts).
-The agent may evaluate many times; the **best** score across all
-attempts is the final task score. Companion endpoints: `GET /health`,
-`GET /best_score`, `GET /time_remaining`.
+- Evaluate the output and record a new scoring attempt:
 
-> The agent is responsible for *calling* `/evaluate` to get a score; NatureBench is responsible
-> for *defining* the evaluation protocol above. The built-in CLIs receive these
-> instructions inside their system prompt — if you reuse the built-in prompt
-> builders, your agent gets them too.
+  ```bash
+  curl -s -X POST "$EVAL_SERVICE_URL/evaluate" \
+    -H "Content-Type: application/json" \
+    -d '{"eval_token": "<opaque-token>"}'
+  ```
+
+- Return the best score across all completed attempts:
+
+  ```bash
+  curl -s "$EVAL_SERVICE_URL/best_score?eval_token=<opaque-token>"
+  ```
+
+- Return the elapsed, remaining, and total allowed solve time:
+
+  ```bash
+  curl -s "$EVAL_SERVICE_URL/time_remaining?eval_token=<opaque-token>"
+  ```
+
+- Check whether the evaluation service is available:
+
+  ```bash
+  curl -s "$EVAL_SERVICE_URL/health"
+  ```
+
+> The built-in CLIs receive these evaluation-service instructions in their
+> prompts. A custom agent must receive the same instructions.
 
 ---
 
@@ -98,12 +116,10 @@ class MyAgentAdapter(AgentAdapter):
     def system_prompt(self, ctx: AgentRunContext) -> str:
         # Reuse the standard task prompt (includes the eval protocol), or build
         # your own (it must write run.py / output and submit to $EVAL_SERVICE_URL/evaluate).
-        # ctx carries task_name, eval_service_url, eval_output_dir, etc.
+        # ctx carries the opaque eval token and the service URL.
         return ClaudeAgent(model_name=ctx.model, mode=ctx.mode).build_system_prompt({
-            "task_name": ctx.task_name,
-            "batch_name": ctx.batch_name,
             "eval_service_url": ctx.eval_service_url,
-            "eval_output_dir": ctx.eval_output_dir,
+            "eval_token": ctx.eval_token,
             "time_limit_minutes": ctx.time_limit_minutes,
         })
 
@@ -177,4 +193,3 @@ when available, its solve/iteration history. Two hooks control this:
   its output to `MAX_LOG_EXCERPT_BYTES` (2,000,000 UTF-8 bytes) before adding it
   to the judge prompt. Parsers may use `max_bytes` for format-aware selection,
   but the framework enforces the final hard limit.
-
