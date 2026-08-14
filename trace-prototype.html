@@ -161,7 +161,11 @@
 
     .run-summary {
       position: sticky;
-      top: 72px;
+      top: 108px;
+      max-height: calc(100vh - 130px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
       padding: 18px 20px;
     }
 
@@ -177,6 +181,20 @@
 
     .back-link:hover {
       color: var(--trace-text);
+    }
+
+    .trace-page-back {
+      position: sticky;
+      top: 62px;
+      z-index: 19;
+      width: max-content;
+      margin-bottom: 14px;
+      padding: 6px 9px;
+      border: 1px solid var(--trace-border);
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--trace-panel) 96%, transparent);
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--trace-bg) 72%, transparent);
+      backdrop-filter: blur(8px);
     }
 
     .run-title {
@@ -263,29 +281,6 @@
       color: var(--trace-text);
       font-size: 0.7rem;
       font-weight: 700;
-      cursor: pointer;
-    }
-
-    .run-id {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      color: var(--trace-muted);
-      font-size: 0.62rem;
-      line-height: 1.35;
-      margin-top: 12px;
-      word-break: break-word;
-    }
-
-    .run-id button {
-      flex: 0 0 auto;
-      width: 24px;
-      height: 24px;
-      border: 1px solid var(--trace-border);
-      border-radius: 5px;
-      background: transparent;
-      color: var(--trace-muted);
       cursor: pointer;
     }
 
@@ -583,12 +578,14 @@
       max-height: 570px;
       overflow: auto;
       padding: 8px 0;
+      scrollbar-gutter: stable;
     }
 
     .file-row {
-      width: 100%;
+      width: max-content;
+      min-width: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: max-content auto;
       gap: 10px;
       border: 0;
       background: transparent;
@@ -606,8 +603,6 @@
     }
 
     .file-row span:first-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
@@ -681,6 +676,8 @@
 
       .run-summary {
         position: static;
+        max-height: none;
+        overflow: visible;
       }
 
       .trace-tabs {
@@ -727,6 +724,7 @@
   </header>
 
   <main class="trace-page">
+    <a class="back-link trace-page-back" href="index.html#featured-cases">← Back to case studies</a>
     <div class="trace-workspace">
       <aside class="run-summary" id="run-summary" aria-label="Run summary"></aside>
 
@@ -812,13 +810,12 @@
     }
 
     function renderSummary(item) {
-      const completeness = item.traceCompleteness || "redacted trace";
+      const capture = traceCaptureLabel(item.traceCompleteness);
       const judgeInvalid = item.judge === "invalid";
       $("run-summary").innerHTML = `
-        <a class="back-link" href="index.html#featured-cases">← Back to case studies</a>
         <section class="run-title">
           <h1>${escapeHtml(item.title)}</h1>
-          <p>${escapeHtml(item.role)} · ${escapeHtml(completeness)}</p>
+          <p>${escapeHtml(item.role)} · ${escapeHtml(capture)}</p>
         </section>
         <section class="score-block">
           <div class="score-value">${escapeHtml(formatG(item.bestG))}</div>
@@ -828,23 +825,27 @@
           <tbody>
             <tr><th>Agent</th><td>${escapeHtml(item.agent)}</td></tr>
             <tr><th>Model</th><td>${escapeHtml(item.model)}</td></tr>
-            <tr><th>Harness</th><td>${escapeHtml(item.harness)}</td></tr>
             <tr><th>Run status</th><td>${escapeHtml(item.status)}</td></tr>
             <tr><th>Judge</th><td>${escapeHtml(item.judge || "")}</td></tr>
             <tr><th>Duration</th><td>${escapeHtml(item.durationLabel)}</td></tr>
             <tr><th>Source events</th><td>${escapeHtml(item.sourceEventCount)}</td></tr>
-            <tr><th>Rendered</th><td>${escapeHtml(item.renderedEventCount)}</td></tr>
+            <tr><th>Rendered events</th><td>${escapeHtml(item.renderedEventCount)}</td></tr>
             <tr><th>Attempts</th><td>${escapeHtml(item.attempts)}</td></tr>
             <tr><th>Best attempt</th><td>${escapeHtml(item.bestAttempt ?? "")}</td></tr>
-            <tr><th>Trace</th><td>${escapeHtml(completeness)}</td></tr>
+            <tr><th>Trace capture</th><td>${escapeHtml(capture)}</td></tr>
           </tbody>
         </table>
         <button class="summary-action" type="button" data-tab-target="workspace">Browse engineering files</button>
-        <div class="run-id">
-          <span>${escapeHtml(item.key)}</span>
-          <button type="button" aria-label="Copy run id" data-copy="${escapeHtml(item.sessionId)}">⧉</button>
-        </div>
       `;
+    }
+
+    function traceCaptureLabel(value) {
+      const labels = {
+        "complete": "Full run captured",
+        "near-complete": "Nearly full run captured",
+        "timeout trace": "Captured until timeout",
+      };
+      return labels[value] || "Partial trace captured";
     }
 
     function eventMarkup(event, index) {
@@ -881,9 +882,10 @@
     }
 
     function renderTracePane(item) {
+      const capture = traceCaptureLabel(item.traceCompleteness);
       $("pane-trace").innerHTML = `
         <div class="timeline-toolbar">
-          <span>${escapeHtml(item.renderedEventCount)} rendered events · ${escapeHtml(item.sourceEventCount)} source records · ${escapeHtml(item.traceCompleteness)}</span>
+          <span>${escapeHtml(item.renderedEventCount)} rendered events · ${escapeHtml(item.sourceEventCount)} source events · ${escapeHtml(capture)}</span>
         </div>
         <div class="timeline" id="timeline">
           ${item.events.map(eventMarkup).join("")}
@@ -935,7 +937,7 @@
             <h2>g by attempt</h2>
             <p class="trace-copy">${judgeInvalid
               ? "The line shows raw evaluator aggregate_improvement. The run was judged invalid, so these values are diagnostic only."
-              : "The line uses evaluator aggregate_improvement, the same normalized gap g used by the leaderboard. g = 0 is paper SOTA; g > 0.1 is Surpass-SOTA."}</p>
+              : "The line uses evaluator aggregate_improvement, the same normalized gap g used by the leaderboard. g = 0 is Match-SOTA; g > 0.1 is Surpass-SOTA."}</p>
             <div class="chart-box" id="main-chart"></div>
           </div>
           <div class="metrics-panel">
@@ -980,7 +982,7 @@
       target.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="g by attempt">
         ${compact ? "" : [-0.4, -0.2, 0, 0.1].map((tick) => `<line x1="${left}" x2="${width - right}" y1="${y(tick).toFixed(1)}" y2="${y(tick).toFixed(1)}" stroke="var(--trace-border)" stroke-width="1"></line><text x="${left - 12}" y="${(y(tick) + 4).toFixed(1)}" text-anchor="end" fill="var(--trace-muted)" font-size="11" font-weight="800">${tick.toFixed(1)}</text>`).join("")}
         <line x1="${left}" x2="${width - right}" y1="${y(0.1).toFixed(1)}" y2="${y(0.1).toFixed(1)}" stroke="var(--trace-warn)" stroke-width="${compact ? 1.2 : 2}" stroke-dasharray="7 7"></line>
-        ${compact ? "" : `<line x1="${left}" x2="${width - right}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--trace-accent)" stroke-width="2" stroke-dasharray="7 7"></line><text x="${width - right - 6}" y="${(y(0.1) - 7).toFixed(1)}" text-anchor="end" fill="var(--trace-warn)" font-size="11" font-weight="800">Surpass-SOTA g&gt;0.1</text><text x="${width - right - 6}" y="${(y(0) - 7).toFixed(1)}" text-anchor="end" fill="var(--trace-accent)" font-size="11" font-weight="800">paper SOTA g=0</text>`}
+        ${compact ? "" : `<line x1="${left}" x2="${width - right}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--trace-accent)" stroke-width="2" stroke-dasharray="7 7"></line><text x="${width - right - 6}" y="${(y(0.1) - 7).toFixed(1)}" text-anchor="end" fill="var(--trace-warn)" font-size="11" font-weight="800">Surpass-SOTA g&gt;0.1</text><text x="${width - right - 6}" y="${(y(0) - 7).toFixed(1)}" text-anchor="end" fill="var(--trace-accent)" font-size="11" font-weight="800">Match-SOTA g=0</text>`}
         <path d="${area}" fill="var(--trace-accent-soft)"></path>
         <path d="${path}" fill="none" stroke="var(--trace-accent)" stroke-width="${compact ? 3 : 4}" stroke-linecap="round" stroke-linejoin="round"></path>
         ${compact ? "" : metricMilestones(points).map((point) => `<circle cx="${x(Number(point.attempt)).toFixed(1)}" cy="${y(Number(point.g)).toFixed(1)}" r="4.8" fill="var(--trace-bg)" stroke="var(--trace-accent)" stroke-width="2.5"></circle><text x="${x(Number(point.attempt)).toFixed(1)}" y="${(y(Number(point.g)) - 12).toFixed(1)}" text-anchor="middle" fill="var(--trace-text)" font-size="11" font-weight="800">${formatG(point.g)}</text>`).join("")}
@@ -989,11 +991,6 @@
 
     function bindDynamicControls() {
       document.querySelectorAll("[data-tab-target]").forEach((button) => button.addEventListener("click", () => switchTab(button.dataset.tabTarget)));
-      document.querySelectorAll("[data-copy]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          try { await navigator.clipboard.writeText(button.dataset.copy || ""); } catch (_) {}
-        });
-      });
     }
 
     function renderPage() {

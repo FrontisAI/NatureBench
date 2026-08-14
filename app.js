@@ -91,7 +91,7 @@
       model: "GPT-5.5",
       domain: "Genomics & Gene Regulation",
       status: "judge-invalid",
-      metric: "MCC x 18 tasks; Pearson for DeepSTARR",
+      metric: "MCC x 18 instances; Pearson x DeepSTARR instance",
       bestG: "-0.14087",
       scoreLabel: "Best raw g · invalid",
       attempts: "258",
@@ -129,7 +129,7 @@
       metric: "Top-1 exact match on USPTO-480k",
       bestG: "-0.35540",
       attempts: "2",
-      runtime: "4.03h",
+      runtime: "4.04h",
       task: "Predict major product SMILES for atom-mapped organic reactions.",
       route: "The agent implemented a seq2seq reaction model with tokenizer, vocabulary, dataset loader, transformer training, checkpoint averaging and batched beam search.",
       paper: "Paper route: LocalTransform models local reaction centers and bond changes; Top-1 exact-match accuracy is 0.908.",
@@ -159,6 +159,7 @@
     caseDomain: "all",
     caseSearch: "",
     selectedCaseId: "",
+    caseLookupDismissed: false,
     featuredCase: "cancer-gene",
   };
 
@@ -262,7 +263,7 @@
 
   function configurationPopoverMarkup(configuration) {
     const computeLink = configuration.computeUrl
-      ? ` <a href="${escapeHtml(configuration.computeUrl)}" target="_blank" rel="noopener">Task lists ↗</a>`
+      ? ` <a href="${escapeHtml(configuration.computeUrl)}" target="_blank" rel="noopener">Task lists by compute ↗</a>`
       : "";
     return `
       <div class="configuration-popover-head">
@@ -579,7 +580,7 @@
       <div class="panel-head numeric-board-head">
         <div>
           <h3 id="numeric-leaderboard-title">Main Leaderboard</h3>
-          <p>Ranked by Surpass-SOTA</p>
+          <p>Ranked by <span class="rank-metric-label">Surpass-SOTA</span> · Click the <span class="inline-info" aria-hidden="true">i</span> beside a model to view its evaluation setup.</p>
         </div>
       </div>
       <div class="numeric-board-wrap" role="region" aria-label="Scrollable Main Leaderboard" tabindex="0">
@@ -590,7 +591,7 @@
               <th>Model</th>
               <th>Agent</th>
               <th>Run source</th>
-              <th>Surpass-SOTA</th>
+              <th><span class="rank-metric-label">Surpass-SOTA</span></th>
               <th>Match-SOTA</th>
               <th>Median g (all)</th>
               <th>CR</th>
@@ -603,8 +604,8 @@
             const crClass = row.completionRate < 80 ? "warn" : "";
             const invalidClass = row.invalid > 15 ? "warn" : "";
             return `
-              <tr>
-                <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
+              <tr class="${index < 3 ? `top-rank top-rank-${index + 1}` : ""}">
+                <td><span class="rank-badge ${index < 3 ? `rank-${index + 1}` : "rank-other"}">${index + 1}</span></td>
                 <td>
                   <div class="model-cell">
                     ${modelLogoMarkup(row.name)}
@@ -614,7 +615,7 @@
                 </td>
                 <td><span class="agent-name ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</span></td>
                 <td>${runSourceMarkup(row)}</td>
-                <td><span class="pill good numeric-primary">${formatPercent(row.surpassSota)}</span></td>
+                <td><span class="pill good numeric-primary ${index < 3 ? `rank-metric-${index + 1}` : ""}">${formatPercent(row.surpassSota)}</span></td>
                 <td>${formatPercent(row.matchSota)}</td>
                 <td>${formatScore(row.medianAll)}</td>
                 <td><span class="pill ${crClass}">${formatPercent(row.completionRate)}</span></td>
@@ -686,7 +687,13 @@
   function renderDistribution() {
     const rows = data.distributions;
     const chart = $("distribution-chart");
-    chart.innerHTML = rows.map((row) => {
+    chart.innerHTML = `
+      <div class="distribution-header" aria-hidden="true">
+        <span>Configuration</span>
+        <span>Task distribution</span>
+        <span>Surpass-SOTA</span>
+      </div>
+      ${rows.map((row) => {
       const surpass = data.leaderboard.find((item) => item.name === row.name)?.surpassSota ?? 0;
       return `
         <div class="distribution-row">
@@ -694,14 +701,22 @@
             ${modelAgentMarkup(row.name, { logo: true })}
           </div>
           <div class="stacked-bar" aria-label="${escapeHtml(row.name)} score distribution">
-            ${row.bins.map((bin, index) => `
-              <div class="segment ${binClasses[index]}" style="width:${bin.percent}%" title="${escapeHtml(bin.label)}: ${bin.count} (${bin.percent}%)"></div>
+            ${row.bins.map((bin, index) => ({ bin, index })).filter(({ bin }) => Number(bin.count) > 0 && Number(bin.percent) > 0).map(({ bin, index }) => `
+              <div
+                class="segment ${binClasses[index]}"
+                style="--bin-count:${bin.count}"
+                tabindex="0"
+                data-bin-label="${escapeHtml(bin.label)}"
+                data-bin-count="${bin.count}"
+                data-bin-percent="${bin.percent}"
+                aria-label="${escapeHtml(bin.label)}: ${bin.count} of ${data.benchmark.taskCount} tasks (${bin.percent}%)"
+              ></div>
             `).join("")}
           </div>
-          <div class="bar-value">${formatPercent(surpass)}</div>
+          <div class="bar-value distribution-metric-value"><span class="mobile-metric-label">Surpass-SOTA: </span>${formatPercent(surpass)}</div>
         </div>
       `;
-    }).join("");
+    }).join("")}`;
 
     const labels = rows[0]?.bins || [];
     $("distribution-legend").innerHTML = labels.map((bin, index) => `
@@ -710,6 +725,52 @@
       </span>
     `).join("");
     bindLogoFallbacks(chart);
+    bindDistributionTooltips(chart);
+  }
+
+  function ensureDistributionTooltip() {
+    let tooltip = $("distribution-tooltip");
+    if (tooltip) return tooltip;
+    tooltip = document.createElement("aside");
+    tooltip.id = "distribution-tooltip";
+    tooltip.className = "distribution-tooltip";
+    tooltip.hidden = true;
+    document.body.appendChild(tooltip);
+    return tooltip;
+  }
+
+  function showDistributionTooltip(segment, clientX, clientY) {
+    const tooltip = ensureDistributionTooltip();
+    tooltip.style.setProperty("--tooltip-bin-color", getComputedStyle(segment).backgroundColor);
+    tooltip.innerHTML = `
+      <strong>${escapeHtml(segment.dataset.binLabel)}:</strong>
+      <span><b>${escapeHtml(segment.dataset.binCount)}</b> (<b>${escapeHtml(segment.dataset.binPercent)}%</b>)</span>
+    `;
+    tooltip.hidden = false;
+    const rect = tooltip.getBoundingClientRect();
+    const margin = 12;
+    const left = clamp(clientX + 14, margin, window.innerWidth - rect.width - margin);
+    const top = clientY - rect.height - 12 < margin ? clientY + 14 : clientY - rect.height - 12;
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${clamp(top, margin, window.innerHeight - rect.height - margin)}px`;
+  }
+
+  function hideDistributionTooltip() {
+    const tooltip = $("distribution-tooltip");
+    if (tooltip) tooltip.hidden = true;
+  }
+
+  function bindDistributionTooltips(chart) {
+    chart.querySelectorAll(".segment").forEach((segment) => {
+      segment.addEventListener("pointerenter", (event) => showDistributionTooltip(segment, event.clientX, event.clientY));
+      segment.addEventListener("pointermove", (event) => showDistributionTooltip(segment, event.clientX, event.clientY));
+      segment.addEventListener("pointerleave", hideDistributionTooltip);
+      segment.addEventListener("focus", () => {
+        const rect = segment.getBoundingClientRect();
+        showDistributionTooltip(segment, rect.left + rect.width / 2, rect.top);
+      });
+      segment.addEventListener("blur", hideDistributionTooltip);
+    });
   }
 
   function renderDomainGrid() {
@@ -749,13 +810,16 @@
     const domain = data.domains.find((item) => item.domain === state.selectedDomain) || data.domains[0];
     if (!domain) return;
     $("domain-chart-title").textContent = domain.domain;
-    $("domain-chart-subtitle").textContent = `N=${domain.n} tasks · Surpass-SOTA rate · Fixed 0-${domainBarScaleMax}% scale`;
+    $("domain-chart-subtitle").textContent = `N=${domain.n} tasks · Surpass-SOTA rate`;
 
     const chart = $("domain-chart");
     chart.innerHTML = `
-      <div class="domain-scale-note">Surpass-SOTA rate, fixed 0-${domainBarScaleMax}% scale</div>
-      <div class="domain-scale-axis" aria-hidden="true">
-        ${[0, 10, 20, 30, 40, 50].map((tick) => `<span>${tick}</span>`).join("")}
+      <div class="domain-chart-header">
+        <span aria-hidden="true"></span>
+        <div class="domain-scale-axis" aria-label="Surpass-SOTA scale from 0 to ${domainBarScaleMax} percent">
+          ${[0, 10, 20, 30, 40, 50].map((tick) => `<span style="--tick-position:${tick / domainBarScaleMax * 100}%">${tick}</span>`).join("")}
+        </div>
+        <span class="domain-value-label">Surpass-SOTA</span>
       </div>
       ${domain.models.map((row, index) => {
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
@@ -768,7 +832,7 @@
             <div class="bar-track" aria-hidden="true">
               <div class="bar-fill" style="--w:${width}%"></div>
             </div>
-            <div class="bar-value">${formatPercent(row.surpassSota)}</div>
+            <div class="bar-value"><span class="mobile-metric-label">Surpass-SOTA: </span>${formatPercent(row.surpassSota)}</div>
           </div>
         `;
       }).join("")}
@@ -791,7 +855,7 @@
       </span>
       <span class="legend-item">
         <span class="legend-swatch" style="background: rgba(127, 139, 134, 0.14);"></span>
-        gray/white: below SOTA, <code>g &lt; 0</code>
+        gray/white: below SOTA, <code>g &lt; 0</code> (darker = farther below)
       </span>
       <span class="legend-item">
         <span class="legend-swatch" style="background: var(--warn-soft); border-color: var(--warn);"></span>
@@ -853,13 +917,17 @@
     return data.cases.filter((row) => {
       if (state.caseDomain !== "all" && row.domain !== state.caseDomain) return false;
       if (!search) return true;
+      const bestModel = row.bestModel || "";
+      const bestHarness = bestModel ? agentForModel(bestModel) : "";
       return [
         row.caseId,
         row.title,
         row.domain,
         row.mlTaskType,
-        row.taskDir,
-        row.bestModel || "",
+        bestModel,
+        bestHarness,
+        `${bestHarness} ${bestModel}`,
+        `${bestHarness} + ${bestModel}`,
       ].some((value) => String(value).toLowerCase().includes(search));
     });
   }
@@ -870,7 +938,7 @@
     const row = selected && rows.some((item) => item.caseId === selected.caseId) ? selected : exactMatch;
     const card = $("case-lookup-card");
 
-    if (!row) {
+    if (!row || state.caseLookupDismissed) {
       card.hidden = true;
       card.innerHTML = "";
       return;
@@ -878,17 +946,25 @@
 
     card.hidden = false;
     card.innerHTML = `
-      <div>
+      <div class="case-lookup-main">
         <span class="case-lookup-label">Selected task</span>
         <h4>${escapeHtml(row.title)}</h4>
-        <p>${escapeHtml(row.caseId)} · ${escapeHtml(row.domain)} · ${escapeHtml(row.mlTaskType)} · ${escapeHtml(row.taskDir)}</p>
+        <p>${escapeHtml(row.caseId)} · ${escapeHtml(row.domain)} · ${escapeHtml(row.mlTaskType)}</p>
       </div>
       <div class="case-lookup-best">
-        <span>Best configuration</span>
+        <div class="case-lookup-best-heading">
+          <button class="case-lookup-close" type="button" aria-label="Close selected task" title="Close selected task">×</button>
+          <span>Best configuration</span>
+        </div>
         <strong>${row.bestModel ? escapeHtml(row.bestModel) : ""}</strong>
         <small>${row.bestModel ? `<span class="agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span> · g ${formatScore(row.bestScore)}` : ""}</small>
       </div>
     `;
+    card.querySelector(".case-lookup-close").addEventListener("click", () => {
+      state.selectedCaseId = "";
+      state.caseLookupDismissed = true;
+      renderCaseTable();
+    });
   }
 
   function renderCaseTable() {
@@ -896,14 +972,16 @@
       <tr>
         <th>Task Name</th>
         <th>Domain</th>
-        <th>Task</th>
+        <th>ML task type</th>
         <th>Best</th>
         ${modelOrder.map((model) => `<th>${modelAgentMarkup(model)}</th>`).join("")}
       </tr>
     `;
 
     const rows = filterCases();
-    $("case-count").textContent = `${rows.length} visible of ${data.cases.length} tasks`;
+    $("case-count").textContent = rows.length === data.cases.length
+      ? `All ${data.cases.length} tasks`
+      : `${rows.length} of ${data.cases.length} tasks`;
     renderCaseLookup(rows);
 
     if (!rows.length) {
@@ -919,7 +997,7 @@
       <tr class="case-row ${row.caseId === state.selectedCaseId ? "selected" : ""}" data-case-id="${escapeHtml(row.caseId)}" tabindex="0" aria-label="${escapeHtml(row.title)}">
         <td>
           <div class="case-title" title="${escapeHtml(row.title)}">${escapeHtml(row.title)}</div>
-          <div class="case-meta">${escapeHtml(row.domain)}</div>
+          <div class="case-meta">Case ID (DOI suffix): ${escapeHtml(row.caseId)}</div>
         </td>
         <td>${escapeHtml(row.domain)}</td>
         <td>${escapeHtml(row.mlTaskType)}</td>
@@ -945,6 +1023,7 @@
     document.querySelectorAll(".case-row").forEach((rowElement) => {
       const selectCase = () => {
         state.selectedCaseId = rowElement.dataset.caseId;
+        state.caseLookupDismissed = false;
         renderCaseTable();
       };
       rowElement.addEventListener("click", selectCase);
@@ -1084,7 +1163,10 @@
         <div class="line-chart-head">
           <div>
             <h4>g by attempt</h4>
-            <p>${item.status.includes("invalid") ? "Raw evaluator gaps by attempt; the run was judged invalid." : "Horizontal axis is attempt; the dashed line marks Surpass-SOTA at g>0.1."}</p>
+            <p class="chart-explanation">
+              <span>Horizontal axis is attempt; the dashed line marks Surpass-SOTA at g&gt;0.1.</span>
+              ${item.status.includes("invalid") ? "<span>Raw g by attempt; the run was judged invalid.</span>" : ""}
+            </p>
           </div>
           <span>${escapeHtml(item.caseId)}</span>
         </div>
@@ -1147,11 +1229,13 @@
 
     $("case-search").addEventListener("input", (event) => {
       state.caseSearch = event.target.value;
+      state.caseLookupDismissed = false;
       renderCaseTable();
     });
 
     $("case-domain-filter").addEventListener("change", (event) => {
       state.caseDomain = event.target.value;
+      state.caseLookupDismissed = false;
       renderCaseTable();
     });
 

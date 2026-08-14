@@ -125,7 +125,7 @@
           <div class="panel-head">
             <div>
               <h3 id="numeric-leaderboard-title">Main Leaderboard</h3>
-              <p>Numeric ranking of coding-agent configurations by Surpass-SOTA.</p>
+              <p>Ranked by <span class="rank-metric-label">Surpass-SOTA</span> · Click the <span class="inline-info" aria-hidden="true">i</span> beside a model to view its evaluation setup.</p>
             </div>
           </div>
           <div class="numeric-board-wrap" role="region" aria-label="Scrollable Main Leaderboard" tabindex="0">
@@ -136,7 +136,7 @@
                   <th>Model</th>
                   <th>Agent</th>
                   <th>Run source</th>
-                  <th>Surpass-SOTA</th>
+                  <th><span class="rank-metric-label">Surpass-SOTA</span></th>
                   <th>Match-SOTA</th>
                   <th>Median g (all)</th>
                   <th>CR</th>
@@ -210,7 +210,7 @@
     <section id="domains">
       <div class="container">
         <h2 class="section-title">Domain Breakdown</h2>
-        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Domain rankings use the same Surpass-SOTA rule as the main leaderboard.</p>
+        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Within each domain, configurations are ranked by Surpass-SOTA, as on the main leaderboard.</p>
 
         <div class="domain-grid" id="domain-grid"></div>
 
@@ -274,10 +274,13 @@
               <p id="case-count"></p>
             </div>
             <div class="case-controls">
-              <label class="search-box">
-                <span>Search</span>
-                <input id="case-search" type="search" placeholder="task name, case id, domain">
-              </label>
+              <div class="case-search-control">
+                <label class="search-box">
+                  <span>Search</span>
+                  <input id="case-search" type="search" placeholder="Search case metadata" aria-describedby="case-search-help">
+                </label>
+                <small class="case-search-help" id="case-search-help">Task name · Case ID · Domain · ML task type · Best model · Best harness · Best harness + model</small>
+              </div>
               <label>
                 <span>Domain</span>
                 <select id="case-domain-filter"></select>

@@ -162,7 +162,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "claude-opus-5-aibuildai-2-5",
-      "name": "Claude Opus 5",
+      "name": "Opus 5",
       "agent": "AIBuildAI 2.5",
       "runSource": {
         "label": "AIBuildAI",
@@ -176,7 +176,7 @@ window.NATUREBENCH_DATA = {
   ],
   "leaderboard": [
     {
-      "name": "Claude Opus 5",
+      "name": "Opus 5",
       "harness": "AIBuildAI 2.5",
       "configurationId": "claude-opus-5-aibuildai-2-5",
       "invalid": 8,
@@ -347,7 +347,7 @@ window.NATUREBENCH_DATA = {
   ],
   "distributions": [
     {
-      "name": "Claude Opus 5",
+      "name": "Opus 5",
       "bins": [
         {
           "label": "No score",
@@ -871,13 +871,13 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Cellular Omics",
       "n": 31,
-      "winner": "Claude Opus 5",
+      "winner": "Opus 5",
       "winnerSurpassSota": 29.032258,
       "winnerMatchSota": 54.83871,
       "winnerMedianAll": 0.00379,
       "models": [
         {
-          "name": "Claude Opus 5",
+          "name": "Opus 5",
           "surpassSota": 29.032258
         },
         {
@@ -955,7 +955,7 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 12.5
         },
         {
-          "name": "Claude Opus 5",
+          "name": "Opus 5",
           "surpassSota": 12.5
         },
         {
@@ -1013,7 +1013,7 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 7.1429
         },
         {
-          "name": "Claude Opus 5",
+          "name": "Opus 5",
           "surpassSota": 7.142857
         },
         {
@@ -1057,13 +1057,13 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Physical Modeling",
       "n": 13,
-      "winner": "Claude Opus 5",
+      "winner": "Opus 5",
       "winnerSurpassSota": 46.153846,
       "winnerMatchSota": 61.538462,
       "winnerMedianAll": 0.028678,
       "models": [
         {
-          "name": "Claude Opus 5",
+          "name": "Opus 5",
           "surpassSota": 46.153846
         },
         {
@@ -1119,13 +1119,13 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Molecular Design",
       "n": 11,
-      "winner": "Claude Opus 5",
+      "winner": "Opus 5",
       "winnerSurpassSota": 18.181818,
       "winnerMatchSota": 36.363636,
       "winnerMedianAll": -0.131112,
       "models": [
         {
-          "name": "Claude Opus 5",
+          "name": "Opus 5",
           "surpassSota": 18.181818
         },
         {
@@ -1181,13 +1181,13 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Relational Reasoning",
       "n": 5,
-      "winner": "Claude Opus 5",
+      "winner": "Opus 5",
       "winnerSurpassSota": 20.0,
       "winnerMatchSota": 100.0,
       "winnerMedianAll": 0.058983,
       "models": [
         {
-          "name": "Claude Opus 5",
+          "name": "Opus 5",
           "surpassSota": 20.0
         },
         {
@@ -1248,7 +1248,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.094366,
       "scores": {
         "Opus 4.6": {
@@ -1299,7 +1299,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.038814
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.094366
         }
@@ -1362,7 +1362,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.151785
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.016439
         }
@@ -1374,7 +1374,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Classification",
       "taskDir": "part1",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.078587,
       "scores": {
         "Opus 4.6": {
@@ -1425,7 +1425,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.276865
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.078587
         }
@@ -1488,7 +1488,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.147208
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.161336
         }
@@ -1551,7 +1551,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.015437
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.020581
         }
@@ -1614,7 +1614,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.151442
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.103181
         }
@@ -1677,7 +1677,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.008765
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.00671
         }
@@ -1740,7 +1740,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.111928
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.131725
         }
@@ -1803,7 +1803,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.034784
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.024948
         }
@@ -1866,7 +1866,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.089299
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.489692
         }
@@ -1929,7 +1929,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.461935
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.46089
         }
@@ -1992,7 +1992,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 1.124845
         }
@@ -2055,7 +2055,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.087944
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -2118,7 +2118,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -2181,7 +2181,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.895638
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.58999
         }
@@ -2244,7 +2244,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.653319
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -2256,7 +2256,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Structure Modeling",
       "taskDir": "buggy",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": -0.071098,
       "scores": {
         "Opus 4.6": {
@@ -2307,7 +2307,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.071098
         }
@@ -2370,7 +2370,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.014164
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.00379
         }
@@ -2433,7 +2433,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.137577
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.116065
         }
@@ -2496,7 +2496,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.096451
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.23422
         }
@@ -2559,7 +2559,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -2622,7 +2622,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.15985
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.181403
         }
@@ -2685,7 +2685,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.030019
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.015784
         }
@@ -2748,7 +2748,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -2.466347
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -3.51809
         }
@@ -2811,7 +2811,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.1324
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.154775
         }
@@ -2874,7 +2874,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.087149
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.199461
         }
@@ -2886,7 +2886,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.005455,
       "scores": {
         "Opus 4.6": {
@@ -2937,7 +2937,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.133806
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.005455
         }
@@ -3000,7 +3000,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.025899
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.004441
         }
@@ -3063,7 +3063,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.135641
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.123479
         }
@@ -3126,7 +3126,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.857429
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -1.0
         }
@@ -3189,7 +3189,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.239644
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.173422
         }
@@ -3201,7 +3201,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": -0.515039,
       "scores": {
         "Opus 4.6": {
@@ -3252,7 +3252,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.515039
         }
@@ -3315,7 +3315,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.09184
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.009134
         }
@@ -3378,7 +3378,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -1
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -38.270943
         }
@@ -3390,7 +3390,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": -125.74878,
       "scores": {
         "Opus 4.6": {
@@ -3441,7 +3441,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -136.865278
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -125.74878
         }
@@ -3504,7 +3504,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.045001
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.193672
         }
@@ -3567,7 +3567,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.336501
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.601041
         }
@@ -3579,7 +3579,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "buggy",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.012456,
       "scores": {
         "Opus 4.6": {
@@ -3630,7 +3630,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.525238
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.012456
         }
@@ -3642,7 +3642,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.120953,
       "scores": {
         "Opus 4.6": {
@@ -3693,7 +3693,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.01729
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.120953
         }
@@ -3756,7 +3756,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.013571
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -3819,7 +3819,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -2.278239
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.209762
         }
@@ -3831,7 +3831,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.069302,
       "scores": {
         "Opus 4.6": {
@@ -3882,7 +3882,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.066908
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.069302
         }
@@ -3894,7 +3894,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": -0.06032,
       "scores": {
         "Opus 4.6": {
@@ -3945,7 +3945,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.075406
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.06032
         }
@@ -3957,7 +3957,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.108918,
       "scores": {
         "Opus 4.6": {
@@ -4008,7 +4008,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.108918
         }
@@ -4071,7 +4071,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.117153
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.991327
         }
@@ -4134,7 +4134,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.001238
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -2.8e-05
         }
@@ -4197,7 +4197,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.135182
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.243134
         }
@@ -4209,7 +4209,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.156884,
       "scores": {
         "Opus 4.6": {
@@ -4260,7 +4260,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.600135
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.156884
         }
@@ -4323,7 +4323,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.024795
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.018788
         }
@@ -4386,7 +4386,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.169803
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -4449,7 +4449,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.285609
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.193405
         }
@@ -4512,7 +4512,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.065084
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.038184
         }
@@ -4524,7 +4524,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Relational Reasoning",
       "mlTaskType": "Classification",
       "taskDir": "buggy",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.058983,
       "scores": {
         "Opus 4.6": {
@@ -4575,7 +4575,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.696988
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.058983
         }
@@ -4638,7 +4638,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.321796
         }
@@ -4650,7 +4650,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.114401,
       "scores": {
         "Opus 4.6": {
@@ -4701,7 +4701,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.098275
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.114401
         }
@@ -4764,7 +4764,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.018143
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.008097
         }
@@ -4827,7 +4827,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.104916
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -4890,7 +4890,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.068223
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.131112
         }
@@ -4953,7 +4953,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.066633
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.0118
         }
@@ -4965,7 +4965,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.079448,
       "scores": {
         "Opus 4.6": {
@@ -5016,7 +5016,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.011574
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.079448
         }
@@ -5079,7 +5079,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.011789
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.030922
         }
@@ -5142,7 +5142,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.012147
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.010031
         }
@@ -5205,7 +5205,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.185233
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.174783
         }
@@ -5268,7 +5268,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.050845
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "invalid",
           "value": null
         }
@@ -5331,7 +5331,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.110377
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.001044
         }
@@ -5394,7 +5394,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.510041
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.638024
         }
@@ -5457,7 +5457,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.059937
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.17364
         }
@@ -5520,7 +5520,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.001622
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.028096
         }
@@ -5583,7 +5583,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.04102
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.37848
         }
@@ -5646,7 +5646,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -2.765124
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -1.248408
         }
@@ -5709,7 +5709,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.261978
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.119209
         }
@@ -5772,7 +5772,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.996751
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.595261
         }
@@ -5784,7 +5784,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.110386,
       "scores": {
         "Opus 4.6": {
@@ -5835,7 +5835,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.051915
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.110386
         }
@@ -5898,7 +5898,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.484792
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.302791
         }
@@ -5910,7 +5910,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part1",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.219698,
       "scores": {
         "Opus 4.6": {
@@ -5961,7 +5961,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.132964
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.219698
         }
@@ -6024,7 +6024,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.006784
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.002639
         }
@@ -6036,7 +6036,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Classification",
       "taskDir": "part1",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.686906,
       "scores": {
         "Opus 4.6": {
@@ -6087,7 +6087,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.369069
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.686906
         }
@@ -6150,7 +6150,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.111179
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.010985
         }
@@ -6162,7 +6162,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Simulation/Operator Learning",
       "taskDir": "part1",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": -14.965226,
       "scores": {
         "Opus 4.6": {
@@ -6213,7 +6213,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -326.385986
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -14.965226
         }
@@ -6276,7 +6276,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -2.008525
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.122065
         }
@@ -6339,7 +6339,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.016707
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.012772
         }
@@ -6351,7 +6351,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.287536,
       "scores": {
         "Opus 4.6": {
@@ -6402,7 +6402,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.287536
         }
@@ -6465,7 +6465,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.04895
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.093389
         }
@@ -6477,7 +6477,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": 0.031848,
       "scores": {
         "Opus 4.6": {
@@ -6528,7 +6528,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.05536
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.031848
         }
@@ -6591,7 +6591,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.233499
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.028678
         }
@@ -6654,7 +6654,7 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.157199
         }
@@ -6717,7 +6717,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.139117
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.140584
         }
@@ -6780,7 +6780,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.298784
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.374034
         }
@@ -6843,7 +6843,7 @@ window.NATUREBENCH_DATA = {
           "state": "none",
           "value": null
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": 0.31485
         }
@@ -6855,7 +6855,7 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
+      "bestModel": "Opus 5",
       "bestScore": -0.063737,
       "scores": {
         "Opus 4.6": {
@@ -6906,7 +6906,7 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.556835
         },
-        "Claude Opus 5": {
+        "Opus 5": {
           "state": "valid",
           "value": -0.063737
         }
