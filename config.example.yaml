@@ -5,28 +5,29 @@ run:
   skip_download: false
   download_only: false
 
-  tasks: cpu
-  batch_name: null
-  out_dir: ./results/cpu_smoke
+  tasks: gpu_low
+  out_dir: ./results/claude_<model-name>_gpu_low
+  dry_run: false
 
   agent: claude
-  model: null
+  model: <model-name>
   mode: base
   timeout: 14400
   setup_timeout: 14400
-  max_workers: 1
+  max_workers: 4
 
   skip_build: true
   base_image: naturebench-base:v3
   dockerfile_name: Dockerfile.v3
-  ensure_base_image: false
+  ensure_base_image: true
 
+  eval_port: null
   eval_env_mapping: ./eval_env_mapping.json
-  start_eval_services: false
+  start_eval_services: true
   eval_log_dir: null
   skip_judge: false
 
-  gpu_devices: null
+  gpu_devices: 0,1,2,3
   gpu_pool_file: null
   gpu_skip_busy_mb: null
   gpu_skip_busy_util: null
@@ -35,7 +36,7 @@ run:
   shared_gpu_slots: null
   shared_gpu_pool_file: null
 
-  proxy_mode: null
+  proxy_mode: none
   proxy_bundle: null
   proxy_container: null
   proxy_network: null
@@ -51,20 +52,4 @@ run:
   force_fresh: []
   force_fresh_task_file: null
 
-solve:
-  task_set: ./task-set/cpu.txt
-  data_dir: ./data/naturebench_data/tasks
-  out_dir: ./results/cpu_smoke
-  agent: claude
-  model: null
-  mode: base
-  timeout: 14400
-  setup_timeout: 14400
-  max_workers: 1
-  skip_build: true
-  base_image: naturebench-base:v3
-  dockerfile_name: Dockerfile.v3
-
-eval_service:
-  host: 0.0.0.0
-  port: 8321
+  solve_args: []

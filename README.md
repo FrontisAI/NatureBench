@@ -63,6 +63,14 @@ The base Docker image is built automatically on the first run via `--ensure-base
 bash scripts/ensure_naturebench_base.sh
 ```
 
+The external evaluation service is started automatically via `--start-eval-services` (used in the Quick Start below). To start it manually:
+
+```bash
+bash scripts/start_eval_services.sh ./eval_env_mapping.json
+```
+
+If the service was started manually, you must still include `--eval-env-mapping` and point it to the same mapping file when you later run `run_naturebench.py`. Omit `--start-eval-services` because the service is already running.
+
 ## 🚀Quick Start
 
 Set credentials for your agent. Claude Code is shown here; for Codex, Gemini CLI, the post-hoc judge, and network proxy, see [`docs/configuration.md`](docs/configuration.md).
@@ -88,6 +96,13 @@ python run_naturebench.py \
 ```
 
 This lists only the parameters you set explicitly; options with sensible defaults are omitted (see [Quick Start defaults](docs/usage.md#quick-start-defaults) for the full list and their values). Adjust `--gpu-devices` / `--max-workers` to your hardware. When running without GPUs, omit `--gpu-devices` and any other GPU scheduling options. The complete parameter reference is in [`docs/usage.md`](docs/usage.md).
+
+You can also use a YAML configuration file. The example in [`config.example.yaml`](config.example.yaml) contains the same settings as the command above. Set `<model-name>`, adjust the GPU settings to your hardware, then run:
+
+```bash
+cp config.example.yaml config.yaml
+python run_naturebench.py
+```
 
 The built-in `--agent` options are `claude`, `codex`, and `gemini`; to run your own agent on NatureBench instead, see [`docs/custom-agents.md`](docs/custom-agents.md).
 

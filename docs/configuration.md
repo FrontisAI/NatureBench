@@ -62,6 +62,10 @@ export GOOGLE_GEMINI_BASE_URL=...
 
 This release does not provide unified mounting logic for official Gemini CLI login state. To use Gemini CLI, use the API environment variables above or extend the container-side CLI login-state handling yourself.
 
+### Network Proxy
+
+All agents default to `none`, which does not inject proxy settings into task containers. If your environment requires a proxy, select another mode explicitly. See [Network Proxy Parameters](usage.md#network-proxy-parameters) for the available modes and their parameters.
+
 ### Post-hoc Judge
 
 The post-hoc judge is configured independently from the agent CLI. Set the judge model with `JUDGE_MODEL`; `gpt-*` model IDs select the OpenAI Responses protocol, while all other model IDs select the Anthropic Messages protocol.

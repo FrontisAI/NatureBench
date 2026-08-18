@@ -74,6 +74,7 @@ If some task agents exit before completing the task, use the harness resume mech
 
 Resume continues an existing agent session. It requires:
 
+- explicitly passing the same `--out-dir` used by the original run;
 - the task directory to preserve the full previous evaluation output, plus the agent's session id and state directory;
 - the running evaluation service to still hold that task's evaluation state — so do not restart the service before resuming.
 
@@ -87,7 +88,6 @@ python run_naturebench.py \
   --agent codex \
   --model <model-name> \
   --out-dir ./results/codex_gpu_low \
-  --start-eval-services \
   --eval-env-mapping ./eval_env_mapping.json \
   --codex-auth-mode device-auth \
   --proxy-mode embedded \
@@ -131,27 +131,20 @@ The Quick Start command in the [`README`](../README.md) sets only the parameters
 | `--dockerfile-name` | `Dockerfile.v3` | Per-task Dockerfile. |
 | `--skip-judge` | off | The post-hoc validity judge runs. |
 | `--eval-log-dir` | `./eval_logs` | External evaluation service log directory. |
-| `--proxy-mode` | per agent (`host` for Claude) | Claude passes the host proxy into containers. |
+| `--proxy-mode` | `none` | Do not inject proxy settings into task containers. |
 | `--proxy-http-port` / `--proxy-socks-port` | `7890` / `7891` | Used only by `embedded` / `sidecar`. |
 
 Features that stay off unless you opt in: the cross-process GPU pool (`--gpu-pool-file`), busy-GPU avoidance (`--gpu-skip-busy-*`), the shared GPU slot pool (`--shared-gpu-*`), resume / force-fresh (`--resume-*`, `--force-fresh-*`), and Codex authentication (`--codex-auth-*`). The internal evaluation port (`--eval-port`) is unused because the Quick Start runs the external service via `--eval-env-mapping`.
 
 </details>
 
-### Configuration File
+### YAML Configuration
 
 | Parameter | Default | Usage |
 |---|---|---|
-| `--config` | Automatically uses `./config.yaml` if it exists | Optional YAML config file. Explicit CLI arguments take precedence over config values. |
+| `--config` | Automatically uses `./config.yaml` from the repository root if it exists | Use `--config <path>` to select a YAML file explicitly. Explicit CLI arguments override the corresponding YAML values. |
 
-`config.example.yaml` contains two sections:
-
-| Section | Used By | Purpose |
-|---|---|---|
-| `run:` | `run_naturebench.py` | Recommended entry-point configuration. |
-| `solve:` | `solve.py --config config.yaml` | Used only when calling the low-level evaluation orchestrator directly. |
-
-Usually you only need to edit `run:`. `run_naturebench.py` automatically calls `solve.py`. Maintain `solve:` only if you run `solve.py --config config.yaml` directly.
+[`config.example.yaml`](../config.example.yaml) provides a complete `run:` configuration equivalent to the top-level README Quick Start.
 
 If you do not want the current directory's `config.yaml` to be read automatically, delete or rename it, or override its settings with explicit CLI arguments.
 
@@ -166,15 +159,14 @@ If you do not want the current directory's `config.yaml` to be read automaticall
 | `--skip-download` | off | Use when data already exists locally; pair with `--data-dir`. |
 | `--download-only` | off | Download selected tasks only; does not start evaluation service or agent. |
 
-### Output Directory And Batch
+### Output Directory
 
 | Case | Final Output Directory | Notes |
 |---|---|---|
 | Pass `--out-dir ./results/my_run` | `./results/my_run/` | Recommended for formal runs and resume. |
-| Omit `--out-dir`, pass `--batch-name my_run` | `./results/my_run/` | `--batch-name` only participates in naming when `--out-dir` is omitted. |
-| Omit both | `./results/<agent>_<model>_<tasks>_<timestamp>/` | Automatic timestamped directory; not recommended for later resume. |
+| Omit `--out-dir` | `./results/<agent>_<model>_<tasks>_<timestamp>/` | Automatic timestamped directory; not recommended for later resume. |
 
-Each task's session, workspace, submissions, and results are written under `--out-dir/<case_id>/`. The evaluation service `batch_name` is the final output directory's last path component. For resumable formal runs, fix `--out-dir` or `--batch-name`.
+Each task's session, workspace, submissions, and results are written under `--out-dir/<case_id>/`. The evaluation service derives its batch name from the final output directory's last path component.
 
 When reusing the same `--out-dir`, tasks with prior state require an explicit choice between `--resume-tasks` and `--force-fresh`; this avoids accidental overwrites.
 
@@ -257,7 +249,7 @@ If only shared-pool tasks are run, omit `--gpu-devices` and make `--tasks` and `
 | `none` | none | Do not inject proxy variables; containers use Docker default networking directly. |
 
 - **Ports:** `--proxy-http-port` and `--proxy-socks-port` (used by `embedded` / `sidecar`) default to `7890` and `7891`.
-- **Per-agent defaults:** Codex defaults to `embedded`; others default to `host`.
+- **Default:** all agents use `none` unless another mode is selected explicitly.
 - **Override:** an explicit `--proxy-mode` overrides these defaults.
 
 For `embedded`, provide your own Clash/Mihomo bundle (not included in this repository); `--proxy-bundle` defaults to `./.clash-bundle`:
@@ -296,6 +288,7 @@ These modes follow the state-handling rules below:
 |---|---|
 | Default fresh run | Tasks with no prior state start a new agent session. |
 | Fresh meets prior state | If any task already has `result.json`, `submissions.jsonl`, agent session/state, or logs, `solve.py` errors out before any task starts and stops the whole run. |
+| Output directory | Both resume and force-fresh must explicitly pass the same `--out-dir` used by the original run. |
 | Resume eligibility | Requires complete previous task output plus the corresponding agent session and state files. |
 | `--resume-only` | Runs only tasks in the resume list; without it, the task set's other tasks are processed too. |
 | force-fresh scope | Applies only to tasks that are both in current `--tasks` and listed in `--force-fresh`; there is no `--force-fresh-only`. |

@@ -331,7 +331,7 @@ def _embedded_clash_setup_cmds() -> List[str]:
 def _probe_codex_login(
     image_tag: str,
     codex_auth_dir: Path,
-    proxy_mode: str = "host",
+    proxy_mode: str = "none",
     proxy_container: Optional[str] = None,
     proxy_network: Optional[str] = None,
     proxy_bundle: Optional[Path] = None,
@@ -1425,7 +1425,7 @@ def _run_single_task(
     setup_timeout: int = 14400,
     codex_auth_dir: Optional[Path] = None,
     codex_use_api_key: bool = False,
-    proxy_mode: str = "host",
+    proxy_mode: str = "none",
     proxy_container: Optional[str] = None,
     proxy_network: Optional[str] = None,
     proxy_bundle: Optional[Path] = None,
@@ -2154,6 +2154,29 @@ def _load_eval_env_mapping(mapping_path: str) -> Tuple[Dict[str, int], int]:
     return task_port_map, default_port
 
 
+def _check_resume_registration(
+    port: int,
+    task_name: str,
+    batch_name: str,
+) -> Tuple[bool, str]:
+    """Check that the external eval service still has the task/batch state."""
+    query = urllib.parse.urlencode({
+        "task_name": task_name,
+        "batch_name": batch_name,
+    })
+    url = f"http://localhost:{port}/time_remaining?{query}"
+    try:
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            resp.read()
+        return True, "ok"
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return False, f"not registered with eval service for batch {batch_name!r}"
+        return False, f"eval service registration check returned HTTP {e.code}"
+    except (urllib.error.URLError, OSError) as e:
+        return False, f"could not query eval service on port {port}: {e}"
+
+
 def _register_task_with_service(
     port: int, task_name: str, data_dir: str, timeout: int,
     out_dir: Optional[str] = None,
@@ -2383,12 +2406,12 @@ def main() -> None:
              "external services must already be running on the specified ports.",
     )
     parser.add_argument(
-        "--proxy-mode", default=None, choices=["host", "sidecar", "embedded", "none"],
+        "--proxy-mode", default="none", choices=["host", "sidecar", "embedded", "none"],
         help="Network proxy mode for any agent. 'host' passes host HTTP(S)/ALL/NO_PROXY "
              "environment variables into task containers; 'embedded' mounts a clash "
              "bundle and starts it inside each task container; 'sidecar' uses a shared "
              "proxy container on a Docker network; 'none' passes no proxy variables. "
-             "Defaults to 'embedded' for Codex and 'host' for Claude/Gemini.",
+             "Defaults to 'none' for all agents.",
     )
     parser.add_argument(
         "--proxy-bundle", default=None,
@@ -2641,10 +2664,8 @@ def main() -> None:
     proxy_mode_arg = getattr(args, "proxy_mode", None)
     if proxy_mode_arg:
         proxy_mode = proxy_mode_arg
-    elif agent_name == "codex":
-        proxy_mode = "embedded"
     else:
-        proxy_mode = "host"
+        proxy_mode = "none"
 
     proxy_container = getattr(args, "proxy_container", None)
     proxy_network = getattr(args, "proxy_network", None)
@@ -2755,6 +2776,39 @@ def main() -> None:
             f"(examples: {sample}). Re-run with --resume-tasks <names> to "
             f"continue them, or --force-fresh <names> to discard prior state "
             f"and start over."
+        )
+
+    # Validate every resume request before any eval-service registration or
+    # Docker launch. In external mode, POST /register would otherwise recreate
+    # missing task state after an eval-service restart and make an invalid
+    # resume look eligible.
+    resume_errors: List[str] = []
+    for tn in tasks:
+        if tn not in resume_set:
+            continue
+        ok, reason = _resume_eligible(out_dir / tn, agent_name)
+        if not ok:
+            resume_errors.append(f"[{tn}] {reason}")
+            continue
+        if not use_external_eval:
+            resume_errors.append(
+                f"[{tn}] no persistent external eval service is configured"
+            )
+            continue
+        port = task_port_map.get(tn, default_eval_port)
+        ok, reason = _check_resume_registration(port, tn, out_dir.name)
+        if not ok:
+            resume_errors.append(f"[{tn}] {reason}")
+    if resume_errors:
+        details = "\n  - ".join(resume_errors)
+        raise RuntimeError(
+            f"{len(resume_errors)} resume task(s) not eligible before startup:\n"
+            f"  - {details}"
+        )
+    if resume_set:
+        logger.info(
+            "Resume preflight passed for %d task(s)",
+            sum(1 for tn in tasks if tn in resume_set),
         )
 
     # --- Apply --force-fresh archival before any registration / docker run ---

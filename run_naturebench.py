@@ -189,7 +189,6 @@ def main() -> None:
             "--task-set internally."
         ),
     )
-    run.add_argument("--batch-name", default=None, help="Used to derive --out-dir when --out-dir is omitted.")
     run.add_argument("--out-dir", default=None)
     run.add_argument("--dry-run", action="store_true", help="Print commands without running them.")
 
@@ -243,7 +242,7 @@ def main() -> None:
     resume.add_argument("--force-fresh-task-file", default=None)
 
     proxy = parser.add_argument_group("network proxy")
-    proxy.add_argument("--proxy-mode", choices=["host", "sidecar", "embedded", "none"], default=None)
+    proxy.add_argument("--proxy-mode", choices=["host", "sidecar", "embedded", "none"], default="none")
     proxy.add_argument("--proxy-bundle", default=None)
     proxy.add_argument("--proxy-container", default=None)
     proxy.add_argument("--proxy-network", default=None)
@@ -309,11 +308,9 @@ def main() -> None:
     if args.out_dir:
         out_dir = Path(args.out_dir).expanduser().resolve()
     else:
-        batch_name = args.batch_name
-        if not batch_name:
-            stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            batch_name = f"{args.agent}_{_slug(args.model)}_{_slug(task_line_for_name)}_{stamp}"
-        out_dir = (root / "results" / batch_name).resolve()
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        run_name = f"{args.agent}_{_slug(args.model)}_{_slug(task_line_for_name)}_{stamp}"
+        out_dir = (root / "results" / run_name).resolve()
 
     if args.force_fresh_task_file:
         args.force_fresh.extend(_read_task_file(Path(args.force_fresh_task_file).expanduser()))
