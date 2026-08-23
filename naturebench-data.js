@@ -14,7 +14,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -27,7 +27,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -40,7 +40,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -53,7 +53,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -66,7 +66,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -79,7 +79,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -92,7 +92,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -105,7 +105,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -118,7 +118,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -131,7 +131,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -144,7 +144,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -157,7 +157,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -171,7 +171,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -184,7 +184,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
@@ -197,7 +197,7 @@ window.NATUREBENCH_DATA = {
       "solvingBudget": "4 h / task",
       "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
       "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
-      "externalAccess": "Web search and web fetch disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5"
     },
     {
