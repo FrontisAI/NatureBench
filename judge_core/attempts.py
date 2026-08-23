@@ -65,6 +65,8 @@ def collect_attempt_context(
 ) -> Dict[str, Any]:
     """Collect score-attempt identity and evaluation completion timestamps."""
     score_attempt: Optional[int] = None
+    score_aggregate_improvement: Optional[float] = None
+    summary_pair_available = False
     metadata_available = False
     summary_path = task_out_dir.parent / "run_summary.json"
     try:
@@ -77,18 +79,29 @@ def collect_attempt_context(
             if not isinstance(result, dict) or result.get("task_name") != task_name:
                 continue
             value = result.get("best_attempt")
+            aggregate_value = result.get("best_aggregate_improvement")
             if (
                 isinstance(value, int)
                 and not isinstance(value, bool)
                 and value > 0
+                and isinstance(aggregate_value, (int, float))
+                and not isinstance(aggregate_value, bool)
             ):
-                score_attempt = value
-                metadata_available = True
+                try:
+                    aggregate_candidate = float(aggregate_value)
+                except OverflowError:
+                    pass
+                else:
+                    if math.isfinite(aggregate_candidate):
+                        score_attempt = value
+                        score_aggregate_improvement = aggregate_candidate
+                        summary_pair_available = True
             break
 
     attempts: List[Dict[str, Any]] = []
     fallback_score: Optional[float] = None
     fallback_attempt: Optional[int] = None
+    fallback_index: Optional[int] = None
     submissions_path = task_out_dir / "submissions.jsonl"
     try:
         lines = submissions_path.read_text(
@@ -132,6 +145,7 @@ def collect_attempt_context(
         ):
             fallback_score = numeric_score
             fallback_attempt = attempt
+            fallback_index = len(attempts)
         timestamp = record.get("timestamp")
         evaluated_at = normalize_trace_timestamp(timestamp)
         evaluated_at_unix: Optional[float] = None
@@ -148,17 +162,30 @@ def collect_attempt_context(
                 "status": record_type or "success",
                 "evaluated_at": evaluated_at,
                 "evaluated_at_unix": evaluated_at_unix,
-                "is_score_attempt": metadata_available and attempt == score_attempt,
+                "aggregate_improvement": numeric_score,
+                "is_score_attempt": False,
             }
         )
 
-    if not metadata_available and fallback_attempt is not None:
-        score_attempt = fallback_attempt
-        metadata_available = True
-        for attempt_record in attempts:
-            attempt_record["is_score_attempt"] = (
+    score_index: Optional[int] = None
+    if summary_pair_available:
+        for index, attempt_record in enumerate(attempts):
+            if (
                 attempt_record["attempt"] == score_attempt
-            )
+                and attempt_record["aggregate_improvement"]
+                == score_aggregate_improvement
+            ):
+                score_index = index
+                metadata_available = True
+                break
+    elif fallback_attempt is not None and fallback_index is not None:
+        score_attempt = fallback_attempt
+        score_aggregate_improvement = fallback_score
+        score_index = fallback_index
+        metadata_available = True
+
+    if score_index is not None:
+        attempts[score_index]["is_score_attempt"] = True
 
     focus_start: Optional[float] = None
     focus_end: Optional[float] = None
@@ -172,6 +199,7 @@ def collect_attempt_context(
     return {
         "metadata_available": metadata_available,
         "score_attempt": score_attempt,
+        "score_aggregate_improvement": score_aggregate_improvement,
         "attempts": attempts,
         "focus_start": focus_start,
         "focus_end": focus_end,
