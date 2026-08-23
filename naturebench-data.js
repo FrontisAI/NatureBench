@@ -162,6 +162,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "name": "Claude Opus 5",
+      "displayName": "Opus 5",
       "id": "claude-opus-5-claude-code",
       "agent": "Claude Code",
       "runSource": {

@@ -213,6 +213,14 @@
     return configurationById[row.configurationId] || modelByName[row.name] || null;
   }
 
+  function displayNameForModel(modelName) {
+    return modelByName[modelName]?.displayName || modelName;
+  }
+
+  function displayNameForRow(row) {
+    return configurationFor(row)?.displayName || row.name;
+  }
+
   function agentForModel(modelName) {
     return modelByName[modelName]?.agent || data.leaderboard.find((row) => row.name === modelName)?.harness || "";
   }
@@ -227,11 +235,12 @@
 
   function modelAgentMarkup(modelName, { logo = false } = {}) {
     const agent = agentForModel(modelName);
+    const displayName = displayNameForModel(modelName);
     return `
       <span class="model-agent-identity">
         ${logo ? modelLogoMarkup(modelName) : ""}
         <span class="model-agent-copy">
-          <span class="method-name">${escapeHtml(modelName)}</span>
+          <span class="method-name">${escapeHtml(displayName)}</span>
           ${agent ? `<span class="agent-subline ${agentColorClass(agent)}">${escapeHtml(agent)}</span>` : ""}
         </span>
       </span>
@@ -241,12 +250,13 @@
   function configurationTriggerMarkup(row) {
     const configuration = configurationFor(row);
     if (!configuration) return "";
+    const displayName = configuration.displayName || row.name;
     return `
       <button
         class="configuration-trigger"
         type="button"
         data-configuration-trigger="${escapeHtml(configuration.id)}"
-        aria-label="View configuration for ${escapeHtml(row.name)} and ${escapeHtml(row.harness)}"
+        aria-label="View configuration for ${escapeHtml(displayName)} and ${escapeHtml(row.harness)}"
         aria-expanded="false"
       >i</button>
     `;
@@ -270,7 +280,7 @@
         <div>
           <span class="configuration-popover-eyebrow">Evaluation configuration</span>
           <strong class="configuration-popover-title">
-            <span class="configuration-popover-model">${escapeHtml(configuration.name)}</span>
+            <span class="configuration-popover-model">${escapeHtml(configuration.displayName || configuration.name)}</span>
             <span class="configuration-popover-separator">+</span>
             <span class="configuration-popover-agent agent-name ${agentColorClass(configuration.agent)}">${escapeHtml(configuration.agent)}</span>
           </strong>
@@ -554,9 +564,9 @@
     const cards = [
       [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench", ""],
       [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups", ""],
-      [formatPercent(top.surpassSota), "Best Surpass-SOTA", top.name, top.harness],
-      [formatPercent(topMatch.matchSota), "Best Match-SOTA", topMatch.name, topMatch.harness],
-      [formatPercent(topCompletion.completionRate), "Top completion", topCompletion.name, topCompletion.harness],
+      [formatPercent(top.surpassSota), "Best Surpass-SOTA", displayNameForRow(top), top.harness],
+      [formatPercent(topMatch.matchSota), "Best Match-SOTA", displayNameForRow(topMatch), topMatch.harness],
+      [formatPercent(topCompletion.completionRate), "Top completion", displayNameForRow(topCompletion), topCompletion.harness],
     ];
 
     summary.innerHTML = cards.map(([value, label, note, agent]) => `
@@ -609,7 +619,7 @@
                 <td>
                   <div class="model-cell">
                     ${modelLogoMarkup(row.name)}
-                    <span class="method-name">${escapeHtml(row.name)}</span>
+                    <span class="method-name">${escapeHtml(displayNameForRow(row))}</span>
                     ${configurationTriggerMarkup(row)}
                   </div>
                 </td>
@@ -646,8 +656,8 @@
         const width = barWidth(rows, metric, row[metric]);
         return `
           <div class="bar-row model-color-row" style="--model-color:${modelColor(row.name)}">
-            <div class="bar-name" title="${escapeHtml(row.name)}">
-              <span class="rank-dot">${index + 1}</span>${escapeHtml(row.name)}
+            <div class="bar-name" title="${escapeHtml(displayNameForRow(row))}">
+              <span class="rank-dot">${index + 1}</span>${escapeHtml(displayNameForRow(row))}
             </div>
             <div class="bar-track" aria-hidden="true">
               <div class="bar-fill" style="--w:${width}%"></div>
@@ -666,7 +676,7 @@
         return `
           <tr>
             <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
-            <td><span class="model-cell"><span class="method-name">${escapeHtml(row.name)}</span>${configurationTriggerMarkup(row)}</span></td>
+            <td><span class="model-cell"><span class="method-name">${escapeHtml(displayNameForRow(row))}</span>${configurationTriggerMarkup(row)}</span></td>
             <td><span class="agent-name ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</span></td>
             <td>${runSourceMarkup(row)}</td>
             <td><span class="pill good">${formatPercent(row.surpassSota)}</span></td>
@@ -697,10 +707,10 @@
       const surpass = data.leaderboard.find((item) => item.name === row.name)?.surpassSota ?? 0;
       return `
         <div class="distribution-row">
-          <div class="distribution-name" title="${escapeHtml(row.name)} · ${escapeHtml(agentForModel(row.name))}">
+          <div class="distribution-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
             ${modelAgentMarkup(row.name, { logo: true })}
           </div>
-          <div class="stacked-bar" aria-label="${escapeHtml(row.name)} score distribution">
+          <div class="stacked-bar" aria-label="${escapeHtml(displayNameForModel(row.name))} score distribution">
             ${row.bins.map((bin, index) => ({ bin, index })).filter(({ bin }) => Number(bin.count) > 0 && Number(bin.percent) > 0).map(({ bin, index }) => `
               <div
                 class="segment ${binClasses[index]}"
@@ -779,7 +789,7 @@
         <div class="domain-name">${escapeHtml(domain.domain)}</div>
         <div class="domain-count">N=${domain.n}</div>
         <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner</div>
-        <div class="domain-winner">${escapeHtml(domain.winner)}</div>
+        <div class="domain-winner">${escapeHtml(displayNameForModel(domain.winner))}</div>
         <div class="domain-winner-agent ${agentColorClass(agentForModel(domain.winner))}">${escapeHtml(agentForModel(domain.winner))}</div>
         <div class="domain-primary">Surpass-SOTA ${formatPercent(domain.winnerSurpassSota)}</div>
         <div class="mini-meter" aria-hidden="true"><span style="--w:${domain.winnerSurpassSota}%"></span></div>
@@ -825,7 +835,7 @@
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
         return `
           <div class="bar-row model-color-row" style="--model-color:${modelColor(row.name)}">
-            <div class="bar-name" title="${escapeHtml(row.name)} · ${escapeHtml(agentForModel(row.name))}">
+            <div class="bar-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
               <span class="rank-dot">${index + 1}</span>
               <span class="bar-model-identity">${modelAgentMarkup(row.name, { logo: true })}</span>
             </div>
@@ -919,15 +929,17 @@
       if (!search) return true;
       const bestModel = row.bestModel || "";
       const bestHarness = bestModel ? agentForModel(bestModel) : "";
+      const bestDisplayName = bestModel ? displayNameForModel(bestModel) : "";
       return [
         row.caseId,
         row.title,
         row.domain,
         row.mlTaskType,
         bestModel,
+        bestDisplayName,
         bestHarness,
-        `${bestHarness} ${bestModel}`,
-        `${bestHarness} + ${bestModel}`,
+        `${bestHarness} ${bestDisplayName}`,
+        `${bestHarness} + ${bestDisplayName}`,
       ].some((value) => String(value).toLowerCase().includes(search));
     });
   }
@@ -956,7 +968,7 @@
           <button class="case-lookup-close" type="button" aria-label="Close selected task" title="Close selected task">×</button>
           <span>Best configuration</span>
         </div>
-        <strong>${row.bestModel ? escapeHtml(row.bestModel) : ""}</strong>
+        <strong>${row.bestModel ? escapeHtml(displayNameForModel(row.bestModel)) : ""}</strong>
         <small>${row.bestModel ? `<span class="agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span> · g ${formatScore(row.bestScore)}` : ""}</small>
       </div>
     `;
@@ -1012,7 +1024,7 @@
             row.bestModel === model ? "best" : "",
           ].filter(Boolean).join(" ");
           return `
-            <td class="${classes}" style="${scoreBackground(score)}" title="${escapeHtml(model)} · ${escapeHtml(agentForModel(model))} · ${escapeHtml(row.caseId)} · ${scoreText(score)}">
+            <td class="${classes}" style="${scoreBackground(score)}" title="${escapeHtml(displayNameForModel(model))} · ${escapeHtml(agentForModel(model))} · ${escapeHtml(row.caseId)} · ${scoreText(score)}">
               ${escapeHtml(scoreText(score))}
             </td>
           `;
@@ -1115,7 +1127,7 @@
       <button class="featured-case-tab ${item.key === state.featuredCase ? "active" : ""}" data-featured-case="${escapeHtml(item.key)}">
         <span>${escapeHtml(item.role)}</span>
         <strong>${escapeHtml(item.title)}</strong>
-        <small>${escapeHtml(item.model)} · <span class="agent-name ${agentColorClass(agentForModel(item.model))}">${escapeHtml(agentForModel(item.model))}</span> · ${escapeHtml(item.bestG)}</small>
+        <small>${escapeHtml(displayNameForModel(item.model))} · <span class="agent-name ${agentColorClass(agentForModel(item.model))}">${escapeHtml(agentForModel(item.model))}</span> · ${escapeHtml(item.bestG)}</small>
       </button>
     `).join("");
 
@@ -1133,7 +1145,7 @@
       <h3 class="featured-active-title">${escapeHtml(item.title)}</h3>
       <p class="featured-active-copy">${escapeHtml(item.task)}</p>
       <div class="featured-pills">
-        <span class="pill good">${escapeHtml(item.model)}</span>
+        <span class="pill good">${escapeHtml(displayNameForModel(item.model))}</span>
         <span class="pill">${escapeHtml(agentForModel(item.model))}</span>
         <span class="pill ${item.status.includes("invalid") ? "warn" : "good"}">${escapeHtml(item.status)}</span>
         <span class="pill">${escapeHtml(item.caseId)}</span>
