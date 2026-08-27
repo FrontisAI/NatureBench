@@ -40,7 +40,13 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from config_loader import load_yaml_config, merge_args_with_config
-from eval_service import ScoreTracker, start_server_background
+from eval_service import (
+    CONTROL_TOKEN_HEADER,
+    DEFAULT_CONTROL_TOKEN_PATH,
+    ScoreTracker,
+    load_or_create_control_token,
+    start_server_background,
+)
 from tqdm import tqdm
 
 # Canonical in-container command builders + resume prompts. These live in
@@ -599,26 +605,50 @@ def _has_prior_state(task_out_dir: Path) -> bool:
     return False
 
 
-def _load_or_create_eval_token(task_out_dir: Path) -> str:
+def _load_or_create_eval_token(
+    task_out_dir: Path,
+    control_token: Optional[str] = None,
+) -> str:
     """Return the stable opaque token used by this task's agent session."""
     task_out_dir.mkdir(parents=True, exist_ok=True)
     token_path = task_out_dir / "eval_token.txt"
     if token_path.exists():
         token = token_path.read_text(encoding="utf-8").strip()
-        if token:
+        if token and token != control_token:
             return token
 
-    return _replace_eval_token(task_out_dir)
+    return _replace_eval_token(task_out_dir, control_token)
 
 
-def _replace_eval_token(task_out_dir: Path) -> str:
+def _replace_eval_token(
+    task_out_dir: Path,
+    control_token: Optional[str] = None,
+) -> str:
     """Generate and atomically persist a new opaque evaluation token."""
     task_out_dir.mkdir(parents=True, exist_ok=True)
     token_path = task_out_dir / "eval_token.txt"
     token = secrets.token_urlsafe(32)
+    while token == control_token:
+        token = secrets.token_urlsafe(32)
     tmp_path = task_out_dir / ".eval_token.txt.tmp"
     tmp_path.write_text(token + "\n", encoding="utf-8")
     tmp_path.replace(token_path)
+    return token
+
+
+def _load_resume_eval_token(task_out_dir: Path, control_token: str) -> str:
+    """Read the existing task token for resume without creating or replacing it."""
+    token_path = task_out_dir / "eval_token.txt"
+    if not token_path.is_file():
+        raise RuntimeError(f"resume eval token file is missing: {token_path}")
+    try:
+        token = token_path.read_text(encoding="utf-8").strip()
+    except OSError as e:
+        raise RuntimeError(f"could not read resume eval token file {token_path}: {e}") from e
+    if not token:
+        raise RuntimeError(f"resume eval token file is empty: {token_path}")
+    if secrets.compare_digest(token, control_token):
+        raise RuntimeError("resume eval token conflicts with the control token")
     return token
 
 
@@ -762,13 +792,14 @@ def _resume_eligible(task_out_dir: Path, agent_name: str) -> Tuple[bool, str]:
     return False, f"resume not supported for agent {agent_name}"
 
 
-def _query_time_remaining(eval_service_url: str, task_name: str,
-                          batch_name: Optional[str] = None) -> Optional[float]:
+def _query_time_remaining(
+    eval_service_url: str,
+    eval_token: str,
+    task_name: str,
+) -> Optional[float]:
     """GET /time_remaining; return remaining seconds or None on error."""
     host_url = _host_url(eval_service_url)
-    url = f"{host_url}/time_remaining?task_name={urllib.parse.quote(task_name)}"
-    if batch_name:
-        url += "&batch_name=" + urllib.parse.quote(batch_name)
+    url = f"{host_url}/time_remaining?eval_token={urllib.parse.quote(eval_token)}"
     try:
         with urllib.request.urlopen(url, timeout=10) as resp:
             data = json.loads(resp.read().decode())
@@ -778,8 +809,19 @@ def _query_time_remaining(eval_service_url: str, task_name: str,
         return None
 
 
-def _notify_timer_resume(eval_service_url: str, task_name: str,
-                         batch_name: Optional[str] = None) -> None:
+def _control_headers(control_token: str) -> Dict[str, str]:
+    return {
+        "Content-Type": "application/json",
+        CONTROL_TOKEN_HEADER: control_token,
+    }
+
+
+def _notify_timer_resume(
+    eval_service_url: str,
+    task_name: str,
+    control_token: str,
+    batch_name: Optional[str] = None,
+) -> None:
     """POST /resume_timer; ignore failures (eval_service may not support it)."""
     host_url = _host_url(eval_service_url)
     url = f"{host_url}/resume_timer"
@@ -790,7 +832,7 @@ def _notify_timer_resume(eval_service_url: str, task_name: str,
         req = urllib.request.Request(
             url,
             data=json.dumps(body).encode(),
-            headers={"Content-Type": "application/json"},
+            headers=_control_headers(control_token),
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=10) as _resp:
@@ -799,8 +841,12 @@ def _notify_timer_resume(eval_service_url: str, task_name: str,
         logger.debug("[%s] /resume_timer not honored: %s", task_name, e)
 
 
-def _notify_timer_pause(eval_service_url: str, task_name: str,
-                        batch_name: Optional[str] = None) -> None:
+def _notify_timer_pause(
+    eval_service_url: str,
+    task_name: str,
+    control_token: str,
+    batch_name: Optional[str] = None,
+) -> None:
     """POST /pause_timer when the agent container is stopping but the task is
     not "done" (i.e. could resume later). Ignore HTTP errors so legacy
     eval_service builds without /pause_timer don't break solve.py.
@@ -814,7 +860,7 @@ def _notify_timer_pause(eval_service_url: str, task_name: str,
         req = urllib.request.Request(
             url,
             data=json.dumps(body).encode(),
-            headers={"Content-Type": "application/json"},
+            headers=_control_headers(control_token),
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=10) as _resp:
@@ -824,7 +870,7 @@ def _notify_timer_pause(eval_service_url: str, task_name: str,
 
 
 def _wait_eval_drain(eval_service_url: str, task_name: str,
-                     batch_name: Optional[str] = None,
+                     eval_token: str,
                      poll_interval: float = 2.0,
                      max_unreachable_polls: int = 30) -> bool:
     """Wait until the remote eval_service has no in-flight evaluator for task.
@@ -848,9 +894,7 @@ def _wait_eval_drain(eval_service_url: str, task_name: str,
     (active_evals > 0), so this wait does not consume the agent's solve budget.
     """
     host_url = _host_url(eval_service_url)
-    url = f"{host_url}/time_remaining?task_name={urllib.parse.quote(task_name)}"
-    if batch_name:
-        url += "&batch_name=" + urllib.parse.quote(batch_name)
+    url = f"{host_url}/time_remaining?eval_token={urllib.parse.quote(eval_token)}"
     unreachable = 0
     waited = 0.0
     while True:
@@ -1351,6 +1395,7 @@ def _monitor_and_kill(
     container_name: str,
     eval_service_url: str,
     timeout: int,
+    eval_token: str,
     poll_interval: int = 60,
     stop_reason: Optional[dict] = None,
     batch_name: Optional[str] = None,
@@ -1362,9 +1407,7 @@ def _monitor_and_kill(
         if proc.poll() is not None:
             break
         try:
-            url = f"{host_url}/time_remaining?task_name={urllib.parse.quote(task_name)}"
-            if batch_name:
-                url += "&batch_name=" + urllib.parse.quote(batch_name)
+            url = f"{host_url}/time_remaining?eval_token={urllib.parse.quote(eval_token)}"
             with urllib.request.urlopen(url, timeout=10) as resp:
                 data = json.loads(resp.read().decode())
             remaining = data.get("remaining_seconds")
@@ -1420,6 +1463,7 @@ def _run_single_task(
     dockerfile_name: str = "Dockerfile.v3",
     *,
     eval_token: str,
+    control_token: str,
     eval_batch_name: Optional[str] = None,
     is_resume: bool = False,
     setup_timeout: int = 14400,
@@ -1851,9 +1895,15 @@ def _run_single_task(
             # Notify external eval service so /time_remaining works.
             # Resume runs continue the existing timer; fresh runs (re)start it.
             if is_resume:
-                _notify_timer_resume(eval_service_url, task_name, batch_name=eval_batch_name)
+                _notify_timer_resume(
+                    eval_service_url, task_name, control_token,
+                    batch_name=eval_batch_name,
+                )
             else:
-                _notify_timer_start_from_url(eval_service_url, task_name, batch_name=eval_batch_name)
+                _notify_timer_start_from_url(
+                    eval_service_url, task_name, control_token,
+                    batch_name=eval_batch_name,
+                )
 
             # Phase 4: Run agent inside the container (with timeout via monitor thread)
             agent_cmd_str = " ".join(shlex.quote(a) for a in agent_cmd)
@@ -1872,7 +1922,7 @@ def _run_single_task(
                 monitor = threading.Thread(
                     target=_monitor_and_kill,
                     args=(proc, task_name, container_name,
-                          eval_service_url, timeout),
+                          eval_service_url, timeout, eval_token),
                     kwargs={"stop_reason": stop_reason, "batch_name": eval_batch_name},
                     daemon=True,
                 )
@@ -1928,9 +1978,15 @@ def _run_single_task(
             # Notify external eval service. Resume runs continue the existing
             # timer; fresh runs (re)start it.
             if is_resume:
-                _notify_timer_resume(eval_service_url, task_name, batch_name=eval_batch_name)
+                _notify_timer_resume(
+                    eval_service_url, task_name, control_token,
+                    batch_name=eval_batch_name,
+                )
             else:
-                _notify_timer_start_from_url(eval_service_url, task_name, batch_name=eval_batch_name)
+                _notify_timer_start_from_url(
+                    eval_service_url, task_name, control_token,
+                    batch_name=eval_batch_name,
+                )
 
             with open(log_path, "w", encoding="utf-8") as f_out, \
                  open(err_path, "w", encoding="utf-8") as f_err:
@@ -1943,7 +1999,7 @@ def _run_single_task(
                 monitor = threading.Thread(
                     target=_monitor_and_kill,
                     args=(proc, task_name, container_name,
-                          eval_service_url, timeout),
+                          eval_service_url, timeout, eval_token),
                     kwargs={"stop_reason": stop_reason, "batch_name": eval_batch_name},
                     daemon=True,
                 )
@@ -2043,7 +2099,7 @@ def _run_single_task(
     _wait_eval_drain(
         eval_service_url,
         task_name,
-        batch_name=eval_batch_name,
+        eval_token,
         poll_interval=2.0,
     )
 
@@ -2054,7 +2110,10 @@ def _run_single_task(
     # timer is already paused, the call is rejected/no-op safely. We do not
     # gate this on the per-task status because the eval-analysis taxonomy
     # allows even `success` cases (D/F) to be resumed later by user choice.
-    _notify_timer_pause(eval_service_url, task_name, batch_name=eval_batch_name)
+    _notify_timer_pause(
+        eval_service_url, task_name, control_token,
+        batch_name=eval_batch_name,
+    )
 
     this_run_duration = time.time() - task_start
 
@@ -2157,13 +2216,10 @@ def _load_eval_env_mapping(mapping_path: str) -> Tuple[Dict[str, int], int]:
 def _check_resume_registration(
     port: int,
     task_name: str,
-    batch_name: str,
+    eval_token: str,
 ) -> Tuple[bool, str]:
-    """Check that the external eval service still has the task/batch state."""
-    query = urllib.parse.urlencode({
-        "task_name": task_name,
-        "batch_name": batch_name,
-    })
+    """Check that the external eval service still resolves the task token."""
+    query = urllib.parse.urlencode({"eval_token": eval_token})
     url = f"http://localhost:{port}/time_remaining?{query}"
     try:
         with urllib.request.urlopen(url, timeout=10) as resp:
@@ -2171,7 +2227,7 @@ def _check_resume_registration(
         return True, "ok"
     except urllib.error.HTTPError as e:
         if e.code == 404:
-            return False, f"not registered with eval service for batch {batch_name!r}"
+            return False, "eval_token not registered with eval service"
         return False, f"eval service registration check returned HTTP {e.code}"
     except (urllib.error.URLError, OSError) as e:
         return False, f"could not query eval service on port {port}: {e}"
@@ -2182,6 +2238,7 @@ def _register_task_with_service(
     out_dir: Optional[str] = None,
     batch_name: Optional[str] = None,
     eval_token: Optional[str] = None,
+    control_token: str = "",
     force: bool = False,
 ) -> Tuple[str, Optional[Dict[str, Any]]]:
     """Register a task with an external eval service via POST /register.
@@ -2208,7 +2265,7 @@ def _register_task_with_service(
     payload = json.dumps(payload_dict).encode("utf-8")
     req = urllib.request.Request(
         url, data=payload,
-        headers={"Content-Type": "application/json"},
+        headers=_control_headers(control_token),
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -2236,6 +2293,7 @@ def _register_task_with_token_retry(
     out_dir: Optional[str] = None,
     batch_name: Optional[str] = None,
     eval_token: str,
+    control_token: str,
     force: bool = False,
     max_attempts: int = 5,
 ) -> Tuple[str, Optional[Dict[str, Any]], str]:
@@ -2250,6 +2308,7 @@ def _register_task_with_token_retry(
             out_dir=out_dir,
             batch_name=batch_name,
             eval_token=current_token,
+            control_token=control_token,
             force=force,
         )
         if (payload or {}).get("error_code") != "eval_token_conflict":
@@ -2261,7 +2320,7 @@ def _register_task_with_token_retry(
                 max_attempts,
             )
             return status, payload, current_token
-        current_token = _replace_eval_token(task_out_dir)
+        current_token = _replace_eval_token(task_out_dir, control_token)
         logger.warning(
             "[%s] Evaluation token collision; generated a replacement and retrying registration",
             task_name,
@@ -2269,12 +2328,13 @@ def _register_task_with_token_retry(
     return "error", None, current_token
 
 
-def _fetch_score_from_service(port: int, task_name: str,
-                              batch_name: Optional[str] = None) -> Dict[str, Any]:
+def _fetch_score_from_service(
+    port: int,
+    eval_token: str,
+    task_name: str,
+) -> Dict[str, Any]:
     """Fetch best score for a task from an external eval service."""
-    qs = f"task_name={task_name}"
-    if batch_name:
-        qs += f"&batch_name={batch_name}"
+    qs = urllib.parse.urlencode({"eval_token": eval_token})
     url = f"http://localhost:{port}/best_score?{qs}"
     try:
         with urllib.request.urlopen(url, timeout=10) as resp:
@@ -2285,8 +2345,12 @@ def _fetch_score_from_service(port: int, task_name: str,
         return {}
 
 
-def _notify_timer_start(port: int, task_name: str,
-                        batch_name: Optional[str] = None) -> None:
+def _notify_timer_start(
+    port: int,
+    task_name: str,
+    control_token: str,
+    batch_name: Optional[str] = None,
+) -> None:
     """Notify external eval service that a task's timer has started."""
     url = f"http://localhost:{port}/start_timer"
     body = {"task_name": task_name}
@@ -2295,7 +2359,7 @@ def _notify_timer_start(port: int, task_name: str,
     payload = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
         url, data=payload,
-        headers={"Content-Type": "application/json"},
+        headers=_control_headers(control_token),
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -2305,14 +2369,20 @@ def _notify_timer_start(port: int, task_name: str,
                        task_name, port, e)
 
 
-def _notify_timer_start_from_url(eval_service_url: str, task_name: str,
-                                  batch_name: Optional[str] = None) -> None:
+def _notify_timer_start_from_url(
+    eval_service_url: str,
+    task_name: str,
+    control_token: str,
+    batch_name: Optional[str] = None,
+) -> None:
     """Extract port from eval_service_url and notify timer start."""
     try:
         from urllib.parse import urlparse
         parsed = urlparse(eval_service_url)
         port = parsed.port or 8321
-        _notify_timer_start(port, task_name, batch_name=batch_name)
+        _notify_timer_start(
+            port, task_name, control_token, batch_name=batch_name,
+        )
     except Exception as e:
         logger.warning("Failed to parse eval URL for timer notification: %s", e)
 
@@ -2404,6 +2474,10 @@ def main() -> None:
         help="Path to eval_env_mapping.json for multi-environment eval service routing. "
              "When provided, solve.py will NOT start an internal eval service; "
              "external services must already be running on the specified ports.",
+    )
+    parser.add_argument(
+        "--eval-control-token-file", default=str(DEFAULT_CONTROL_TOKEN_PATH),
+        help="Path to the persistent evaluation-service control token.",
     )
     parser.add_argument(
         "--proxy-mode", default="none", choices=["host", "sidecar", "embedded", "none"],
@@ -2658,6 +2732,9 @@ def main() -> None:
         raise FileNotFoundError(f"Data directory not found: {data_dir}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    control_token = load_or_create_control_token(
+        Path(args.eval_control_token_file).expanduser().resolve()
+    )
 
     # Proxy and Codex auth configuration.
     codex_auth_dir: Optional[Path] = None
@@ -2796,7 +2873,12 @@ def main() -> None:
             )
             continue
         port = task_port_map.get(tn, default_eval_port)
-        ok, reason = _check_resume_registration(port, tn, out_dir.name)
+        try:
+            eval_token = _load_resume_eval_token(out_dir / tn, control_token)
+        except RuntimeError as e:
+            resume_errors.append(f"[{tn}] {e}")
+            continue
+        ok, reason = _check_resume_registration(port, tn, eval_token)
         if not ok:
             resume_errors.append(f"[{tn}] {reason}")
     if resume_errors:
@@ -2855,7 +2937,7 @@ def main() -> None:
             port = task_port_map.get(task_name, default_eval_port)
             task_out_dir = out_dir / task_name
             task_out_dir.mkdir(parents=True, exist_ok=True)
-            eval_token = _load_or_create_eval_token(task_out_dir)
+            eval_token = _load_or_create_eval_token(task_out_dir, control_token)
             need_force = task_name in force_fresh_set
             status, payload, eval_token = _register_task_with_token_retry(
                 port, task_name, str(task_path), timeout,
@@ -2863,6 +2945,7 @@ def main() -> None:
                 out_dir=str(task_out_dir.resolve()),
                 batch_name=out_dir.name,
                 eval_token=eval_token,
+                control_token=control_token,
                 force=need_force,
             )
             eval_tokens[task_name] = eval_token
@@ -2903,7 +2986,7 @@ def main() -> None:
             if task_path.exists():
                 task_out_dir = out_dir / task_name
                 task_out_dir.mkdir(parents=True, exist_ok=True)
-                eval_token = _load_or_create_eval_token(task_out_dir)
+                eval_token = _load_or_create_eval_token(task_out_dir, control_token)
                 eval_tokens[task_name] = eval_token
                 tbl, issues = tracker.register_task(
                     task_name, task_path, timeout=timeout, out_dir=task_out_dir,
@@ -2922,7 +3005,9 @@ def main() -> None:
                     }
             else:
                 logger.warning("Task data directory not found: %s", task_path)
-        server, _server_thread = start_server_background(eval_host, eval_port, tracker)
+        server, _server_thread = start_server_background(
+            eval_host, eval_port, tracker, control_token=control_token,
+        )
         logger.info("Evaluation Service started at http://%s:%d", eval_host, eval_port)
 
     # --- Helper to resolve per-task eval URL ---
@@ -2943,7 +3028,7 @@ def main() -> None:
         if use_external_eval:
             tn = r["task_name"]
             port = task_port_map.get(tn, default_eval_port)
-            ext = _fetch_score_from_service(port, tn, batch_name=out_dir.name)
+            ext = _fetch_score_from_service(port, eval_tokens[tn], tn)
             if ext.get("best_attempt") is not None:
                 r["best_attempt"] = ext["best_attempt"]
             if ext.get("best_aggregate_improvement") is not None:
@@ -2980,7 +3065,9 @@ def main() -> None:
             return f"{score_info.best_aggregate_improvement:+.4f}"
         if use_external_eval:
             port = task_port_map.get(task_name, default_eval_port)
-            ext = _fetch_score_from_service(port, task_name, batch_name=out_dir.name)
+            ext = _fetch_score_from_service(
+                port, eval_tokens[task_name], task_name,
+            )
             if ext.get("best_aggregate_improvement") is not None:
                 return f"{ext['best_aggregate_improvement']:+.4f}"
         return "N/A"
@@ -3016,6 +3103,7 @@ def main() -> None:
                     base_image=base_image,
                     dockerfile_name=dockerfile_name,
                     eval_token=eval_tokens[task_name],
+                    control_token=control_token,
                     eval_batch_name=eval_batch_name,
                     is_resume=is_resume,
                     setup_timeout=setup_timeout,
@@ -3048,6 +3136,7 @@ def main() -> None:
                         base_image,
                         dockerfile_name,
                         eval_token=eval_tokens[task_name],
+                        control_token=control_token,
                         eval_batch_name=eval_batch_name,
                         is_resume=_decide_resume(task_name),
                         setup_timeout=setup_timeout,

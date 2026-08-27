@@ -8,6 +8,7 @@ __pycache__/
 config.yaml
 outputs/
 run_outputs/
+eval_logs/
 
 # built lumen agent binary (see docker/Dockerfile.lumen)
 docker/lumen

@@ -107,8 +107,9 @@ Its behavior:
 
 - **State (in memory):** per-`(case_id, batch_name)` attempt count, best attempt and score, and timers.
 - **Logging:** appends every `/evaluate` call to the task's `submissions.jsonl`, and writes `result.json` and `run_summary.json` when a task finishes.
-- **Reuse:** start the service once; later resume commands reuse its state by dropping `--start-eval-services` while keeping `--eval-env-mapping`.
-- **Restart:** restarting clears in-memory state (it does not replay `submissions.jsonl`). To restart, first stop the old process via the PIDs in `eval_logs/eval_service_pids.txt` rather than binding a second service to the same port.
+- **Multiple runs:** the same service can support multiple NatureBench runs; each `(case_id, batch_name)` retains its own state.
+- **Reuse:** we recommend starting the external service once. For later runs, omit `--start-eval-services` and keep `--eval-env-mapping`. Resume runs must keep using the original service process to preserve task state.
+- **Restart:** restarting clears in-memory state and does not replay it. To restart, first stop the old process via the PIDs in `eval_logs/eval_service_pids.txt`, then start the service again. Passing `--start-eval-services` again does not restart the existing service; instead, it attempts to launch another process (the same port fails to bind; different port starts a separate service).
 
 **Internal evaluation service**
 
@@ -119,3 +120,10 @@ Fallback when `--eval-env-mapping` is not provided: `solve.py` starts a backgrou
 - requires the main environment itself to satisfy evaluator dependencies.
 
 Formal evaluation and resume runs should use external mode.
+
+**Evaluation service access control**
+
+The evaluation service uses separate credentials for agent-facing and host-only endpoints on the same HTTP listener. Agents receive only a per-task evaluation token for `/evaluate`, `/best_score`, and `/time_remaining`; `/register` and timer control endpoints require a service control token that is not exposed to agents.
+
+- **External mode:** the control token is persisted in a file so the external service and multiple NatureBench runs can use the same credential. If the file does not exist, the first standalone service start or end-to-end NatureBench run creates it at `eval_logs/eval_control_token` by default; if it already exists, service starts and NatureBench runs reuse it. Do not modify or replace it while reusing the service.
+- **Internal mode:** the in-process service serves only the current run, so the control token is passed to it directly in memory; the service does not load the token file separately.

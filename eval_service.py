@@ -19,6 +19,7 @@ import json
 import logging
 import os
 import re
+import secrets
 import sys
 import threading
 import time
@@ -39,6 +40,32 @@ logging.basicConfig(
     format="%(asctime)s [EvalService] %(levelname)s %(message)s",
 )
 logger = logging.getLogger("eval_service")
+
+CONTROL_TOKEN_HEADER = "X-NatureBench-Control-Token"
+DEFAULT_CONTROL_TOKEN_PATH = Path(__file__).resolve().parent / "eval_logs" / "eval_control_token"
+
+
+def load_or_create_control_token(path: Path = DEFAULT_CONTROL_TOKEN_PATH) -> str:
+    """Load the service control token, creating it with owner-only permissions."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        token = path.read_text(encoding="utf-8").strip()
+        if not token:
+            raise RuntimeError(f"control token file is empty: {path}")
+        return token
+
+    token = secrets.token_urlsafe(32)
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        token = path.read_text(encoding="utf-8").strip()
+        if not token:
+            raise RuntimeError(f"control token file is empty: {path}")
+        return token
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(token + "\n")
+    return token
 
 
 # ---------------------------------------------------------------------------
@@ -541,6 +568,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
     """Handle evaluation HTTP requests."""
 
     tracker: ScoreTracker  # injected by the server
+    control_token: str     # injected by the server
 
     def log_message(self, format, *args):
         logger.info(format, *args)
@@ -557,6 +585,10 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", 0))
         return self.rfile.read(length)
 
+    def _has_control_access(self) -> bool:
+        supplied = self.headers.get(CONTROL_TOKEN_HEADER, "")
+        return bool(supplied) and secrets.compare_digest(supplied, self.control_token)
+
     # ----- GET -----
 
     def do_GET(self):
@@ -569,22 +601,14 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
         if parsed.path == "/best_score":
             params = parse_qs(parsed.query)
             eval_token = params.get("eval_token", [None])[0]
-            token_request = bool(eval_token)
-            if token_request:
-                resolved = self.tracker.resolve_eval_token(eval_token)
-                if resolved is None:
-                    self._send_json(404, {"error": "eval_token not registered"})
-                    return
-                task_name, _batch_name, state = resolved
-            else:
-                task_name = params.get("task_name", [None])[0]
-                if not task_name:
-                    self._send_json(400, {"error": "missing eval_token or task_name parameter"})
-                    return
-                state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
-                if state is None:
-                    self._send_json(404, {"error": f"task {task_name} not registered"})
-                    return
+            if not eval_token:
+                self._send_json(400, {"error": "missing eval_token parameter"})
+                return
+            resolved = self.tracker.resolve_eval_token(eval_token)
+            if resolved is None:
+                self._send_json(404, {"error": "not found"})
+                return
+            _task_name, _batch_name, state = resolved
             best_rec = None
             if state.best_attempt is not None:
                 idx = state.best_attempt - 1
@@ -597,30 +621,20 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 "best_raw_scores": best_rec.raw_scores if best_rec else {},
                 "total_attempts": len(state.submissions),
             }
-            if not token_request:
-                response["task_name"] = task_name
             self._send_json(200, response)
             return
 
         if parsed.path == "/time_remaining":
             params = parse_qs(parsed.query)
             eval_token = params.get("eval_token", [None])[0]
-            token_request = bool(eval_token)
-            if token_request:
-                resolved = self.tracker.resolve_eval_token(eval_token)
-                if resolved is None:
-                    self._send_json(404, {"error": "eval_token not registered"})
-                    return
-                task_name, _batch_name, state = resolved
-            else:
-                task_name = params.get("task_name", [None])[0]
-                if not task_name:
-                    self._send_json(400, {"error": "missing eval_token or task_name parameter"})
-                    return
-                state = self.tracker.get_task(task_name, batch_name=_bn_from_query(parsed))
-                if state is None:
-                    self._send_json(404, {"error": f"task {task_name} not registered"})
-                    return
+            if not eval_token:
+                self._send_json(400, {"error": "missing eval_token parameter"})
+                return
+            resolved = self.tracker.resolve_eval_token(eval_token)
+            if resolved is None:
+                self._send_json(404, {"error": "not found"})
+                return
+            _task_name, _batch_name, state = resolved
             elapsed = state.get_effective_elapsed()
             remaining = max(0, state.timeout - elapsed) if state.timeout else None
             # Compute the current cumulative pause time (including the ongoing pause)
@@ -636,8 +650,6 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 "should_skip": state.should_skip,
                 "consecutive_failures": state.consecutive_failures,
             }
-            if not token_request:
-                response["task_name"] = task_name
             self._send_json(200, response)
             return
 
@@ -653,18 +665,30 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             return
 
         if parsed.path == "/register":
+            if not self._has_control_access():
+                self._send_json(404, {"error": "unknown endpoint"})
+                return
             self._handle_register()
             return
 
         if parsed.path == "/start_timer":
+            if not self._has_control_access():
+                self._send_json(404, {"error": "unknown endpoint"})
+                return
             self._handle_start_timer()
             return
 
         if parsed.path == "/resume_timer":
+            if not self._has_control_access():
+                self._send_json(404, {"error": "unknown endpoint"})
+                return
             self._handle_resume_timer()
             return
 
         if parsed.path == "/pause_timer":
+            if not self._has_control_access():
+                self._send_json(404, {"error": "unknown endpoint"})
+                return
             self._handle_pause_timer()
             return
 
@@ -673,21 +697,7 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
     def _handle_evaluate(self):
         """Handle POST /evaluate
 
-        Request body JSON:
-        {
-            "task_name": "s42256-020-0209-y",
-            "output_dir": "/workspace/output"   // output directory path inside the container
-        }
-
-        Since output_dir is a path inside the container, it is accessed via the
-        mount mapping. In practice it is simpler to have the agent send the
-        result file contents directly.
-
-        Two modes are supported:
-        Mode A — pass a file path (the host must be able to access it):
-            {"task_name": "...", "output_dir": "/host/path/to/output"}
-        Mode B — pass result data (recommended, used inside the container):
-            {"task_name": "...", "predictions": {"instance_name": {"sample_id": label, ...}}}
+        Request body JSON: {"eval_token": "opaque task token"}
         """
         try:
             body = json.loads(self._read_body())
@@ -696,37 +706,22 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
             return
 
         eval_token = body.get("eval_token")
-        token_request = bool(eval_token)
-        if token_request:
-            resolved = self.tracker.resolve_eval_token(eval_token)
-            if resolved is None:
-                self._send_json(404, {"error": "eval_token not registered"})
-                return
-            task_name, _batch_name, state = resolved
-        else:
-            task_name = body.get("task_name")
-            if not task_name:
-                self._send_json(400, {"error": "missing eval_token or task_name"})
-                return
-            state = self.tracker.get_task(task_name, batch_name=body.get("batch_name") if body else None)
-            if state is None:
-                self._send_json(404, {"error": f"task {task_name} not registered"})
-                return
+        if not eval_token:
+            self._send_json(400, {"error": "missing eval_token"})
+            return
+        resolved = self.tracker.resolve_eval_token(eval_token)
+        if resolved is None:
+            self._send_json(404, {"error": "not found"})
+            return
+        task_name, _batch_name, state = resolved
 
         # Pause this task's countdown (evaluation time does not count toward agent solve time)
         state.pause_timer()
         try:
-            if token_request:
-                if state.out_dir is None:
-                    self._send_json(500, {"error": "registered task has no output directory"})
-                    return
-                output_dir = state.out_dir / "workspace" / "output"
-            else:
-                output_dir_str = body.get("output_dir")
-                if not output_dir_str:
-                    self._send_json(400, {"error": "missing output_dir"})
-                    return
-                output_dir = Path(output_dir_str)
+            if state.out_dir is None:
+                self._send_json(500, {"error": "registered task has no output directory"})
+                return
+            output_dir = state.out_dir / "workspace" / "output"
             if not output_dir.exists():
                 self._send_json(400, {"error": f"output_dir does not exist: {output_dir}"})
                 return
@@ -795,8 +790,6 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 "best_aggregate_improvement": state.best_aggregate_improvement,
                 "best_attempt": state.best_attempt,
             }
-            if not token_request:
-                response["task_name"] = task_name
             self._send_json(200, response)
 
         except Exception as e:
@@ -893,6 +886,13 @@ class EvalRequestHandler(BaseHTTPRequestHandler):
                 out_dir = None
         batch_name = body.get("batch_name")
         eval_token = body.get("eval_token")
+        if eval_token and secrets.compare_digest(eval_token, self.control_token):
+            self._send_json(409, {
+                "status": "error",
+                "error_code": "eval_token_conflict",
+                "error": "eval_token conflicts with control token",
+            })
+            return
         force = bool(body.get("force", False))
         try:
             primary_table, issues = self.tracker.register_task(
@@ -1113,16 +1113,19 @@ def create_server(
     host: str = "0.0.0.0",
     port: int = 8321,
     tracker: Optional[ScoreTracker] = None,
+    control_token: Optional[str] = None,
 ) -> ThreadingHTTPServer:
     """Create and return a multithreaded HTTP server instance (not started)."""
     if tracker is None:
         tracker = ScoreTracker()
+    if control_token is None:
+        control_token = load_or_create_control_token()
 
     # Inject the tracker via a closure
     handler_class = type(
         "BoundEvalHandler",
         (EvalRequestHandler,),
-        {"tracker": tracker},
+        {"tracker": tracker, "control_token": control_token},
     )
 
     server = ThreadingHTTPServer((host, port), handler_class)
@@ -1134,9 +1137,10 @@ def start_server_background(
     host: str = "0.0.0.0",
     port: int = 8321,
     tracker: Optional[ScoreTracker] = None,
+    control_token: Optional[str] = None,
 ) -> Tuple[ThreadingHTTPServer, threading.Thread]:
     """Start the Evaluation Service in a background thread (multithreaded for concurrent requests)."""
-    server = create_server(host, port, tracker)
+    server = create_server(host, port, tracker, control_token=control_token)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     logger.info("Evaluation Service started in the background: http://%s:%d", host, port)
@@ -1153,6 +1157,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NatureBench Evaluation Service")
     parser.add_argument("--host", default="0.0.0.0", help="listen address")
     parser.add_argument("--port", type=int, default=8321, help="listen port")
+    parser.add_argument(
+        "--control-token-file", default=str(DEFAULT_CONTROL_TOKEN_PATH),
+        help="path to the persistent service control token",
+    )
     parser.add_argument(
         "--data-dir", default=None,
         help="task package root directory (containing per-task subdirectories). Optional: if omitted, tasks are registered only via POST /register",
@@ -1189,7 +1197,8 @@ if __name__ == "__main__":
     else:
         logger.info("--data-dir not specified, waiting for tasks to be registered via POST /register")
 
-    server = create_server(args.host, args.port, tracker)
+    control_token = load_or_create_control_token(Path(args.control_token_file))
+    server = create_server(args.host, args.port, tracker, control_token=control_token)
     logger.info("Starting Evaluation Service, press Ctrl+C to stop")
     try:
         server.serve_forever()

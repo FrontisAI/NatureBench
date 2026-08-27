@@ -194,7 +194,7 @@ When reusing the same `--out-dir`, tasks with prior state require an explicit ch
 
 | Parameter | Default | Usage |
 |---|---|---|
-| `--start-eval-services` | off | Start the external evaluation service. Use this for the first formal run; usually do not repeat it when the service is already running. |
+| `--start-eval-services` | off | Start the external evaluation service. Omit it if the service is already running. |
 | `--eval-env-mapping` | none | Task-to-port mapping for external evaluation service. Recommended for formal runs. |
 | `--eval-port` | `8321` | Internal evaluation service port; for small debugging runs only. |
 | `--eval-log-dir` | `./eval_logs` | External evaluation service log directory. |
