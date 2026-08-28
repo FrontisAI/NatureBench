@@ -3,6 +3,23 @@
   if (!data) {
     throw new Error("NATUREBENCH_DATA is missing");
   }
+  const trackApi = window.NATUREBENCH_TRACKS;
+  if (!trackApi) {
+    throw new Error("NATUREBENCH_TRACKS is missing");
+  }
+  const { TRACKS, buildTrackLeaderboard, rankLeaderboard } = trackApi;
+  const leaderboardByTrack = Object.fromEntries(
+    Object.keys(TRACKS).map((trackKey) => [trackKey, buildTrackLeaderboard(data, trackKey)]),
+  );
+
+  function initialLeaderboardTrack() {
+    try {
+      const requestedTrack = new URLSearchParams(window.location.search).get("track");
+      return TRACKS[requestedTrack] ? requestedTrack : "full";
+    } catch {
+      return "full";
+    }
+  }
 
   const $ = (id) => document.getElementById(id);
 
@@ -154,6 +171,7 @@
   ];
 
   const state = {
+    leaderboardTrack: initialLeaderboardTrack(),
     rankMetric: "surpassSota",
     selectedDomain: data.domains[0]?.domain || "",
     caseDomain: "all",
@@ -169,6 +187,7 @@
   let activeConfigurationTrigger = null;
   let configurationPopoverPinned = false;
   let configurationHideTimer = null;
+  let leaderboardResizeHandler = null;
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -458,7 +477,7 @@
     board.classList.add("panel", "table-panel", "numeric-board-panel");
     if (!board.parentNode) container.insertBefore(board, chartPanel);
 
-    if (summary.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_PRECEDING) {
+    if (!board.contains(summary) && summary.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_PRECEDING) {
       container.insertBefore(summary, board);
     }
     if (board.nextElementSibling !== chartPanel) {
@@ -532,6 +551,40 @@
     });
   }
 
+  function activeTrack() {
+    return TRACKS[state.leaderboardTrack];
+  }
+
+  function activeLeaderboardRows() {
+    return leaderboardByTrack[state.leaderboardTrack];
+  }
+
+  function renderLeaderboardTrack() {
+    const track = activeTrack();
+    document.querySelectorAll("[data-leaderboard-track]").forEach((button) => {
+      const isActive = button.dataset.leaderboardTrack === track.key;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+      button.tabIndex = isActive ? 0 : -1;
+    });
+    const panel = $("leaderboard-track-panel");
+    const activeTab = document.querySelector(`[data-leaderboard-track="${track.key}"]`);
+    if (panel && activeTab) panel.setAttribute("aria-labelledby", activeTab.id);
+    const description = $("leaderboard-track-description");
+    if (description) description.textContent = track.description;
+  }
+
+  function updateLeaderboardTrackUrl(trackKey) {
+    try {
+      const url = new URL(window.location.href);
+      if (trackKey === "full") url.searchParams.delete("track");
+      else url.searchParams.set("track", trackKey);
+      window.history.replaceState(null, "", url);
+    } catch {
+      // Keep track switching functional when URL state cannot be updated.
+    }
+  }
+
   function barWidth(rows, metric, value) {
     const config = metricConfig[metric];
     const values = rows.map((row) => Number(row[metric]));
@@ -557,13 +610,14 @@
     const summary = $("summary-metrics");
     if (!summary) return;
 
-    const rows = sortRows(data.leaderboard, "surpassSota");
+    const activeRows = activeLeaderboardRows();
+    const rows = rankLeaderboard(activeRows);
     const top = rows[0];
-    const topMatch = [...data.leaderboard].sort((a, b) => b.matchSota - a.matchSota || b.surpassSota - a.surpassSota)[0];
-    const topCompletion = [...data.leaderboard].sort((a, b) => b.completionRate - a.completionRate || b.surpassSota - a.surpassSota)[0];
+    const topMatch = [...activeRows].sort((a, b) => b.matchCount - a.matchCount || b.surpassCount - a.surpassCount)[0];
+    const topCompletion = [...activeRows].sort((a, b) => b.validCount - a.validCount || b.surpassCount - a.surpassCount)[0];
     const cards = [
-      [data.benchmark.taskCount, "Tasks", data.benchmark.name || "NatureBench", ""],
-      [data.benchmark.domainCount, "Scientific domains", "Nature-family task groups", ""],
+      [String(activeTrack().taskCount), "Tasks", activeTrack().label, ""],
+      [String(data.benchmark.domainCount), "Scientific domains", "Nature-family task groups", ""],
       [formatPercent(top.surpassSota), "Best Surpass-SOTA", displayNameForRow(top), top.harness],
       [formatPercent(topMatch.matchSota), "Best Match-SOTA", displayNameForRow(topMatch), topMatch.harness],
       [formatPercent(topCompletion.completionRate), "Top completion", displayNameForRow(topCompletion), topCompletion.harness],
@@ -583,18 +637,14 @@
 
   function renderNumericBoard() {
     const board = $("numeric-main-board");
-    if (!board) return;
+    const boardWrap = board?.querySelector(".numeric-board-wrap");
+    if (!board || !boardWrap) return;
 
-    const rows = sortRows(data.leaderboard, "surpassSota");
-    board.innerHTML = `
-      <div class="panel-head numeric-board-head">
-        <div>
-          <h3 id="numeric-leaderboard-title">Main Leaderboard</h3>
-          <p>Ranked by <span class="rank-metric-label">Surpass-SOTA</span> · Click the <span class="inline-info" aria-hidden="true">i</span> beside a model to view its evaluation setup.</p>
-        </div>
-      </div>
-      <div class="numeric-board-wrap" role="region" aria-label="Scrollable Main Leaderboard" tabindex="0">
-        <table class="numeric-board-table">
+    const track = activeTrack();
+    const rows = rankLeaderboard(activeLeaderboardRows());
+    boardWrap.setAttribute("aria-label", `Scrollable ${track.label} Leaderboard`);
+    boardWrap.innerHTML = `
+        <table class="numeric-board-table" id="numeric-leaderboard">
           <thead>
             <tr>
               <th>Rank</th>
@@ -610,12 +660,13 @@
             </tr>
           </thead>
           <tbody>
-            ${rows.map((row, index) => {
+            ${rows.map((row) => {
             const crClass = row.completionRate < 80 ? "warn" : "";
-            const invalidClass = row.invalid > 15 ? "warn" : "";
+            const invalidClass = row.invalid / track.taskCount > 1 / 6 ? "warn" : "";
+            const topRank = row.rank <= 3;
             return `
-              <tr class="${index < 3 ? `top-rank top-rank-${index + 1}` : ""}">
-                <td><span class="rank-badge ${index < 3 ? `rank-${index + 1}` : "rank-other"}">${index + 1}</span></td>
+              <tr class="${topRank ? `top-rank top-rank-${row.rank}` : ""}">
+                <td><span class="rank-badge ${topRank ? `rank-${row.rank}` : "rank-other"}">${row.rank}</span></td>
                 <td>
                   <div class="model-cell">
                     ${modelLogoMarkup(row.name)}
@@ -625,7 +676,7 @@
                 </td>
                 <td><span class="agent-name ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</span></td>
                 <td>${runSourceMarkup(row)}</td>
-                <td><span class="pill good numeric-primary ${index < 3 ? `rank-metric-${index + 1}` : ""}">${formatPercent(row.surpassSota)}</span></td>
+                <td><span class="pill good numeric-primary ${topRank ? `rank-metric-${row.rank}` : ""}">${formatPercent(row.surpassSota)}</span></td>
                 <td>${formatPercent(row.matchSota)}</td>
                 <td>${formatScore(row.medianAll)}</td>
                 <td><span class="pill ${crClass}">${formatPercent(row.completionRate)}</span></td>
@@ -636,16 +687,16 @@
             }).join("")}
           </tbody>
         </table>
-      </div>
     `;
     bindLogoFallbacks(board);
     bindConfigurationTriggers(board);
+    bindLeaderboardScroller();
   }
 
   function renderLeaderboard() {
     const metric = state.rankMetric;
     const config = metricConfig[metric];
-    const rows = sortRows(data.leaderboard, metric);
+    const rows = sortRows(activeLeaderboardRows(), metric);
     renderNumericBoard();
     if ($("chart-subtitle")) {
       $("chart-subtitle").textContent = `Sorted by ${config.label}`;
@@ -1212,6 +1263,78 @@
     renderFeaturedCompare();
   }
 
+  function bindLeaderboardScroller() {
+    const leaderboardScroller = document.querySelector(".numeric-board-wrap");
+    if (!leaderboardScroller) return;
+
+    if (leaderboardResizeHandler) {
+      window.removeEventListener("resize", leaderboardResizeHandler);
+    }
+
+    let activePointerId = null;
+    let startX = 0;
+    let startScrollLeft = 0;
+    let moved = false;
+    let suppressClick = false;
+
+    const updateScrollableState = () => {
+      leaderboardScroller.classList.toggle(
+        "is-scrollable",
+        leaderboardScroller.scrollWidth > leaderboardScroller.clientWidth + 1,
+      );
+    };
+
+    const finishDrag = (event) => {
+      if (activePointerId !== event.pointerId) return;
+      if (leaderboardScroller.hasPointerCapture(activePointerId)) {
+        leaderboardScroller.releasePointerCapture(activePointerId);
+      }
+      suppressClick = moved;
+      activePointerId = null;
+      leaderboardScroller.classList.remove("is-dragging");
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    };
+
+    leaderboardScroller.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse" || event.button !== 0 || !leaderboardScroller.classList.contains("is-scrollable")) return;
+      activePointerId = event.pointerId;
+      startX = event.clientX;
+      startScrollLeft = leaderboardScroller.scrollLeft;
+      moved = false;
+      leaderboardScroller.setPointerCapture(activePointerId);
+    });
+
+    leaderboardScroller.addEventListener("pointermove", (event) => {
+      if (activePointerId !== event.pointerId) return;
+      const deltaX = event.clientX - startX;
+      if (!moved && Math.abs(deltaX) < 4) return;
+      moved = true;
+      leaderboardScroller.classList.add("is-dragging");
+      leaderboardScroller.scrollLeft = startScrollLeft - deltaX;
+      event.preventDefault();
+    });
+
+    leaderboardScroller.addEventListener("pointerup", finishDrag);
+    leaderboardScroller.addEventListener("pointercancel", finishDrag);
+    leaderboardScroller.addEventListener("click", (event) => {
+      if (!suppressClick) return;
+      event.preventDefault();
+      event.stopPropagation();
+    }, true);
+
+    leaderboardScroller.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      leaderboardScroller.scrollBy({ left: event.key === "ArrowLeft" ? -160 : 160, behavior: "smooth" });
+      event.preventDefault();
+    });
+
+    updateScrollableState();
+    leaderboardResizeHandler = updateScrollableState;
+    window.addEventListener("resize", leaderboardResizeHandler);
+  }
+
   function bindEvents() {
     document.addEventListener("click", (event) => {
       if (!event.target.closest("[data-configuration-trigger], #configuration-popover")) {
@@ -1233,6 +1356,32 @@
         renderLeaderboard();
       });
     }
+
+    const leaderboardTrackButtons = Array.from(document.querySelectorAll("[data-leaderboard-track]"));
+    leaderboardTrackButtons.forEach((button, index) => {
+      button.addEventListener("click", () => {
+        const nextTrack = button.dataset.leaderboardTrack;
+        if (!TRACKS[nextTrack] || nextTrack === state.leaderboardTrack) return;
+        state.leaderboardTrack = nextTrack;
+        updateLeaderboardTrackUrl(nextTrack);
+        renderLeaderboardTrack();
+        renderSummary();
+        renderLeaderboard();
+      });
+
+      button.addEventListener("keydown", (event) => {
+        let nextIndex;
+        if (event.key === "ArrowRight") nextIndex = (index + 1) % leaderboardTrackButtons.length;
+        else if (event.key === "ArrowLeft") nextIndex = (index - 1 + leaderboardTrackButtons.length) % leaderboardTrackButtons.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = leaderboardTrackButtons.length - 1;
+        else return;
+
+        event.preventDefault();
+        leaderboardTrackButtons[nextIndex].focus();
+        leaderboardTrackButtons[nextIndex].click();
+      });
+    });
 
     $("domain-select").addEventListener("change", (event) => {
       state.selectedDomain = event.target.value;
@@ -1303,70 +1452,6 @@
       });
     }
 
-    const leaderboardScroller = document.querySelector(".numeric-board-wrap");
-    if (leaderboardScroller) {
-      let activePointerId = null;
-      let startX = 0;
-      let startScrollLeft = 0;
-      let moved = false;
-      let suppressClick = false;
-
-      const updateScrollableState = () => {
-        leaderboardScroller.classList.toggle(
-          "is-scrollable",
-          leaderboardScroller.scrollWidth > leaderboardScroller.clientWidth + 1,
-        );
-      };
-
-      const finishDrag = (event) => {
-        if (activePointerId !== event.pointerId) return;
-        if (leaderboardScroller.hasPointerCapture(activePointerId)) {
-          leaderboardScroller.releasePointerCapture(activePointerId);
-        }
-        suppressClick = moved;
-        activePointerId = null;
-        leaderboardScroller.classList.remove("is-dragging");
-        window.setTimeout(() => {
-          suppressClick = false;
-        }, 0);
-      };
-
-      leaderboardScroller.addEventListener("pointerdown", (event) => {
-        if (event.pointerType !== "mouse" || event.button !== 0 || !leaderboardScroller.classList.contains("is-scrollable")) return;
-        activePointerId = event.pointerId;
-        startX = event.clientX;
-        startScrollLeft = leaderboardScroller.scrollLeft;
-        moved = false;
-        leaderboardScroller.setPointerCapture(activePointerId);
-      });
-
-      leaderboardScroller.addEventListener("pointermove", (event) => {
-        if (activePointerId !== event.pointerId) return;
-        const deltaX = event.clientX - startX;
-        if (!moved && Math.abs(deltaX) < 4) return;
-        moved = true;
-        leaderboardScroller.classList.add("is-dragging");
-        leaderboardScroller.scrollLeft = startScrollLeft - deltaX;
-        event.preventDefault();
-      });
-
-      leaderboardScroller.addEventListener("pointerup", finishDrag);
-      leaderboardScroller.addEventListener("pointercancel", finishDrag);
-      leaderboardScroller.addEventListener("click", (event) => {
-        if (!suppressClick) return;
-        event.preventDefault();
-        event.stopPropagation();
-      }, true);
-
-      leaderboardScroller.addEventListener("keydown", (event) => {
-        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-        leaderboardScroller.scrollBy({ left: event.key === "ArrowLeft" ? -160 : 160, behavior: "smooth" });
-        event.preventDefault();
-      });
-
-      updateScrollableState();
-      window.addEventListener("resize", updateScrollableState);
-    }
   }
 
   function initTheme() {
@@ -1385,6 +1470,7 @@
     ensureLeaderboardContainers();
     ensureCaseLegend();
     updateStaticLabels();
+    renderLeaderboardTrack();
     renderSummary();
     renderLeaderboard();
     renderFeaturedCases();

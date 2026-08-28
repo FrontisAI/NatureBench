@@ -338,9 +338,9 @@ window.NATUREBENCH_DATA = {
       "invalid": 17,
       "matchSota": 21.1111,
       "surpassSota": 7.7778,
-      "meanAll": -2.7453,
-      "medianAll": -0.2118,
-      "medianValid": -0.1122,
+      "meanAll": -2.7438,
+      "medianAll": -0.2054,
+      "medianValid": -0.1106,
       "completionRate": 80,
       "scoreRate": 98.8889,
       "configurationId": "qwen-3-7-max-claude-code"
@@ -349,9 +349,9 @@ window.NATUREBENCH_DATA = {
       "name": "MiniMax-M3",
       "harness": "Claude Code",
       "invalid": 11,
-      "matchSota": 26.6667,
+      "matchSota": 27.7778,
       "surpassSota": 6.6667,
-      "meanAll": -6.0282,
+      "meanAll": -6.0272,
       "medianAll": -0.1601,
       "medianValid": -0.1138,
       "completionRate": 86.6667,
@@ -845,13 +845,13 @@ window.NATUREBENCH_DATA = {
         },
         {
           "label": "-0.5 <= g < 0",
-          "count": 35,
-          "percent": 38.9
+          "count": 34,
+          "percent": 37.8
         },
         {
           "label": "0 <= g <= 0.1",
-          "count": 18,
-          "percent": 20
+          "count": 19,
+          "percent": 21.1
         },
         {
           "label": "0.1 < g <= 0.5",
@@ -3214,7 +3214,7 @@ window.NATUREBENCH_DATA = {
         },
         "MiniMax-M3": {
           "state": "valid",
-          "value": -0.063364
+          "value": 0.023086
         },
         "GLM-5.2": {
           "state": "valid",
@@ -5002,7 +5002,7 @@ window.NATUREBENCH_DATA = {
         },
         "Qwen 3.7 Max": {
           "state": "valid",
-          "value": -0.244965
+          "value": -0.115166
         },
         "GPT-5.5": {
           "state": "valid",

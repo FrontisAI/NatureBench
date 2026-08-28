@@ -264,12 +264,144 @@ code {
 
 .leaderboard-guide {
   max-width: 980px;
-  margin: 0 auto 1.25rem;
+  margin: 1.25rem auto;
   border: 1px solid color-mix(in srgb, var(--accent-primary) 24%, var(--border-color));
   border-radius: 8px;
   background: var(--panel);
   box-shadow: var(--shadow);
   overflow: hidden;
+}
+
+.leaderboard-main-panel {
+  border-color: color-mix(in srgb, var(--accent-primary) 24%, var(--border-color));
+}
+
+.leaderboard-main-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.leaderboard-main-head > div:first-child {
+  min-width: 0;
+}
+
+.leaderboard-main-head p {
+  max-width: 790px;
+}
+
+.leaderboard-main-head .leaderboard-setup-note {
+  margin-top: 0.28rem;
+}
+
+.leaderboard-track-switch {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.65rem;
+  margin: 0 1.15rem 0.65rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.leaderboard-track-button {
+  min-height: 42px;
+  margin-bottom: -1px;
+  padding: 0.48rem 0.08rem 0.68rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leaderboard-track-button span {
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.leaderboard-track-description {
+  max-width: 790px;
+  margin: 0 1.15rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.leaderboard-track-button:hover {
+  color: var(--accent-primary);
+}
+
+.leaderboard-track-button.is-active {
+  border-bottom-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.leaderboard-track-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.leaderboard-main-panel .leaderboard-summary {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0 1.15rem 1rem;
+}
+
+.leaderboard-main-panel .leaderboard-summary .numeric-summary-card {
+  min-height: 104px;
+  padding: 0.78rem 0.82rem;
+  grid-template-rows: 1.8rem 2rem 2rem;
+  border-color: color-mix(in srgb, var(--accent-primary) 14%, var(--border-color));
+  background: color-mix(in srgb, var(--bg-secondary) 28%, var(--panel));
+  box-shadow: none;
+}
+
+.rank-secondary-label {
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.panel-title-with-scope,
+.section-title-with-scope {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.section-title-with-scope {
+  justify-content: center;
+  margin-bottom: 0.8rem;
+}
+
+.section-title-with-scope .section-title {
+  margin-bottom: 0;
+}
+
+.track-scope-note {
+  color: var(--accent-primary);
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  line-height: 1.4;
+}
+
+.panel-head .track-scope-note {
+  margin-top: 0.24rem;
+  color: var(--accent-primary);
+  font-size: 0.72rem;
+}
+
+.section-track-scope-note {
+  margin: -0.45rem auto 0.6rem;
+  text-align: center;
+  font-size: 0.86rem;
 }
 
 .evaluation-setup {
@@ -401,6 +533,15 @@ code {
 
 section {
   padding: 3.5rem 0;
+}
+
+#leaderboard,
+#featured-cases,
+#domains,
+#cases,
+#submit-results,
+#citation {
+  scroll-margin-top: 70px;
 }
 
 .band {
@@ -2833,6 +2974,10 @@ td.board-value {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .leaderboard-main-panel .leaderboard-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .two-col {
     grid-template-columns: 1fr;
   }
@@ -2935,6 +3080,16 @@ td.board-value {
     grid-template-columns: 1fr;
   }
 
+  .leaderboard-main-head {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .leaderboard-main-panel .leaderboard-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0 0.9rem 0.9rem;
+  }
+
   .metric-definition-list > div {
     grid-template-columns: 1fr;
     gap: 0.12rem;
@@ -2950,6 +3105,10 @@ td.board-value {
   }
 
   .section-description {
+    font-size: 0.78rem;
+  }
+
+  .section-track-scope-note {
     font-size: 0.78rem;
   }
 
@@ -3203,6 +3362,24 @@ td.board-value {
 }
 
 @media (max-width: 520px) {
+  .leaderboard-track-switch {
+    gap: 1.25rem;
+    margin: 0 0.9rem 0.65rem;
+  }
+
+  .leaderboard-track-button {
+    min-height: 40px;
+    padding: 0.46rem 0.04rem 0.62rem;
+  }
+
+  .leaderboard-track-description {
+    margin: 0 0.9rem 0.9rem;
+  }
+
+  .leaderboard-main-panel .leaderboard-summary {
+    grid-template-columns: 1fr;
+  }
+
   .configuration-popover-list > div {
     grid-template-columns: 1fr;
     gap: 0.16rem;
