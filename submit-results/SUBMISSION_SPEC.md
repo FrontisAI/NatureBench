@@ -8,7 +8,7 @@ NatureBench run for leaderboard review.
 A submission contains three parts:
 
 1. `submission.yaml`: submission and evaluation configuration.
-2. `results.csv`: one row for each of the 90 official cases.
+2. `results.csv`: one row for each official case in the submitted track (90 for Full or 25 for NatureBench-25).
 3. `raw-results/`: per-case result records and trajectories used for review.
 
 ## 2. `submission.yaml`
@@ -25,6 +25,7 @@ submission:
   contact: "research@example.org"
 
 evaluation:
+  track: "full"
   timeout_seconds: 14400
   web_search: false
   compute: "gpu_low: one NVIDIA RTX 4090 (24 GB); gpu_high: one NVIDIA A800 (80 GB); cpu: no GPU."
@@ -41,6 +42,7 @@ evaluation:
 | `url` | Public link to the model, agent, paper, or project. |
 | `submission_date` | Date the result package is submitted, in `YYYY-MM-DD` format. |
 | `contact` | An email address, GitHub account, or another working contact method. |
+| `track` | Evaluation track: `full` for the 90-task track or `naturebench-25` for the 25-task track. Omitted values are interpreted as `full`. |
 | `timeout_seconds` | Per-task agent solve budget. The reference setting is 14,400 seconds. |
 | `web_search` | Whether the agent uses web search during the evaluation. The reference setting is `false`. |
 | `compute` | Short free-text description of the hardware assigned to tasks. The reference setup uses one NVIDIA RTX 3090/4090 (24 GB) for each `gpu_low` task, one NVIDIA A800 (80 GB) for each `gpu_high` task, and no GPU for `cpu` tasks. |
@@ -58,7 +60,7 @@ case_id,final_status,best_score,judge_verdict,judge_reason
 
 | Field | Requirement |
 |---|---|
-| `case_id` | Official case ID. The file must contain all 90 IDs exactly once. |
+| `case_id` | Official case ID. The file must contain every ID in the selected track exactly once. |
 | `final_status` | Final task status reported by the pipeline. |
 | `best_score` | Best evaluator-produced aggregate improvement `g`. Keep the raw numeric value even when the submitter-side judge marks the task invalid. For no score, leave the field empty; do not use `-`, `None`, `none`, `null`, or `NaN`. |
 | `judge_verdict` | Required. With a numeric score, use `valid` or `invalid`. Without a score, use `not_applicable`, as the pipeline does not normally judge unscored tasks; if a judge was run, report its `valid` or `invalid` verdict. |
@@ -68,10 +70,10 @@ case_id,final_status,best_score,judge_verdict,judge_reason
 
 The public metrics are calculated from the reviewed per-case rows.
 
-- Score Rate (`SR`): tasks with a numeric score divided by 90.
-- Completion Rate (`CR`): valid-scored tasks divided by 90.
-- Match-SOTA: valid-scored tasks with `g >= 0`, divided by 90.
-- Surpass-SOTA: valid-scored tasks with `g > 0.1`, divided by 90.
+- Score Rate (`SR`): tasks with a numeric score divided by the track's official task count.
+- Completion Rate (`CR`): valid-scored tasks divided by the track's official task count.
+- Match-SOTA: valid-scored tasks with `g >= 0`, divided by the track's official task count.
+- Surpass-SOTA: valid-scored tasks with `g > 0.1`, divided by the track's official task count.
 - Mean and median `g` over all tasks, with invalid and no-score cases assigned
   `g = -1`.
 - Median `g` over valid-scored tasks.

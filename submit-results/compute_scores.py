@@ -14,8 +14,9 @@ from typing import Any, Iterable
 
 from validate_submission import (
     ResultRecord,
+    SUPPORTED_TRACKS,
     default_case_metadata_path,
-    load_case_metadata,
+    load_track_case_metadata,
 )
 
 
@@ -164,6 +165,7 @@ def calculate_metrics(records: list[ResultRecord]) -> dict[str, Any]:
 def calculate_report(
     records: dict[str, ResultRecord],
     case_metadata: dict[str, str],
+    track: str = "full",
 ) -> dict[str, Any]:
     ordered_records = [records[case_id] for case_id in sorted(case_metadata)]
     _require_judge_verdicts(ordered_records)
@@ -177,6 +179,7 @@ def calculate_report(
         domains[domain] = calculate_metrics(domain_records)
     return {
         "metric_version": "naturebench-public-v1",
+        "track": track,
         "overall": calculate_metrics(ordered_records),
         "domains": domains,
     }
@@ -216,6 +219,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--results", type=Path, required=True, help="results.csv")
     parser.add_argument("--output", type=Path, help="optional score_report.json")
     parser.add_argument(
+        "--track",
+        choices=SUPPORTED_TRACKS,
+        default="full",
+        help="evaluation track used to select the official case set",
+    )
+    parser.add_argument(
         "--case-metadata",
         type=Path,
         default=default_case_metadata_path(),
@@ -227,14 +236,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Iterable[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
-        case_metadata = load_case_metadata(args.case_metadata)
+        case_metadata = load_track_case_metadata(args.case_metadata, args.track)
         records = load_scoring_results(args.results, case_metadata)
     except ValueError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
 
     try:
-        report = calculate_report(records, case_metadata)
+        report = calculate_report(records, case_metadata, track=args.track)
     except ValueError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1

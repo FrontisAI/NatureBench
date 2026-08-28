@@ -7,12 +7,13 @@
 [![arXiv](https://img.shields.io/badge/arXiv-b31b1b?style=for-the-badge&logo=arxiv&logoColor=ffffff)](https://arxiv.org/abs/2606.24530) &nbsp; [![Hugging Face Dataset](https://img.shields.io/badge/HUGGINGFACE-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/FrontisAI/NatureBench) &nbsp; [![Leaderboard](https://img.shields.io/badge/Leaderboard-steelblue?style=for-the-badge&logo=googlechrome&logoColor=ffffff)](https://frontisai.github.io/NatureBench/)
 
 [📰 News](#news) • [📖 Overview](#overview) • [🏅 Submit Results](#submit-results) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start)<br>
-[🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
+[🎯 NatureBench-25](#naturebench-25) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
 </div>
 
 ## 📰News
 
+- **🎯 [2026-08-28] We introduce [NatureBench-25](#naturebench-25), a 25-task track for faster, lower-cost evaluation.**
 - **🏆 [2026-08-23] We update the [results](https://frontisai.github.io/NatureBench/) with three new coding-agent configurations: Opus 5, Kimi K3, and Qwen 3.8 Max.**
 - **🏆 [2026-08-07] We add the externally submitted AIBuildAI 2.5 + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/).**
 - **⚖️ [2026-07-30] We update the validity judge and use GPT-5.5 to reassess all runs; the [results](https://frontisai.github.io/NatureBench/) have been comprehensively updated.**
@@ -117,6 +118,21 @@ For comparability, our reported runs use the following setup:
 | Compute | Each `gpu_low` task uses one NVIDIA RTX 3090/4090 (24 GB), each `gpu_high` task uses one NVIDIA A800 (80 GB, A100-class), and the 3 `cpu` tasks use no GPU. Task-group lists are provided in [`task-set/`](task-set/). |
 | Web search | Disabled for all evaluated agents. |
 
+## 🎯NatureBench-25
+
+**NatureBench-25** is the 25-task track for faster, lower-cost evaluation. It covers all six scientific domains. Tasks are selected for quality, domain coverage, compute demand, evaluator runtime, and consistency with the Full leaderboard.
+
+It complements rather than replaces the 90-task Full track. Use the Full track for comprehensive benchmark reporting.
+
+The NatureBench-25 task lists are available in `task-set/naturebench-25/` and grouped by compute requirements. To run only this 25-task track, use the Quick Start command above and set `--tasks` to one of the following paths:
+
+| Task list | Counts | Use |
+|---|---:|---|
+| [`naturebench-25/all.txt`](task-set/naturebench-25/all.txt) | 25 | Complete track |
+| [`naturebench-25/cpu.txt`](task-set/naturebench-25/cpu.txt) | 1 | CPU tasks |
+| [`naturebench-25/gpu_low.txt`](task-set/naturebench-25/gpu_low.txt) | 22 | Lower-GPU tasks |
+| [`naturebench-25/gpu_high.txt`](task-set/naturebench-25/gpu_high.txt) | 2 | Higher-GPU tasks |
+
 ## 🌱NatureGym
 
 The task packages are built by **NatureGym**, an automated, Skills-based pipeline that turns a published Nature-family paper into a containerized, runnable task. It filters papers, acquires and verifies the data, and assembles the task package (brief, data, evaluator, environment, metadata), while an information firewall removes the source method so that agents must *discover* solutions rather than reproduce them.
@@ -135,7 +151,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 - `scripts/` — helper scripts
   - `ensure_naturebench_base.sh` — build the NatureBench base image if it is missing
   - `start_eval_services.sh` — start evaluation service from the mapping file
-- `task-set/` — task lists grouped by resource demand
+- `task-set/` — Full and NatureBench-25 task lists grouped by resource demand
 - `submit-results/` — leaderboard submission guide, templates, and validation/scoring tools
 - `docs/` — detailed configuration, usage, task-packages, and custom-agents references
 - `naturegym/` — NatureGym construction pipeline: skills + batch drivers that build task packages from papers

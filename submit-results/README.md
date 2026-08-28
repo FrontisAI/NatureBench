@@ -20,8 +20,11 @@ Prepare one directory containing:
         └── trajectory.*          # one or more non-empty trajectory files
 ```
 
-Start from [`templates/submission.yaml`](templates/submission.yaml) and
-[`templates/results.csv`](templates/results.csv). See
+Start from [`templates/submission.yaml`](templates/submission.yaml). Use
+[`templates/results.csv`](templates/results.csv) for the 90-task Full track or
+[`templates/results_naturebench_25.csv`](templates/results_naturebench_25.csv)
+for NatureBench-25. Set `evaluation.track` in `submission.yaml` to `"full"` for
+the Full track or `"naturebench-25"` for NatureBench-25. See
 [`SUBMISSION_SPEC.md`](SUBMISSION_SPEC.md) for the field definitions, accepted
 raw-result layouts, and result publication process.
 
@@ -36,6 +39,7 @@ python submit-results/validate_submission.py \
   --raw-results <submission-name>/raw-results
 
 python submit-results/compute_scores.py \
+  --track <full-or-naturebench-25> \
   --results <submission-name>/results.csv \
   --output <submission-name>/score_report.json
 ```

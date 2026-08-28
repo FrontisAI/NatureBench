@@ -33,6 +33,7 @@ SUBMISSION_FIELDS = {
     "contact",
 }
 EVALUATION_FIELDS = {
+    "track",
     "timeout_seconds",
     "web_search",
     "compute",
@@ -40,6 +41,8 @@ EVALUATION_FIELDS = {
     "human_intervention",
     "deviations_from_reference",
 }
+OPTIONAL_EVALUATION_FIELDS = {"track"}
+SUPPORTED_TRACKS = ("full", "naturebench-25")
 SCORE_TOLERANCE = 1e-9
 
 
@@ -76,6 +79,14 @@ def default_case_metadata_path() -> Path:
     return Path(__file__).with_name("case_metadata.csv")
 
 
+def default_track_task_file(track: str) -> Path | None:
+    if track == "full":
+        return None
+    if track == "naturebench-25":
+        return Path(__file__).resolve().parents[1] / "task-set" / track / "all.txt"
+    raise ValueError(f"unsupported evaluation track: {track}")
+
+
 def load_case_metadata(path: Path) -> dict[str, str]:
     """Load the official case-to-domain mapping."""
 
@@ -94,6 +105,36 @@ def load_case_metadata(path: Path) -> dict[str, str]:
     return cases
 
 
+def load_track_case_metadata(path: Path, track: str) -> dict[str, str]:
+    """Load full case metadata, optionally filtered to an official track."""
+
+    cases = load_case_metadata(path)
+    task_file = default_track_task_file(track)
+    if task_file is None:
+        return cases
+    try:
+        task_ids = [
+            line.strip()
+            for line in task_file.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+    except OSError as error:
+        raise ValueError(f"cannot read {track} task list {task_file}: {error}") from error
+    duplicates = sorted(
+        case_id for case_id in set(task_ids) if task_ids.count(case_id) > 1
+    )
+    if duplicates:
+        raise ValueError(
+            f"{track} task list contains duplicate cases: {', '.join(duplicates)}"
+        )
+    unknown = sorted(set(task_ids) - set(cases))
+    if unknown:
+        raise ValueError(
+            f"{track} task list contains unknown cases: {', '.join(unknown)}"
+        )
+    return {case_id: cases[case_id] for case_id in task_ids}
+
+
 def _nonempty_string(
     mapping: dict[str, Any],
     key: str,
@@ -110,8 +151,9 @@ def _check_exact_keys(
     expected: set[str],
     location: str,
     report: ValidationReport,
+    optional: set[str] | None = None,
 ) -> None:
-    missing = sorted(expected - set(mapping))
+    missing = sorted(expected - set(optional or ()) - set(mapping))
     extra = sorted(set(mapping) - expected)
     if missing:
         report.error(f"{location} is missing fields: {', '.join(missing)}")
@@ -161,7 +203,16 @@ def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | 
     if not isinstance(evaluation, dict):
         report.error("metadata.evaluation must be a mapping")
     else:
-        _check_exact_keys(evaluation, EVALUATION_FIELDS, "evaluation", report)
+        _check_exact_keys(
+            evaluation,
+            EVALUATION_FIELDS,
+            "evaluation",
+            report,
+            optional=OPTIONAL_EVALUATION_FIELDS,
+        )
+        track = evaluation.get("track", "full")
+        if track not in SUPPORTED_TRACKS:
+            report.error("evaluation.track must be full or naturebench-25")
         timeout = evaluation.get("timeout_seconds")
         if isinstance(timeout, bool) or not isinstance(timeout, int) or timeout <= 0:
             report.error("evaluation.timeout_seconds must be a positive integer")
@@ -174,6 +225,18 @@ def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | 
             report.error("evaluation.judge_model must be a string; use an empty string if unused")
 
     return payload
+
+
+def evaluation_track(payload: dict[str, Any] | None) -> str:
+    """Return a validated track, defaulting legacy submissions to Full."""
+
+    if not isinstance(payload, dict):
+        return "full"
+    evaluation = payload.get("evaluation")
+    if not isinstance(evaluation, dict):
+        return "full"
+    track = evaluation.get("track", "full")
+    return track if track in SUPPORTED_TRACKS else "full"
 
 
 def _parse_score(
@@ -488,14 +551,15 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Iterable[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     report = ValidationReport()
+    metadata = validate_metadata(args.metadata, report)
+    track = evaluation_track(metadata)
     try:
-        case_metadata = load_case_metadata(args.case_metadata)
+        case_metadata = load_track_case_metadata(args.case_metadata, track)
     except ValueError as error:
         report.error(str(error))
         print(format_report(report))
         return 1
 
-    validate_metadata(args.metadata, report)
     records = load_results_csv(args.results, case_metadata, report)
     validate_raw_results(args.raw_results, records, case_metadata, report)
     print(format_report(report))

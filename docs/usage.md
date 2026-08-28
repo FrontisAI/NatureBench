@@ -152,7 +152,7 @@ If you do not want the current directory's `config.yaml` to be read automaticall
 
 | Parameter | Default | Usage |
 |---|---|---|
-| `--tasks` | `all` | Task selection entry point. Use `all`, `cpu`, `gpu_high`, `gpu_low`, or a custom task-list file. |
+| `--tasks` | `all` | Task selection entry point. Use `all`, `cpu`, `gpu_high`, `gpu_low`, or a custom task-list file path. |
 | `--dataset-id` | `FrontisAI/NatureBench` | Hugging Face dataset id; usually unchanged. |
 | `--dataset-revision` | `None` | Uses the latest version from the HF default branch at download time; usually unchanged. |
 | `--data-dir` | `./data/naturebench_data` | Dataset download or local data directory. |
