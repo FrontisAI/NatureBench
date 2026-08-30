@@ -979,9 +979,12 @@
         <span class="legend-swatch" style="background: rgba(111, 183, 170, 0.16);"></span>
         light green: Match-SOTA, <code>0 &lt;= g &lt;= 0.1</code>
       </span>
-      <span class="legend-item">
+      <span class="legend-item legend-item-below">
         <span class="legend-swatch" style="background: rgba(127, 139, 134, 0.14);"></span>
-        gray/white: below SOTA, <code>g &lt; 0</code> (darker = farther below)
+        <span class="legend-copy">
+          <span class="legend-main">gray/white: below SOTA, <code>g &lt; 0</code></span>
+          <span class="legend-note">(darker = farther below)</span>
+        </span>
       </span>
       <span class="legend-item">
         <span class="legend-swatch" style="background: var(--warn-soft); border-color: var(--warn);"></span>
@@ -1143,7 +1146,10 @@
       <tr class="case-row ${row.caseId === state.selectedCaseId ? "selected" : ""}" data-case-id="${escapeHtml(row.caseId)}" tabindex="0" aria-label="${escapeHtml(row.title)}">
         <td>
           <div class="case-title" title="${escapeHtml(row.title)}">${escapeHtml(row.title)}</div>
-          <div class="case-meta">Case ID (DOI suffix): ${escapeHtml(row.caseId)}</div>
+          <div class="case-meta case-id-meta">
+            <span>Case ID (DOI suffix):</span>
+            <span class="case-id-value">${escapeHtml(row.caseId)}</span>
+          </div>
         </td>
         <td>${escapeHtml(row.domain)}</td>
         <td>${escapeHtml(row.mlTaskType)}</td>

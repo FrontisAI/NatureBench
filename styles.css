@@ -1995,7 +1995,7 @@ td.board-value {
   line-height: 1.35;
 }
 
-.line-chart-head span {
+.line-chart-head > span {
   color: var(--text-secondary);
   font-size: 0.6rem;
   font-weight: 800;
@@ -2571,6 +2571,10 @@ td.board-value {
   font-weight: 800;
 }
 
+.legend-item-below .legend-note::before {
+  content: " ";
+}
+
 .case-matrix-legend .legend-swatch,
 .matrix-legend .legend-swatch,
 .case-legend .legend-swatch,
@@ -2843,6 +2847,11 @@ td.board-value {
 .case-meta {
   color: var(--text-secondary);
   font-size: 0.62rem;
+}
+
+.case-id-meta {
+  display: flex;
+  gap: 0.25em;
 }
 
 .case-best-cell {
@@ -3294,6 +3303,21 @@ td.board-value {
     overflow: hidden;
   }
 
+  .line-chart-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.32rem;
+  }
+
+  .line-chart-head > div {
+    min-width: 0;
+  }
+
+  .line-chart-head > span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
   .attempt-line-chart {
     min-width: 0;
   }
@@ -3431,6 +3455,29 @@ td.board-value {
     grid-template-columns: 1fr;
   }
 
+  .case-matrix-legend .legend-item-below {
+    align-items: flex-start;
+  }
+
+  .case-matrix-legend .legend-item-below .legend-swatch {
+    margin-top: 0.08rem;
+  }
+
+  .case-matrix-legend .legend-item-below .legend-copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.08rem;
+  }
+
+  .case-matrix-legend .legend-item-below .legend-main,
+  .case-matrix-legend .legend-item-below .legend-note {
+    white-space: nowrap;
+  }
+
+  .case-matrix-legend .legend-item-below .legend-note::before {
+    content: none;
+  }
+
   .case-table-wrap {
     max-height: 620px;
   }
@@ -3438,6 +3485,26 @@ td.board-value {
 }
 
 @media (max-width: 520px) {
+  .case-table {
+    --mobile-case-column-width: clamp(132px, 38vw, 150px);
+  }
+
+  .case-table td:first-child,
+  .case-table th:first-child {
+    width: var(--mobile-case-column-width);
+    min-width: var(--mobile-case-column-width);
+    max-width: var(--mobile-case-column-width);
+  }
+
+  .case-title {
+    max-width: calc(var(--mobile-case-column-width) - 1rem);
+  }
+
+  .case-id-meta {
+    display: grid;
+    gap: 0.04rem;
+  }
+
   .leaderboard-track-switch {
     gap: 1.25rem;
     margin: 0 0.9rem 0.65rem;
@@ -3476,11 +3543,19 @@ td.board-value {
   }
 }
 
-@media (max-width: 340px) {
+@media (max-width: 540px) {
   .domain-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
+@media (max-width: 380px) {
+  .domain-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 340px) {
   .domain-chart-header {
     display: block;
   }

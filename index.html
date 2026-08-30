@@ -226,7 +226,7 @@
       <div class="container">
         <h2 class="section-title">Domain Breakdown</h2>
         <p class="track-scope-note section-track-scope-note">Full track · 90 tasks</p>
-        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Within each domain, configurations are ranked by Surpass-SOTA, as on the main leaderboard.</p>
+        <p class="section-description">Domain labels follow the six-domain taxonomy used in the NatureBench paper. Within each domain, configurations are ranked by Surpass-SOTA, then Match-SOTA, as on the main leaderboard.</p>
 
         <div class="domain-grid" id="domain-grid"></div>
 
@@ -278,7 +278,7 @@
         <div class="case-matrix-legend legend" id="case-matrix-legend" aria-label="Case matrix legend">
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-surpass" aria-hidden="true"></span>Surpass-SOTA, <code>g &gt; 0.1</code></span>
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-match" aria-hidden="true"></span>Match-SOTA, <code>0 &lt;= g &lt;= 0.1</code></span>
-          <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-below" aria-hidden="true"></span>Below SOTA, <code>g &lt; 0</code></span>
+          <span class="legend-item case-legend-item legend-item-below"><span class="legend-swatch case-legend-swatch case-legend-swatch-below" aria-hidden="true"></span><span class="legend-copy"><span class="legend-main">gray/white: below SOTA, <code>g &lt; 0</code></span><span class="legend-note">(darker = farther below)</span></span></span>
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-invalid" aria-hidden="true"></span>Invalid</span>
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-none" aria-hidden="true">none</span>No score/submission</span>
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-best" aria-hidden="true"></span>Outlined cell: best configuration for that task</span>
