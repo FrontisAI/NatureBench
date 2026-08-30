@@ -143,10 +143,21 @@
     });
   }
 
+  function rankDomainLeaderboard(data, domainName) {
+    const cases = data.cases.filter((item) => item.domain === domainName);
+    if (!cases.length) throw new Error(`Unknown or empty domain: ${domainName}`);
+    const rows = data.leaderboard.map((row) => ({
+      ...row,
+      ...metricsForModel(row.name, cases),
+    }));
+    return rankLeaderboard(rows);
+  }
+
   return Object.freeze({
     TRACKS,
     buildTrackLeaderboard,
     casesForTrack,
+    rankDomainLeaderboard,
     rankLeaderboard,
   });
 });

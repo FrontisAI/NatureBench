@@ -80,16 +80,6 @@
       white-space: nowrap;
     }
 
-    .trace-brand span {
-      color: var(--trace-accent-2);
-    }
-
-    .trace-brand small {
-      color: var(--trace-muted);
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
     .trace-top-actions {
       display: flex;
       align-items: center;
@@ -161,40 +151,12 @@
 
     .run-summary {
       position: sticky;
-      top: 108px;
-      max-height: calc(100vh - 130px);
+      top: 72px;
+      max-height: calc(100vh - 94px);
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-gutter: stable;
       padding: 18px 20px;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      color: var(--trace-muted);
-      font-size: 0.72rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-
-    .back-link:hover {
-      color: var(--trace-text);
-    }
-
-    .trace-page-back {
-      position: sticky;
-      top: 62px;
-      z-index: 19;
-      width: max-content;
-      margin-bottom: 14px;
-      padding: 6px 9px;
-      border: 1px solid var(--trace-border);
-      border-radius: 6px;
-      background: color-mix(in srgb, var(--trace-panel) 96%, transparent);
-      box-shadow: 0 8px 18px color-mix(in srgb, var(--trace-bg) 72%, transparent);
-      backdrop-filter: blur(8px);
     }
 
     .run-title {
@@ -216,6 +178,19 @@
       color: var(--trace-muted);
       font-size: 0.72rem;
       line-height: 1.45;
+    }
+
+    .run-context {
+      display: grid;
+      gap: 2px;
+    }
+
+    .run-context span {
+      display: block;
+    }
+
+    .run-context span:last-child {
+      color: var(--trace-faint);
     }
 
     .score-block {
@@ -714,7 +689,7 @@
 <body>
   <header class="trace-topbar">
     <div class="trace-topbar-inner">
-      <a class="trace-brand" href="index.html" aria-label="NatureBench home">Nature<span>Bench</span><small>/ traces</small></a>
+      <a class="trace-brand" href="index.html" aria-label="Back to NatureBench Leaderboard">← NatureBench Leaderboard</a>
       <div class="trace-top-actions">
         <select class="trace-case-select" id="case-select" aria-label="Select trace case"></select>
         <a class="trace-link" href="index.html#featured-cases">Featured cases</a>
@@ -724,7 +699,6 @@
   </header>
 
   <main class="trace-page">
-    <a class="back-link trace-page-back" href="index.html#featured-cases">← Back to case studies</a>
     <div class="trace-workspace">
       <aside class="run-summary" id="run-summary" aria-label="Run summary"></aside>
 
@@ -815,7 +789,10 @@
       $("run-summary").innerHTML = `
         <section class="run-title">
           <h1>${escapeHtml(item.title)}</h1>
-          <p>${escapeHtml(item.role)} · ${escapeHtml(capture)}</p>
+          <p class="run-context">
+            <span>${escapeHtml(item.role)}</span>
+            <span>${escapeHtml(capture)}</span>
+          </p>
         </section>
         <section class="score-block">
           <div class="score-value">${escapeHtml(formatG(item.bestG))}</div>

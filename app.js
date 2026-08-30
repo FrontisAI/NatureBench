@@ -7,9 +7,12 @@
   if (!trackApi) {
     throw new Error("NATUREBENCH_TRACKS is missing");
   }
-  const { TRACKS, buildTrackLeaderboard, rankLeaderboard } = trackApi;
+  const { TRACKS, buildTrackLeaderboard, rankDomainLeaderboard, rankLeaderboard } = trackApi;
   const leaderboardByTrack = Object.fromEntries(
     Object.keys(TRACKS).map((trackKey) => [trackKey, buildTrackLeaderboard(data, trackKey)]),
+  );
+  const domainLeaderboardByName = Object.fromEntries(
+    data.domains.map((domain) => [domain.domain, rankDomainLeaderboard(data, domain.domain)]),
   );
 
   function initialLeaderboardTrack() {
@@ -662,7 +665,7 @@
           <tbody>
             ${rows.map((row) => {
             const crClass = row.completionRate < 80 ? "warn" : "";
-            const invalidClass = row.invalid / track.taskCount > 1 / 6 ? "warn" : "";
+            const invalidClass = row.invalid / track.taskCount > 0.2 ? "warn" : "";
             const topRank = row.rank <= 3;
             return `
               <tr class="${topRank ? `top-rank top-rank-${row.rank}` : ""}">
@@ -696,6 +699,7 @@
   function renderLeaderboard() {
     const metric = state.rankMetric;
     const config = metricConfig[metric];
+    const track = activeTrack();
     const rows = sortRows(activeLeaderboardRows(), metric);
     renderNumericBoard();
     if ($("chart-subtitle")) {
@@ -723,7 +727,7 @@
     if (detailBody) {
       detailBody.innerHTML = rows.map((row, index) => {
         const crClass = row.completionRate < 80 ? "warn" : "";
-        const invalidClass = row.invalid > 15 ? "warn" : "";
+        const invalidClass = row.invalid / track.taskCount > 0.2 ? "warn" : "";
         return `
           <tr>
             <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
@@ -834,22 +838,82 @@
     });
   }
 
+  function textContentBounds(element) {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return range.getBoundingClientRect();
+  }
+
+  function alignDomainWinnerDividers() {
+    document.querySelectorAll(".domain-winner-list.is-tied").forEach((list) => {
+      const entries = list.querySelectorAll(".domain-winner-entry");
+      if (entries.length !== 2) return;
+
+      const secondEntry = entries[1];
+      secondEntry.style.removeProperty("--domain-divider-left");
+
+      const firstHarness = entries[0].querySelector(".domain-winner-agent");
+      const secondHarness = entries[1].querySelector(".domain-winner-agent");
+      if (!firstHarness || !secondHarness) return;
+
+      const firstHarnessRect = textContentBounds(firstHarness);
+      const secondHarnessRect = textContentBounds(secondHarness);
+      const secondEntryRect = secondEntry.getBoundingClientRect();
+      const dividerCenter = (firstHarnessRect.right + secondHarnessRect.left) / 2;
+      secondEntry.style.setProperty(
+        "--domain-divider-left",
+        `${dividerCenter - secondEntryRect.left}px`,
+      );
+    });
+
+    document.querySelectorAll(".domain-table-winner-list.is-tied").forEach((list) => {
+      const entries = list.querySelectorAll(".domain-table-winner-entry");
+      if (entries.length !== 2) return;
+
+      const firstHarness = entries[0].querySelector(".agent-subline");
+      const secondHarness = entries[1].querySelector(".agent-subline");
+      if (!firstHarness || !secondHarness) return;
+
+      const firstHarnessRect = textContentBounds(firstHarness);
+      const secondHarnessRect = textContentBounds(secondHarness);
+      const secondEntryRect = entries[1].getBoundingClientRect();
+      const dividerCenter = (firstHarnessRect.right + secondHarnessRect.left) / 2;
+      entries[1].style.setProperty(
+        "--domain-table-divider-left",
+        `${dividerCenter - secondEntryRect.left}px`,
+      );
+    });
+  }
+
   function renderDomainGrid() {
-    $("domain-grid").innerHTML = data.domains.map((domain) => `
-      <button class="domain-card" data-domain="${escapeHtml(domain.domain)}" style="--model-color:${modelColor(domain.winner)}">
-        <div class="domain-name">${escapeHtml(domain.domain)}</div>
-        <div class="domain-count">N=${domain.n}</div>
-        <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner</div>
-        <div class="domain-winner">${escapeHtml(displayNameForModel(domain.winner))}</div>
-        <div class="domain-winner-agent ${agentColorClass(agentForModel(domain.winner))}">${escapeHtml(agentForModel(domain.winner))}</div>
-        <div class="domain-primary">Surpass-SOTA ${formatPercent(domain.winnerSurpassSota)}</div>
-        <div class="mini-meter" aria-hidden="true"><span style="--w:${domain.winnerSurpassSota}%"></span></div>
-        <div class="domain-stat">
-          <span>Match-SOTA ${formatPercent(domain.winnerMatchSota)}</span>
-          <span>Median g ${formatScore(domain.winnerMedianAll)}</span>
-        </div>
-      </button>
-    `).join("");
+    $("domain-grid").innerHTML = data.domains.map((domain) => {
+      const rows = domainLeaderboardByName[domain.domain];
+      const leaders = rows.filter((row) => row.rank === 1);
+      const leader = leaders[0];
+      return `
+        <button class="domain-card" data-domain="${escapeHtml(domain.domain)}" data-tied-winners="${leaders.length > 1}" style="--model-color:${modelColor(leader.name)}">
+          <div class="domain-name">${escapeHtml(domain.domain)}</div>
+          <div class="domain-count">N=${domain.n}</div>
+          <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner${leaders.length > 1 ? "s" : ""}</div>
+          <div class="domain-winner-list${leaders.length > 1 ? " is-tied" : ""}">
+            ${leaders.map((row) => `
+              <div class="domain-winner-entry">
+                <div class="domain-winner">${escapeHtml(displayNameForRow(row))}</div>
+                <div class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="domain-primary">Surpass-SOTA ${formatPercent(leader.surpassSota)}</div>
+          <div class="mini-meter" aria-hidden="true"><span style="--w:${leader.surpassSota}%"></span></div>
+          <div class="domain-stat">
+            <span>Match-SOTA ${formatPercent(leader.matchSota)}</span>
+            <span>Median g ${leaders.map((row) => formatScore(row.medianAll)).join("/")}</span>
+          </div>
+        </button>
+      `;
+    }).join("");
+
+    alignDomainWinnerDividers();
 
     document.querySelectorAll(".domain-card").forEach((card) => {
       card.addEventListener("click", () => {
@@ -870,6 +934,7 @@
   function renderDomainDetail() {
     const domain = data.domains.find((item) => item.domain === state.selectedDomain) || data.domains[0];
     if (!domain) return;
+    const rows = domainLeaderboardByName[domain.domain];
     $("domain-chart-title").textContent = domain.domain;
     $("domain-chart-subtitle").textContent = `N=${domain.n} tasks · Surpass-SOTA rate`;
 
@@ -882,12 +947,12 @@
         </div>
         <span class="domain-value-label">Surpass-SOTA</span>
       </div>
-      ${domain.models.map((row, index) => {
+      ${rows.map((row) => {
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
         return `
           <div class="bar-row model-color-row" style="--model-color:${modelColor(row.name)}">
             <div class="bar-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
-              <span class="rank-dot">${index + 1}</span>
+              <span class="rank-dot">${row.rank}</span>
               <span class="bar-model-identity">${modelAgentMarkup(row.name, { logo: true })}</span>
             </div>
             <div class="bar-track" aria-hidden="true">
@@ -934,16 +999,28 @@
   }
 
   function renderDomainWinners() {
-    $("domain-winners-body").innerHTML = data.domains.map((domain) => `
-      <tr>
-        <td>${escapeHtml(domain.domain)}</td>
-        <td>${domain.n}</td>
-        <td>${modelAgentMarkup(domain.winner)}</td>
-        <td><span class="pill good">${formatPercent(domain.winnerSurpassSota)}</span></td>
-        <td>${formatPercent(domain.winnerMatchSota)}</td>
-        <td>${formatScore(domain.winnerMedianAll)}</td>
-      </tr>
-    `).join("");
+    $("domain-winners-body").innerHTML = data.domains.map((domain) => {
+      const rows = domainLeaderboardByName[domain.domain];
+      const leaders = rows.filter((row) => row.rank === 1);
+      const leader = leaders[0];
+      return `
+        <tr>
+          <td>${escapeHtml(domain.domain)}</td>
+          <td>${domain.n}</td>
+          <td>
+            <div class="domain-table-winner-list${leaders.length > 1 ? " is-tied" : ""}">
+              ${leaders.map((row) => `
+                <div class="domain-table-winner-entry">${modelAgentMarkup(row.name)}</div>
+              `).join("")}
+            </div>
+          </td>
+          <td><span class="pill good">${formatPercent(leader.surpassSota)}</span></td>
+          <td>${formatPercent(leader.matchSota)}</td>
+          <td><span class="domain-table-median-values">${leaders.map((row) => formatScore(row.medianAll)).join("/")}</span></td>
+        </tr>
+      `;
+    }).join("");
+    alignDomainWinnerDividers();
   }
 
   function renderCaseFilters() {
@@ -1019,8 +1096,14 @@
           <button class="case-lookup-close" type="button" aria-label="Close selected task" title="Close selected task">×</button>
           <span>Best configuration</span>
         </div>
-        <strong>${row.bestModel ? escapeHtml(displayNameForModel(row.bestModel)) : ""}</strong>
-        <small>${row.bestModel ? `<span class="agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span> · g ${formatScore(row.bestScore)}` : ""}</small>
+        ${row.bestModel ? `
+          <strong class="case-lookup-best-configuration configuration-popover-title">
+            <span class="configuration-popover-model">${escapeHtml(displayNameForModel(row.bestModel))}</span>
+            <span class="configuration-popover-separator">+</span>
+            <span class="configuration-popover-agent agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span>
+          </strong>
+          <small class="case-lookup-best-score">g ${formatScore(row.bestScore)}</small>
+        ` : ""}
       </div>
     `;
     card.querySelector(".case-lookup-close").addEventListener("click", () => {
@@ -1347,6 +1430,7 @@
     });
 
     window.addEventListener("resize", hideConfigurationPopover);
+    window.addEventListener("resize", alignDomainWinnerDividers);
     document.addEventListener("scroll", hideConfigurationPopover, true);
 
     const rankMetric = $("rank-metric");
@@ -1483,6 +1567,9 @@
     renderCaseLegend();
     renderCaseTable();
     bindEvents();
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(alignDomainWinnerDividers);
+    }
   }
 
   init();

@@ -161,6 +161,19 @@ window.NATUREBENCH_DATA = {
       "validityJudge": "GPT-5.5"
     },
     {
+      "name": "GLM-5.3",
+      "id": "glm-5-3-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "Web search and web fetch tools disabled",
+      "validityJudge": "GPT-5.5"
+    },
+    {
       "name": "Claude Opus 5",
       "displayName": "Opus 5",
       "id": "claude-opus-5-claude-code",
@@ -305,6 +318,19 @@ window.NATUREBENCH_DATA = {
       "completionRate": 84.4444,
       "scoreRate": 100,
       "configurationId": "opus-4-6-claude-code"
+    },
+    {
+      "name": "GLM-5.3",
+      "harness": "Claude Code",
+      "invalid": 26,
+      "matchSota": 25.555555555555554,
+      "surpassSota": 10,
+      "meanAll": -0.882393,
+      "medianAll": -0.300032,
+      "medianValid": -0.055435,
+      "completionRate": 66.66666666666666,
+      "scoreRate": 95.55555555555556,
+      "configurationId": "glm-5-3-claude-code"
     },
     {
       "name": "Gemini 3.5 Flash",
@@ -697,6 +723,46 @@ window.NATUREBENCH_DATA = {
           "label": "0.1 < g <= 0.5",
           "count": 9,
           "percent": 10
+        },
+        {
+          "label": "g > 0.5",
+          "count": 1,
+          "percent": 1.1
+        }
+      ]
+    },
+    {
+      "name": "GLM-5.3",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 4,
+          "percent": 4.4
+        },
+        {
+          "label": "Invalid",
+          "count": 26,
+          "percent": 28.9
+        },
+        {
+          "label": "g < -0.5",
+          "count": 11,
+          "percent": 12.2
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 26,
+          "percent": 28.9
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 14,
+          "percent": 15.6
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 8,
+          "percent": 8.9
         },
         {
           "label": "g > 0.5",
@@ -1100,6 +1166,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 19.3548
         },
         {
+          "name": "GLM-5.3",
+          "surpassSota": 19.35483870967742
+        },
+        {
           "name": "Qwen 3.8 Max",
           "surpassSota": 16.129032
         },
@@ -1171,6 +1241,10 @@ window.NATUREBENCH_DATA = {
         },
         {
           "name": "Opus 5",
+          "surpassSota": 12.5
+        },
+        {
+          "name": "GLM-5.3",
           "surpassSota": 12.5
         },
         {
@@ -1284,6 +1358,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
+          "name": "GLM-5.3",
+          "surpassSota": 0
+        },
+        {
           "name": "Gemini 3.5 Flash",
           "surpassSota": 0
         }
@@ -1358,6 +1436,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
+          "name": "GLM-5.3",
+          "surpassSota": 0
+        },
+        {
           "name": "GLM-5.1",
           "surpassSota": 0
         }
@@ -1390,6 +1472,10 @@ window.NATUREBENCH_DATA = {
         {
           "name": "Opus 4.7",
           "surpassSota": 9.0909
+        },
+        {
+          "name": "GLM-5.3",
+          "surpassSota": 9.090909090909092
         },
         {
           "name": "GLM-5.2",
@@ -1502,6 +1588,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 0
         },
         {
+          "name": "GLM-5.3",
+          "surpassSota": 0
+        },
+        {
           "name": "Kimi K3",
           "surpassSota": 0.0
         },
@@ -1569,6 +1659,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.038814
+        },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
         },
         "Opus 5": {
           "state": "valid",
@@ -1645,6 +1739,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.151785
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.149212
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.016439
@@ -1719,6 +1817,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.276865
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.084568
         },
         "Opus 5": {
           "state": "valid",
@@ -1795,6 +1897,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.147208
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.033669
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.161336
@@ -1870,6 +1976,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.015437
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.006478
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.020581
@@ -1894,8 +2004,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Classification",
       "taskDir": "part1",
-      "bestModel": "Gemini 3.5 Flash",
-      "bestScore": 0.196232,
+      "bestModel": "GLM-5.3",
+      "bestScore": 0.236582,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1944,6 +2054,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.151442
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.236582
         },
         "Opus 5": {
           "state": "valid",
@@ -2020,6 +2134,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.008765
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.000839
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.00671
@@ -2094,6 +2212,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.111928
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.162324
         },
         "Opus 5": {
           "state": "valid",
@@ -2170,6 +2292,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.034784
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.035298
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.024948
@@ -2244,6 +2370,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.089299
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.24753
         },
         "Opus 5": {
           "state": "valid",
@@ -2320,6 +2450,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.461935
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.46089
@@ -2392,6 +2526,10 @@ window.NATUREBENCH_DATA = {
           "value": 0.401577
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -2470,6 +2608,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.087944
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.139271
+        },
         "Opus 5": {
           "state": "invalid",
           "value": null
@@ -2542,6 +2684,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -2620,6 +2766,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.895638
         },
+        "GLM-5.3": {
+          "state": "none",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.58999
@@ -2694,6 +2844,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.653319
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 1.421492
         },
         "Opus 5": {
           "state": "invalid",
@@ -2770,6 +2924,10 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.382777
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.071098
@@ -2844,6 +3002,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.014164
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.010396
         },
         "Opus 5": {
           "state": "valid",
@@ -2920,6 +3082,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.137577
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.116065
@@ -2994,6 +3160,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.096451
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.128453
         },
         "Opus 5": {
           "state": "valid",
@@ -3070,6 +3240,10 @@ window.NATUREBENCH_DATA = {
           "state": "invalid",
           "value": null
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.464267
+        },
         "Opus 5": {
           "state": "invalid",
           "value": null
@@ -3144,6 +3318,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.15985
+        },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
         },
         "Opus 5": {
           "state": "valid",
@@ -3220,6 +3398,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.030019
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.030928
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.015784
@@ -3295,6 +3477,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -2.466347
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -3.51809
@@ -3319,8 +3505,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
-      "bestScore": -0.029159,
+      "bestModel": "GLM-5.3",
+      "bestScore": -0.016066,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -3369,6 +3555,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.1324
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.016066
         },
         "Opus 5": {
           "state": "valid",
@@ -3445,6 +3635,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.087149
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.199461
@@ -3519,6 +3713,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.133806
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.041972
         },
         "Opus 5": {
           "state": "valid",
@@ -3595,6 +3793,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.025899
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.018077
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.004441
@@ -3669,6 +3871,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.135641
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.122595
         },
         "Opus 5": {
           "state": "valid",
@@ -3745,6 +3951,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.857429
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -1.0
@@ -3820,6 +4030,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.239644
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.310361
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.173422
@@ -3892,6 +4106,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -3970,6 +4188,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.09184
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.078204
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.009134
@@ -4044,6 +4266,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -1
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -39.340941
         },
         "Opus 5": {
           "state": "valid",
@@ -4120,6 +4346,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -136.865278
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -125.74878
@@ -4194,6 +4424,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.045001
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.185734
         },
         "Opus 5": {
           "state": "valid",
@@ -4270,6 +4504,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.336501
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.601041
@@ -4344,6 +4582,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.525238
+        },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
         },
         "Opus 5": {
           "state": "valid",
@@ -4420,6 +4662,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.01729
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.029423
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.120953
@@ -4494,6 +4740,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.013571
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.011452
         },
         "Opus 5": {
           "state": "invalid",
@@ -4570,6 +4820,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -2.278239
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.209762
@@ -4644,6 +4898,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.066908
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.055802
         },
         "Opus 5": {
           "state": "valid",
@@ -4720,6 +4978,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.075406
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.176962
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.06032
@@ -4792,6 +5054,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -4870,6 +5136,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.117153
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.623733
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.991327
@@ -4944,6 +5214,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.001238
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.003939
         },
         "Opus 5": {
           "state": "valid",
@@ -5020,6 +5294,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.135182
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.243134
@@ -5094,6 +5372,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.600135
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.605678
         },
         "Opus 5": {
           "state": "valid",
@@ -5170,6 +5452,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.024795
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.020515
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.018788
@@ -5244,6 +5530,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.169803
+        },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
         },
         "Opus 5": {
           "state": "invalid",
@@ -5320,6 +5610,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.285609
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.295611
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.193405
@@ -5394,6 +5688,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.065084
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.068898
         },
         "Opus 5": {
           "state": "valid",
@@ -5470,6 +5768,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.696988
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.538606
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.058983
@@ -5542,6 +5844,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -5620,6 +5926,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.098275
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.114262
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.114401
@@ -5694,6 +6004,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.018143
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.002251
         },
         "Opus 5": {
           "state": "valid",
@@ -5770,6 +6084,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.104916
         },
+        "GLM-5.3": {
+          "state": "none",
+          "value": null
+        },
         "Opus 5": {
           "state": "invalid",
           "value": null
@@ -5844,6 +6162,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.068223
+        },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
         },
         "Opus 5": {
           "state": "valid",
@@ -5920,6 +6242,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.066633
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.092055
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.0118
@@ -5994,6 +6320,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.011574
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.029818
         },
         "Opus 5": {
           "state": "valid",
@@ -6070,6 +6400,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.011789
         },
+        "GLM-5.3": {
+          "state": "none",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.030922
@@ -6144,6 +6478,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.012147
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.012636
         },
         "Opus 5": {
           "state": "valid",
@@ -6220,6 +6558,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.185233
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.112707
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.174783
@@ -6294,6 +6636,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.050845
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.222217
         },
         "Opus 5": {
           "state": "invalid",
@@ -6370,6 +6716,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.110377
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.140072
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.001044
@@ -6444,6 +6794,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.510041
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.485714
         },
         "Opus 5": {
           "state": "valid",
@@ -6520,6 +6874,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.059937
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.094674
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.17364
@@ -6594,6 +6952,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": 0.001622
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.007645
         },
         "Opus 5": {
           "state": "valid",
@@ -6670,6 +7032,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -0.04102
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -1
+        },
         "Opus 5": {
           "state": "valid",
           "value": -0.37848
@@ -6744,6 +7110,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -2.765124
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -2.671139
         },
         "Opus 5": {
           "state": "valid",
@@ -6820,6 +7190,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.261978
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.319046
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.119209
@@ -6894,6 +7268,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.996751
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -1
         },
         "Opus 5": {
           "state": "valid",
@@ -6970,6 +7348,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.051915
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.135006
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.110386
@@ -7044,6 +7426,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.484792
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.51387
         },
         "Opus 5": {
           "state": "valid",
@@ -7120,6 +7506,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.132964
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.224908
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.219698
@@ -7194,6 +7584,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.006784
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.015873
         },
         "Opus 5": {
           "state": "valid",
@@ -7270,6 +7664,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.369069
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.686906
@@ -7344,6 +7742,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.111179
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.289702
         },
         "Opus 5": {
           "state": "valid",
@@ -7420,6 +7822,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": -326.385986
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": -14.965226
@@ -7494,6 +7900,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -2.008525
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -1.126205
         },
         "Opus 5": {
           "state": "valid",
@@ -7570,6 +7980,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.016707
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": 0.01697
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.012772
@@ -7642,6 +8056,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -7720,6 +8138,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.04895
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.093389
@@ -7794,6 +8216,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.05536
+        },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
         },
         "Opus 5": {
           "state": "valid",
@@ -7870,6 +8296,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.233499
         },
+        "GLM-5.3": {
+          "state": "none",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.028678
@@ -7942,6 +8372,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "GLM-5.2": {
+          "state": "invalid",
+          "value": null
+        },
+        "GLM-5.3": {
           "state": "invalid",
           "value": null
         },
@@ -8020,6 +8454,10 @@ window.NATUREBENCH_DATA = {
           "state": "valid",
           "value": 0.139117
         },
+        "GLM-5.3": {
+          "state": "invalid",
+          "value": null
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.140584
@@ -8094,6 +8532,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.298784
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.223372
         },
         "Opus 5": {
           "state": "valid",
@@ -8170,6 +8612,10 @@ window.NATUREBENCH_DATA = {
           "state": "none",
           "value": null
         },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.508383
+        },
         "Opus 5": {
           "state": "valid",
           "value": 0.31485
@@ -8244,6 +8690,10 @@ window.NATUREBENCH_DATA = {
         "GLM-5.2": {
           "state": "valid",
           "value": -0.556835
+        },
+        "GLM-5.3": {
+          "state": "valid",
+          "value": -0.664619
         },
         "Opus 5": {
           "state": "valid",

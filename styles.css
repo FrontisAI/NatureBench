@@ -2261,12 +2261,50 @@ td.board-value {
   font-weight: 800;
 }
 
-.domain-winner {
+.domain-winner-list {
   margin-top: 0.3rem;
+}
+
+.domain-winner-list.is-tied {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: 0.2rem;
+}
+
+.domain-winner-entry {
+  min-width: 0;
+}
+
+.domain-winner-list.is-tied .domain-winner-entry + .domain-winner-entry {
+  position: relative;
+  padding-left: 0.24rem;
+}
+
+.domain-winner-list.is-tied .domain-winner-entry + .domain-winner-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--domain-divider-left, 0);
+  width: 1px;
+  background: var(--border-color);
+  transform: translateX(-50%);
+}
+
+.domain-winner {
   color: var(--model-color, var(--accent-primary));
   font-size: 0.74rem;
   font-weight: 800;
   line-height: 1.25;
+}
+
+.domain-winner-list.is-tied .domain-winner,
+.domain-winner-list.is-tied .domain-winner-agent {
+  overflow-wrap: anywhere;
+}
+
+.domain-winner-list.is-tied .domain-winner-agent {
+  white-space: nowrap;
 }
 
 .domain-winner-agent {
@@ -2310,6 +2348,43 @@ td.board-value {
 
 .domain-stat span {
   display: block;
+}
+
+.domain-card[data-tied-winners="true"] .domain-stat span:last-child {
+  white-space: nowrap;
+}
+
+.domain-table-winner-list {
+  display: flex;
+  align-items: flex-start;
+}
+
+.domain-table-winner-list.is-tied {
+  gap: 0.5rem;
+}
+
+.domain-table-winner-entry {
+  min-width: 0;
+}
+
+.domain-table-winner-list.is-tied .domain-table-winner-entry + .domain-table-winner-entry {
+  position: relative;
+  padding-left: 0.7rem;
+}
+
+.domain-table-winner-list.is-tied .domain-table-winner-entry + .domain-table-winner-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--domain-table-divider-left, 0);
+  width: 1px;
+  background: var(--border-color);
+  transform: translateX(-50%);
+}
+
+.domain-table-median-values {
+  white-space: nowrap;
 }
 
 .two-col {
@@ -2611,7 +2686,7 @@ td.board-value {
 }
 
 .case-lookup-label,
-.case-lookup-best span {
+.case-lookup-best-heading > span {
   color: var(--accent-primary);
   font-size: 0.58rem;
   font-weight: 800;
@@ -2658,14 +2733,15 @@ td.board-value {
   font-size: 0.76rem;
 }
 
+.case-lookup-best .case-lookup-best-configuration {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .case-lookup-best small {
   margin-top: 0.16rem;
   color: var(--text-secondary);
   font-size: 0.62rem;
-}
-
-.case-lookup-best small .agent-name {
-  color: var(--agent-color, var(--text-secondary));
 }
 
 .case-lookup-close {
