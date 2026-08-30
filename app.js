@@ -665,7 +665,7 @@
           <tbody>
             ${rows.map((row) => {
             const crClass = row.completionRate < 80 ? "warn" : "";
-            const invalidClass = row.invalid / track.taskCount > 0.2 ? "warn" : "";
+            const invalidClass = row.invalid / track.taskCount > 1 / 6 ? "warn" : "";
             const topRank = row.rank <= 3;
             return `
               <tr class="${topRank ? `top-rank top-rank-${row.rank}` : ""}">
@@ -727,7 +727,7 @@
     if (detailBody) {
       detailBody.innerHTML = rows.map((row, index) => {
         const crClass = row.completionRate < 80 ? "warn" : "";
-        const invalidClass = row.invalid / track.taskCount > 0.2 ? "warn" : "";
+        const invalidClass = row.invalid / track.taskCount > 1 / 6 ? "warn" : "";
         return `
           <tr>
             <td><span class="pill ${index < 3 ? "good" : ""}">${index + 1}</span></td>
