@@ -13,6 +13,7 @@
 
 ## 📰News
 
+- **🏆 [2026-08-30] We update the [results](https://frontisai.github.io/NatureBench/) with GLM-5.3.**
 - **🎯 [2026-08-28] We introduce [NatureBench-25](#naturebench-25), a 25-task track for faster, lower-cost evaluation.**
 - **🏆 [2026-08-23] We update the [results](https://frontisai.github.io/NatureBench/) with three new coding-agent configurations: Opus 5, Kimi K3, and Qwen 3.8 Max.**
 - **🏆 [2026-08-07] We add the externally submitted AIBuildAI 2.5 + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/).**
@@ -33,7 +34,7 @@ NatureBench is built on **NatureGym**, an automated pipeline that converts a pub
 
 ## 📊Results
 
-Across twelve coding-agent configurations, the strongest reaches a 15.6% Surpass-SOTA rate, and success remains uneven across the six scientific domains NatureBench spans.
+Across sixteen coding-agent configurations, the strongest reaches a 23.3% Surpass-SOTA rate and a 57.8% Match-SOTA rate.
 
 <p align="center">
   <img src="assets/main_results.png" width="840" alt="NatureBench scientific domains and Surpass-SOTA rates across coding-agent configurations">
