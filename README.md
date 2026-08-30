@@ -6,15 +6,16 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-b31b1b?style=for-the-badge&logo=arxiv&logoColor=ffffff)](https://arxiv.org/abs/2606.24530) &nbsp; [![Hugging Face Dataset](https://img.shields.io/badge/HUGGINGFACE-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/FrontisAI/NatureBench) &nbsp; [![Leaderboard](https://img.shields.io/badge/Leaderboard-steelblue?style=for-the-badge&logo=googlechrome&logoColor=ffffff)](https://frontisai.github.io/NatureBench/)
 
-[📰 News](#news) • [📖 Overview](#overview) • [🏅 Submit Results](#submit-results) • [🔧 Installation](#installation) • [🚀 Quick Start](#quick-start)<br>
-[🎯 NatureBench-25](#naturebench-25) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
+[📰 News](#news) • [📖 Overview](#overview) • [🏅 Submit Results](#submit-results) • [🔧 Setup](#setup) • [🚀 Quick Start](#quick-start)<br>
+[⚓ Harbor Support](#harbor-support) • [⚡ NatureBench-25](#naturebench-25) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
 </div>
 
 ## 📰News
 
+- **⚓ [2026-08-31] We release the [NatureBench Harbor integration](#harbor-support), including task conversion code, evaluation extensions, and [converted Harbor tasks](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor).**
 - **🏆 [2026-08-30] We update the [results](https://frontisai.github.io/NatureBench/) with GLM-5.3.**
-- **🎯 [2026-08-28] We introduce [NatureBench-25](#naturebench-25), a 25-task track for faster, lower-cost evaluation.**
+- **⚡ [2026-08-28] We introduce [NatureBench-25](#naturebench-25), a 25-task track for faster, lower-cost evaluation.**
 - **🏆 [2026-08-23] We update the [results](https://frontisai.github.io/NatureBench/) with three new coding-agent configurations: Opus 5, Kimi K3, and Qwen 3.8 Max.**
 - **🏆 [2026-08-07] We add the externally submitted AIBuildAI 2.5 + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/).**
 - **⚖️ [2026-07-30] We update the validity judge and use GPT-5.5 to reassess all runs; the [results](https://frontisai.github.io/NatureBench/) have been comprehensively updated.**
@@ -47,7 +48,9 @@ agents on NatureBench. Submissions are currently accepted by email; see
 [`submit-results/`](submit-results/) for the result templates, validation and
 scoring scripts, required raw artifacts, and submission email.
 
-## 🔧Installation
+## 🔧Setup
+
+**Install NatureBench:**
 
 ```bash
 git clone https://github.com/FrontisAI/NatureBench.git
@@ -60,19 +63,42 @@ conda activate naturebench
 
 This creates two environments: `naturebench` (the main orchestration environment that runs `run_naturebench.py`, agent adapters, Docker scheduling, and result aggregation) and `naturebench-eval` (the evaluation service environment that runs scoring logic).
 
-The base Docker image is built automatically on the first run via `--ensure-base-image` (used in the Quick Start below). To build it manually:
+**Build the base image manually (optional):**
+
+The base Docker image is built automatically on the first run via `--ensure-base-image` (used in the Quick Start command below). To build it manually:
 
 ```bash
 bash scripts/ensure_naturebench_base.sh
 ```
 
-The external evaluation service is started automatically via `--start-eval-services` (used in the Quick Start below). To start it manually:
+**Start the evaluation service manually (optional):**
+
+The external evaluation service is started automatically via `--start-eval-services` (used in the Quick Start command below). To start it manually:
 
 ```bash
 bash scripts/start_eval_services.sh ./eval_env_mapping.json
 ```
 
 If the service was started manually, you must still include `--eval-env-mapping` and point it to the same mapping file when you later run `run_naturebench.py`. Omit `--start-eval-services` because the service is already running.
+
+**Download tasks only (optional):**
+
+Tasks are downloaded automatically by the Quick Start command. To prepare task
+packages without starting the evaluation, run:
+
+```bash
+python run_naturebench.py \
+  --tasks all \
+  --download-only
+```
+
+Replace `all` with `cpu`, `gpu_low`, or `gpu_high` to download only one compute
+group, or pass the path to a custom task-list file containing one task ID per
+line. For example, use `--tasks task-set/naturebench-25/all.txt` to download
+the complete NatureBench-25 track. By default, tasks are saved under
+`./data/naturebench_data/`; use `--data-dir <path>` to choose a different
+location. The command also extracts any compressed task data into the
+runtime-ready layout.
 
 ## 🚀Quick Start
 
@@ -119,7 +145,16 @@ For comparability, our reported runs use the following setup:
 | Compute | Each `gpu_low` task uses one NVIDIA RTX 3090/4090 (24 GB), each `gpu_high` task uses one NVIDIA A800 (80 GB, A100-class), and the 3 `cpu` tasks use no GPU. Task-group lists are provided in [`task-set/`](task-set/). |
 | Web search | Disabled for all evaluated agents. |
 
-## 🎯NatureBench-25
+## ⚓Harbor Support
+
+NatureBench provides a Harbor-compatible way to run the benchmark. We provide
+an adapter that converts original NatureBench task packages into Harbor tasks,
+the extensions required to run NatureBench evaluation through Harbor, a task downloader, and a reference
+configuration. The converted Harbor tasks are distributed in the
+[`FrontisAI/NatureBench-Harbor` dataset](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor).
+See the [Harbor guide](harbor/README.md) for instructions.
+
+## ⚡NatureBench-25
 
 **NatureBench-25** is the 25-task track for faster, lower-cost evaluation. It covers all six scientific domains. Tasks are selected for quality, domain coverage, compute demand, evaluator runtime, and consistency with the Full leaderboard.
 
@@ -149,6 +184,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 - `agent/` — agent adapters and registry for Claude Code / Codex CLI / Gemini CLI (and custom agents)
 - `evaluator/` — evaluator interface
 - `docker/Dockerfile.base` — NatureBench base Docker image
+- `harbor/` — Harbor task adapter, runtime extensions, task downloader, and reference configuration
 - `scripts/` — helper scripts
   - `ensure_naturebench_base.sh` — build the NatureBench base image if it is missing
   - `start_eval_services.sh` — start evaluation service from the mapping file
@@ -170,6 +206,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 | [`docs/usage.md`](docs/usage.md) | More run examples (CPU, GPU batch, Codex login, resume), the complete parameter reference, and output formats. |
 | [`docs/task-packages.md`](docs/task-packages.md) | Task package structure and the resource-grouped task lists. |
 | [`docs/custom-agents.md`](docs/custom-agents.md) | Plugging in a custom agent: How to run your own agent on NatureBench. |
+| [Harbor guide](harbor/README.md) | Converting and running NatureBench tasks with Harbor. |
 | [`submit-results/`](submit-results/) | Email-submission guide, result templates, validation and scoring tools, and the publication process. |
 
 ## ⚖️License

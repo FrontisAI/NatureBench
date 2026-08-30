@@ -9,6 +9,8 @@ config.yaml
 outputs/
 run_outputs/
 eval_logs/
+harbor/tasks/
+harbor/release/
 
 # built lumen agent binary (see docker/Dockerfile.lumen)
 docker/lumen

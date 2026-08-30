@@ -1,0 +1,14 @@
+datasets:
+  - path: ./tasks
+
+n_concurrent_trials: 1
+
+agents:
+  - import_path: naturebench_extensions.timed_agent:NatureBenchTimedAgent
+    model_name: anthropic/claude-opus-4-7
+    kwargs:
+      inner_agent: claude-code
+      timeout: 14400
+
+environment:
+  import_path: naturebench_extensions.docker_environment:NatureBenchDockerEnvironment

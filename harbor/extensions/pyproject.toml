@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "naturebench-harbor-extensions"
+version = "0.1.0"
+description = "Host-side Harbor extensions for the NatureBench protocol"
+requires-python = ">=3.12"
+dependencies = ["harbor>=0.20.0"]

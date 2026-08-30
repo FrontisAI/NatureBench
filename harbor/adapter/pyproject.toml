@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "naturebench-harbor-adapter"
+version = "0.1.0"
+description = "Convert source NatureBench tasks into Harbor tasks"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+naturebench-to-harbor = "naturebench_adapter.cli:main"
+
+[tool.setuptools.package-data]
+naturebench_adapter = [
+  "task_template/**/*",
+  "source_data/*.jsonl",
+  "source_data/task_set/*.txt",
+]
