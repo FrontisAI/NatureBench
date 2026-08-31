@@ -151,7 +151,7 @@ NatureBench provides a Harbor-compatible way to run the benchmark. We provide
 an adapter that converts original NatureBench task packages into Harbor tasks,
 the extensions required to run NatureBench evaluation through Harbor, a task downloader, and a reference
 configuration. The converted Harbor tasks are distributed in the
-[`FrontisAI/NatureBench-Harbor` dataset](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor).
+[`FrontisAI/NatureBench-Harbor`](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor) dataset.
 See the [Harbor guide](harbor/README.md) for instructions.
 
 ## ⚡NatureBench-25
