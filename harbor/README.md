@@ -213,6 +213,14 @@ harbor run \
   -o outputs
 ```
 
+Agent-related settings passed through `--ak` and `--ae`:
+
+| Parameter | Meaning |
+|---|---|
+| `inner_agent` | Selects the Harbor agent executed inside `NatureBenchTimedAgent`. |
+| `timeout` | Sets the per-task agent solve-time budget, excluding environment setup and evaluator execution; defaults to 14,400 seconds if omitted. This differs from `[agent].timeout_sec` in `task.toml`, Harbor's 43,200-second wall-clock safety limit for the complete agent phase. |
+| Other arguments | All other `--ak` arguments and `--ae` environment variables are passed to the selected inner agent. |
+
 ### Harbor timeout display issue
 
 When the NatureBench solve-time budget is exhausted, `NatureBenchTimedAgent`

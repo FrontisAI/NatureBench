@@ -8,6 +8,7 @@ submission:
 
 evaluation:
   track: "full" # Use "naturebench-25" for the 25-task track.
+  evaluation_pipeline: "naturebench" # Use "harbor" or "custom" when applicable.
   timeout_seconds: 14400
   web_search: false
   compute: "" # Reference: gpu_low = one RTX 3090/4090 (24 GB); gpu_high = one A800 (80 GB); cpu = no GPU.

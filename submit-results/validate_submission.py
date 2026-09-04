@@ -34,6 +34,7 @@ SUBMISSION_FIELDS = {
 }
 EVALUATION_FIELDS = {
     "track",
+    "evaluation_pipeline",
     "timeout_seconds",
     "web_search",
     "compute",
@@ -41,8 +42,9 @@ EVALUATION_FIELDS = {
     "human_intervention",
     "deviations_from_reference",
 }
-OPTIONAL_EVALUATION_FIELDS = {"track"}
+OPTIONAL_EVALUATION_FIELDS = {"track", "evaluation_pipeline"}
 SUPPORTED_TRACKS = ("full", "naturebench-25")
+SUPPORTED_EVALUATION_PIPELINES = ("naturebench", "harbor", "custom")
 SCORE_TOLERANCE = 1e-9
 
 
@@ -213,6 +215,11 @@ def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | 
         track = evaluation.get("track", "full")
         if track not in SUPPORTED_TRACKS:
             report.error("evaluation.track must be full or naturebench-25")
+        evaluation_pipeline = evaluation.get("evaluation_pipeline", "naturebench")
+        if evaluation_pipeline not in SUPPORTED_EVALUATION_PIPELINES:
+            report.error(
+                "evaluation.evaluation_pipeline must be naturebench, harbor, or custom"
+            )
         timeout = evaluation.get("timeout_seconds")
         if isinstance(timeout, bool) or not isinstance(timeout, int) or timeout <= 0:
             report.error("evaluation.timeout_seconds must be a positive integer")
@@ -237,6 +244,18 @@ def evaluation_track(payload: dict[str, Any] | None) -> str:
         return "full"
     track = evaluation.get("track", "full")
     return track if track in SUPPORTED_TRACKS else "full"
+
+
+def evaluation_pipeline(payload: dict[str, Any] | None) -> str:
+    """Return the validated evaluation pipeline, defaulting to NatureBench."""
+
+    if not isinstance(payload, dict):
+        return "naturebench"
+    evaluation = payload.get("evaluation")
+    if not isinstance(evaluation, dict):
+        return "naturebench"
+    pipeline = evaluation.get("evaluation_pipeline")
+    return pipeline if pipeline in SUPPORTED_EVALUATION_PIPELINES else "naturebench"
 
 
 def _parse_score(
@@ -383,15 +402,51 @@ def _validate_status(
     case_id: str,
     record: ResultRecord,
     task_result: Any,
+    source_name: str,
+    report: ValidationReport,
+) -> None:
+    if task_result is None:
+        return
+    if not isinstance(task_result, dict):
+        report.error(f"{case_id}: {source_name} must contain a JSON object")
+        return
+    status = task_result.get("status")
+    if not isinstance(status, str) or not status.strip():
+        report.error(f"{case_id}: {source_name} status must be a non-empty string")
+    elif status != record.final_status:
+        report.error(
+            f"{case_id}: final_status {record.final_status!r} does not match "
+            f"{source_name} status {status!r}"
+        )
+
+
+def _validate_recorded_best_score(
+    case_id: str,
+    record: ResultRecord,
+    task_result: Any,
+    source_name: str,
+    field_name: str,
     report: ValidationReport,
 ) -> None:
     if not isinstance(task_result, dict):
         return
-    status = task_result.get("status")
-    if isinstance(status, str) and status != record.final_status:
+    raw_score = task_result.get(field_name)
+    recorded_score = _finite_number(raw_score)
+    if record.best_score is None:
+        if recorded_score is not None:
+            report.error(
+                f"{case_id}: results.csv has no score but {source_name} "
+                f"{field_name} is {recorded_score}"
+            )
+        return
+    if recorded_score is None:
         report.error(
-            f"{case_id}: final_status {record.final_status!r} does not match "
-            f"result.json status {status!r}"
+            f"{case_id}: numeric best_score has no numeric {field_name} in {source_name}"
+        )
+    elif not _scores_equal(record.best_score, recorded_score):
+        report.error(
+            f"{case_id}: results.csv best_score {record.best_score} does not match "
+            f"{source_name} {field_name} {recorded_score}"
         )
 
 
@@ -470,18 +525,12 @@ def _validate_trajectories(task_dir: Path, case_id: str, report: ValidationRepor
             report.error(f"{case_id}: cannot read trajectory file {path.name}: {error}")
 
 
-def validate_raw_results(
+def _validate_naturebench_raw_results(
     raw_results: Path,
     records: dict[str, ResultRecord],
     case_metadata: dict[str, str],
     report: ValidationReport,
 ) -> None:
-    """Validate the common per-case raw-results structure."""
-
-    if not raw_results.is_dir():
-        report.error(f"raw results directory does not exist: {raw_results}")
-        return
-
     for case_id in sorted(case_metadata):
         record = records.get(case_id)
         if record is None:
@@ -494,14 +543,16 @@ def validate_raw_results(
         result_path = task_dir / "result.json"
         submissions_path = task_dir / "submissions.jsonl"
 
-        for required_path in (result_path, submissions_path):
-            if not required_path.is_file():
-                report.error(f"{case_id}: required file is missing: {required_path.name}")
+        if not result_path.is_file():
+            report.error(f"{case_id}: required file is missing: {result_path.name}")
+        if record.best_score is not None and not submissions_path.is_file():
+            report.error(f"{case_id}: required file is missing: {submissions_path.name}")
 
         task_result = _read_json(result_path, report) if result_path.is_file() else None
-        _validate_status(case_id, record, task_result, report)
-        attempts = _read_jsonl(submissions_path, report) if submissions_path.is_file() else []
-        _validate_scores(case_id, record, attempts, report)
+        _validate_status(case_id, record, task_result, "result.json", report)
+        if submissions_path.is_file():
+            attempts = _read_jsonl(submissions_path, report)
+            _validate_scores(case_id, record, attempts, report)
         _validate_judge(
             case_id,
             record,
@@ -509,6 +560,154 @@ def validate_raw_results(
             report,
         )
         _validate_trajectories(task_dir, case_id, report)
+
+
+def _validate_harbor_raw_results(
+    raw_results: Path,
+    records: dict[str, ResultRecord],
+    case_metadata: dict[str, str],
+    report: ValidationReport,
+) -> None:
+    for case_id in sorted(case_metadata):
+        record = records.get(case_id)
+        if record is None:
+            continue
+        task_dir = raw_results / case_id
+        if not task_dir.is_dir():
+            report.error(f"{case_id}: raw-results case directory is missing")
+            continue
+
+        best_score_path = task_dir / "best_score.json"
+        submissions_path = task_dir / "submissions.jsonl"
+        summary_path = task_dir / "summary.json"
+        for required_path in (best_score_path, summary_path):
+            if not required_path.is_file():
+                report.error(f"{case_id}: required file is missing: {required_path.name}")
+        if record.best_score is not None and not submissions_path.is_file():
+            report.error(f"{case_id}: required file is missing: {submissions_path.name}")
+
+        best_score_result = (
+            _read_json(best_score_path, report) if best_score_path.is_file() else None
+        )
+        if (
+            isinstance(best_score_result, dict)
+            and best_score_result.get("finalized") is not True
+        ):
+            report.error(f"{case_id}: best_score.json must have finalized=true")
+        _validate_status(case_id, record, best_score_result, "best_score.json", report)
+        _validate_recorded_best_score(
+            case_id,
+            record,
+            best_score_result,
+            "best_score.json",
+            "best_aggregate_improvement",
+            report,
+        )
+        if submissions_path.is_file():
+            attempts = _read_jsonl(submissions_path, report)
+            _validate_scores(case_id, record, attempts, report)
+        summary = _read_json(summary_path, report) if summary_path.is_file() else None
+        if summary is not None and not isinstance(summary, dict):
+            report.error(f"{case_id}: summary.json must contain a JSON object")
+        if isinstance(summary, dict):
+            _validate_recorded_best_score(
+                case_id,
+                record,
+                summary,
+                "summary.json",
+                "best_aggregate_improvement",
+                report,
+            )
+            if isinstance(best_score_result, dict) and summary.get(
+                "best_attempt"
+            ) != best_score_result.get("best_attempt"):
+                report.error(
+                    f"{case_id}: summary.json best_attempt does not match "
+                    "best_score.json"
+                )
+            if record.judge_verdict in {"valid", "invalid"}:
+                summary_judge = summary.get("judge")
+                expected_valid = record.judge_verdict == "valid"
+                if not isinstance(summary_judge, dict):
+                    report.error(f"{case_id}: summary.json judge must be an object")
+                else:
+                    if summary_judge.get("is_valid") is not expected_valid:
+                        report.error(
+                            f"{case_id}: summary.json judge.is_valid does not match "
+                            "results.csv"
+                        )
+                    reason = summary_judge.get("reason")
+                    if (
+                        not isinstance(reason, str)
+                        or reason.strip() != record.judge_reason
+                    ):
+                        report.error(
+                            f"{case_id}: summary.json judge.reason does not match "
+                            "results.csv"
+                        )
+        _validate_judge(
+            case_id,
+            record,
+            task_dir / "judge_verdict.json",
+            report,
+        )
+        _validate_trajectories(task_dir, case_id, report)
+
+
+def _validate_custom_raw_results(
+    raw_results: Path,
+    records: dict[str, ResultRecord],
+    case_metadata: dict[str, str],
+    report: ValidationReport,
+) -> None:
+    readme_path = raw_results / "README.md"
+    if readme_path.is_file():
+        try:
+            if not readme_path.read_text(encoding="utf-8").strip():
+                report.error("raw-results/README.md must not be empty")
+        except OSError as error:
+            report.error(f"cannot read {readme_path}: {error}")
+
+    for case_id in sorted(case_metadata):
+        if case_id not in records:
+            continue
+        task_dir = raw_results / case_id
+        if not task_dir.is_dir():
+            report.error(f"{case_id}: raw-results case directory is missing")
+            continue
+        try:
+            files = [path for path in task_dir.rglob("*") if path.is_file()]
+            if not files:
+                report.error(f"{case_id}: raw-results case directory contains no files")
+            elif not any(path.stat().st_size > 0 for path in files):
+                report.error(f"{case_id}: raw-results case directory contains no non-empty files")
+        except OSError as error:
+            report.error(f"{case_id}: cannot inspect raw-result files: {error}")
+
+    report.warn(
+        "custom evaluation pipeline: score, status, judge, and trajectory mappings "
+        "require manual review against the submitted raw artifacts"
+    )
+
+
+def validate_raw_results(
+    raw_results: Path,
+    records: dict[str, ResultRecord],
+    case_metadata: dict[str, str],
+    report: ValidationReport,
+    pipeline: str = "naturebench",
+) -> None:
+    """Validate per-case raw results for the selected evaluation pipeline."""
+
+    if not raw_results.is_dir():
+        report.error(f"raw results directory does not exist: {raw_results}")
+        return
+    if pipeline == "harbor":
+        _validate_harbor_raw_results(raw_results, records, case_metadata, report)
+    elif pipeline == "custom":
+        _validate_custom_raw_results(raw_results, records, case_metadata, report)
+    else:
+        _validate_naturebench_raw_results(raw_results, records, case_metadata, report)
 
 
 def format_report(report: ValidationReport) -> str:
@@ -553,6 +752,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     report = ValidationReport()
     metadata = validate_metadata(args.metadata, report)
     track = evaluation_track(metadata)
+    pipeline = evaluation_pipeline(metadata)
     try:
         case_metadata = load_track_case_metadata(args.case_metadata, track)
     except ValueError as error:
@@ -561,7 +761,13 @@ def main(argv: Iterable[str] | None = None) -> int:
         return 1
 
     records = load_results_csv(args.results, case_metadata, report)
-    validate_raw_results(args.raw_results, records, case_metadata, report)
+    validate_raw_results(
+        args.raw_results,
+        records,
+        case_metadata,
+        report,
+        pipeline=pipeline,
+    )
     print(format_report(report))
     return 0 if report.ok else 1
 

@@ -13,20 +13,16 @@ Prepare one directory containing:
 ├── submission.yaml
 ├── results.csv
 └── raw-results/
-    └── <case_id>/
-        ├── result.json
-        ├── submissions.jsonl
-        ├── judge_verdict.json    # required for valid/invalid verdicts
-        └── trajectory.*          # one or more non-empty trajectory files
+    ├── <case_id>/
+    └── README.md              # when format or review notes are needed
 ```
 
 Start from [`templates/submission.yaml`](templates/submission.yaml). Use
 [`templates/results.csv`](templates/results.csv) for the 90-task Full track or
 [`templates/results_naturebench_25.csv`](templates/results_naturebench_25.csv)
-for NatureBench-25. Set `evaluation.track` in `submission.yaml` to `"full"` for
-the Full track or `"naturebench-25"` for NatureBench-25. See
-[`SUBMISSION_SPEC.md`](SUBMISSION_SPEC.md) for the field definitions, accepted
-raw-result layouts, and result publication process.
+for NatureBench-25. See [`SUBMISSION_SPEC.md`](SUBMISSION_SPEC.md) for
+instructions on completing `submission.yaml` and `results.csv`, organizing the
+per-case raw results, and the result review and publication process.
 
 ## Check the submission
 
@@ -45,8 +41,11 @@ python submit-results/compute_scores.py \
 ```
 
 The first command checks the submission format and the consistency of the
-available result records. The second computes a preview of the public
-metrics and optionally writes a standalone JSON report.
+available result records according to `evaluation_pipeline`. For `custom`
+pipelines, it only checks case coverage and non-empty raw artifacts.
+
+The second command computes a preview of the public metrics and optionally
+writes a standalone JSON report.
 
 ## Send the submission
 
