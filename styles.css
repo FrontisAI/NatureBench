@@ -64,7 +64,7 @@
   --agent-gemini-color: #315fa8;
   --agent-aibuildai-color: #7b4ba5;
   --agent-helix-color: #b02f6f;
-  --agent-luria-color: #a45a16;
+  --agent-luria-color: #657500;
   --rank-gold: #8a6411;
   --rank-silver: #5e6970;
   --rank-bronze: #8a4f30;
@@ -90,7 +90,7 @@
   --agent-gemini-color: #8eb5ff;
   --agent-aibuildai-color: #c9a0e8;
   --agent-helix-color: #f08cba;
-  --agent-luria-color: #f0ad63;
+  --agent-luria-color: #c7e45d;
   --rank-gold: #f0ca62;
   --rank-silver: #c4ccd0;
   --rank-bronze: #e4a17c;
@@ -2210,13 +2210,16 @@ td.board-value {
 
 .domain-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.8rem;
   margin-bottom: 1.25rem;
 }
 
 .domain-card {
-  min-height: 174px;
+  display: grid;
+  grid-template-rows: 2rem 1rem 1.2rem 2.45rem 1.1rem 7px auto;
+  row-gap: 0.28rem;
+  min-height: 220px;
   padding: 0.9rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -2234,16 +2237,17 @@ td.board-value {
 }
 
 .domain-name {
-  min-height: 42px;
   font-size: 0.7rem;
   font-weight: 800;
   line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .domain-count {
   color: var(--text-secondary);
   font-size: 0.66rem;
-  margin: 0.3rem 0 0.55rem;
 }
 
 .domain-winner-label {
@@ -2274,13 +2278,10 @@ td.board-value {
 }
 
 .domain-winner-list {
-  margin-top: 0.3rem;
-}
-
-.domain-winner-list.is-tied {
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-  gap: 0.2rem;
+  grid-template-columns: repeat(var(--winner-count, 1), minmax(0, 1fr));
+  align-items: start;
+  gap: 0.72rem;
 }
 
 .domain-winner-entry {
@@ -2289,7 +2290,6 @@ td.board-value {
 
 .domain-winner-list.is-tied .domain-winner-entry + .domain-winner-entry {
   position: relative;
-  padding-left: 0.24rem;
 }
 
 .domain-winner-list.is-tied .domain-winner-entry + .domain-winner-entry::before {
@@ -2297,7 +2297,7 @@ td.board-value {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: var(--domain-divider-left, 0);
+  left: -0.36rem;
   width: 1px;
   background: var(--border-color);
   transform: translateX(-50%);
@@ -2308,15 +2308,13 @@ td.board-value {
   font-size: 0.74rem;
   font-weight: 800;
   line-height: 1.25;
-}
-
-.domain-winner-list.is-tied .domain-winner,
-.domain-winner-list.is-tied .domain-winner-agent {
-  overflow-wrap: anywhere;
-}
-
-.domain-winner-list.is-tied .domain-winner-agent {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.domain-winner-list[data-winner-count="3"] .domain-winner {
+  font-size: 0.7rem;
 }
 
 .domain-winner-agent {
@@ -2325,10 +2323,12 @@ td.board-value {
   font-size: 0.58rem;
   font-weight: 700;
   line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .domain-primary {
-  margin-top: 0.22rem;
   color: var(--text-primary);
   font-size: 0.64rem;
   font-weight: 800;
@@ -2337,7 +2337,6 @@ td.board-value {
 
 .mini-meter {
   height: 7px;
-  margin-top: 0.55rem;
   border-radius: 99px;
   background: var(--bg-secondary);
   overflow: hidden;
@@ -2352,7 +2351,6 @@ td.board-value {
 }
 
 .domain-stat {
-  margin-top: 0.45rem;
   color: var(--text-secondary);
   font-size: 0.66rem;
   line-height: 1.42;
@@ -3420,22 +3418,13 @@ td.board-value {
   }
 
   .domain-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.62rem;
   }
 
   .domain-card {
-    display: block;
-    min-height: 174px;
-    padding: 0.65rem;
-  }
-
-  .domain-card .domain-name {
-    min-height: 34px;
-  }
-
-  .domain-card .domain-count {
-    margin-top: 0.18rem;
+    min-height: 210px;
+    padding: 0.75rem;
   }
 
   #domain-chart .bar-row {
@@ -3557,7 +3546,7 @@ td.board-value {
 
 @media (max-width: 540px) {
   .domain-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 

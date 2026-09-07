@@ -871,27 +871,6 @@
   }
 
   function alignDomainWinnerDividers() {
-    document.querySelectorAll(".domain-winner-list.is-tied").forEach((list) => {
-      const entries = list.querySelectorAll(".domain-winner-entry");
-      if (entries.length !== 2) return;
-
-      const secondEntry = entries[1];
-      secondEntry.style.removeProperty("--domain-divider-left");
-
-      const firstHarness = entries[0].querySelector(".domain-winner-agent");
-      const secondHarness = entries[1].querySelector(".domain-winner-agent");
-      if (!firstHarness || !secondHarness) return;
-
-      const firstHarnessRect = textContentBounds(firstHarness);
-      const secondHarnessRect = textContentBounds(secondHarness);
-      const secondEntryRect = secondEntry.getBoundingClientRect();
-      const dividerCenter = (firstHarnessRect.right + secondHarnessRect.left) / 2;
-      secondEntry.style.setProperty(
-        "--domain-divider-left",
-        `${dividerCenter - secondEntryRect.left}px`,
-      );
-    });
-
     document.querySelectorAll(".domain-table-winner-list.is-tied").forEach((list) => {
       const entries = list.querySelectorAll(".domain-table-winner-entry");
       if (entries.length !== 2) return;
@@ -917,13 +896,13 @@
       const leaders = rows.filter((row) => row.rank === 1);
       const leader = leaders[0];
       return `
-        <button class="domain-card" data-domain="${escapeHtml(domain.domain)}" data-tied-winners="${leaders.length > 1}" style="--model-color:${modelColor(leader.name)}">
+        <button class="domain-card" data-domain="${escapeHtml(domain.domain)}" data-tied-winners="${leaders.length > 1}" style="--model-color:${modelColor(leader.name)};--winner-count:${leaders.length}">
           <div class="domain-name">${escapeHtml(domain.domain)}</div>
           <div class="domain-count">N=${domain.n}</div>
           <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner${leaders.length > 1 ? "s" : ""}</div>
-          <div class="domain-winner-list${leaders.length > 1 ? " is-tied" : ""}">
+          <div class="domain-winner-list${leaders.length > 1 ? " is-tied" : ""}" data-winner-count="${leaders.length}">
             ${leaders.map((row) => `
-              <div class="domain-winner-entry">
+              <div class="domain-winner-entry" title="${escapeHtml(displayNameForRow(row))} · ${escapeHtml(row.harness)}">
                 <div class="domain-winner">${escapeHtml(displayNameForRow(row))}</div>
                 <div class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</div>
               </div>
