@@ -85,7 +85,7 @@
     { match: /gpt|openai/i, color: "#21312d" },
     { match: /gemini/i, color: "#4e92ab" },
     { match: /qwen/i, color: "#a9854c" },
-    { match: /kimi|moonshot/i, color: "#7e789f" },
+    { match: /kimi|moonshot/i, color: "var(--model-kimi-color)" },
     { match: /glm|z\.ai/i, color: "#2f9462" },
     { match: /deepseek/i, color: "#5f7faa" },
     { match: /minimax/i, color: "#aa6078" },
@@ -437,7 +437,7 @@
   function modelColor(modelName) {
     const agent = agentForModel(modelName);
     if (/^luria\b/i.test(agent)) return "var(--agent-luria-color)";
-    if (/^aibuildai\b/i.test(agent)) return "#147c72";
+    if (/^aibuildai\b/i.test(agent)) return "var(--agent-aibuildai-color)";
     return modelColors.find((item) => item.match.test(modelName))?.color || "#147c72";
   }
 
