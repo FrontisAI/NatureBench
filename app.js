@@ -443,13 +443,16 @@
 
   function compactDomainModelName(row, winnerCount) {
     const displayName = displayNameForRow(row);
+    if (winnerCount >= 3 && /^DeepSeek-V4-Pro$/i.test(displayName)) return "DS-V4";
     if (winnerCount > 1 && /^DeepSeek-V4-Pro$/i.test(displayName)) return "DS-V4-Pro";
     return displayName;
   }
 
   function compactDomainAgentName(agent, winnerCount) {
     if (winnerCount < 3) return agent;
-    if (/^aibuildai\b/i.test(agent)) return "AIBuildAI";
+    if (/^luria\b/i.test(agent)) return "Luria";
+    if (/^claude code\b/i.test(agent)) return "Claude";
+    if (/^aibuildai\b/i.test(agent)) return "AIBuild";
     return agent;
   }
 
