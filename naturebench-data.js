@@ -214,6 +214,19 @@ window.NATUREBENCH_DATA = {
       "validityJudge": "GPT-5.5"
     },
     {
+      "name": "Qwen 3.8 Max 0902",
+      "id": "qwen-3-8-max-0902-claude-code",
+      "agent": "Claude Code",
+      "runSource": {
+        "label": "NatureBench run"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One GPU / GPU task: NVIDIA RTX 3090/4090 (24 GB) for gpu_low, NVIDIA A800 (80 GB, A100-class) for gpu_high, and no GPU for CPU tasks",
+      "computeUrl": "https://github.com/FrontisAI/NatureBench/tree/main/task-set",
+      "externalAccess": "Web search and web fetch tools disabled",
+      "validityJudge": "GPT-5.5"
+    },
+    {
       "id": "claude-opus-5-aibuildai-2-5",
       "name": "Opus 5",
       "agent": "AIBuildAI 2.5",
@@ -310,6 +323,19 @@ window.NATUREBENCH_DATA = {
       "medianValid": 0.008615,
       "completionRate": 91.111111,
       "scoreRate": 100.0
+    },
+    {
+      "name": "Qwen 3.8 Max 0902",
+      "harness": "Claude Code",
+      "invalid": 21,
+      "matchSota": 35.55555555555556,
+      "surpassSota": 17.77777777777778,
+      "meanAll": -1.836837269780915,
+      "medianAll": -0.10924231900758932,
+      "medianValid": -0.0052621585510307335,
+      "completionRate": 72.22222222222223,
+      "scoreRate": 95.55555555555556,
+      "configurationId": "qwen-3-8-max-0902-claude-code"
     },
     {
       "name": "Opus 4.7",
@@ -580,6 +606,46 @@ window.NATUREBENCH_DATA = {
           "label": "0.1 < g <= 0.5",
           "count": 19,
           "percent": 21.1
+        },
+        {
+          "label": "g > 0.5",
+          "count": 2,
+          "percent": 2.2
+        }
+      ]
+    },
+    {
+      "name": "Qwen 3.8 Max 0902",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 4,
+          "percent": 4.4
+        },
+        {
+          "label": "Invalid",
+          "count": 21,
+          "percent": 23.3
+        },
+        {
+          "label": "g < -0.5",
+          "count": 7,
+          "percent": 7.8
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 26,
+          "percent": 28.9
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 16,
+          "percent": 17.8
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 14,
+          "percent": 15.6
         },
         {
           "label": "g > 0.5",
@@ -1207,6 +1273,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 25.806452
         },
         {
+          "name": "Qwen 3.8 Max 0902",
+          "surpassSota": 25.806451612903224
+        },
+        {
           "name": "Kimi K3",
           "surpassSota": 22.580645
         },
@@ -1305,6 +1375,10 @@ window.NATUREBENCH_DATA = {
           "surpassSota": 12.5
         },
         {
+          "name": "Qwen 3.8 Max 0902",
+          "surpassSota": 12.5
+        },
+        {
           "name": "DeepSeek-V4-Pro",
           "surpassSota": 6.25
         },
@@ -1349,11 +1423,15 @@ window.NATUREBENCH_DATA = {
     {
       "domain": "Biomedical Modeling",
       "n": 14,
-      "winner": "Claude Opus 5",
-      "winnerSurpassSota": 21.428571,
-      "winnerMatchSota": 57.142857,
-      "winnerMedianAll": 0.0178,
+      "winner": "Qwen 3.8 Max 0902",
+      "winnerSurpassSota": 21.428571428571427,
+      "winnerMatchSota": 35.714285714285715,
+      "winnerMedianAll": -0.09244033752245914,
       "models": [
+        {
+          "name": "Qwen 3.8 Max 0902",
+          "surpassSota": 21.428571428571427
+        },
         {
           "name": "Claude Opus 5",
           "surpassSota": 21.428571
@@ -1443,6 +1521,10 @@ window.NATUREBENCH_DATA = {
         {
           "name": "Opus 4.7",
           "surpassSota": 30.7692
+        },
+        {
+          "name": "Qwen 3.8 Max 0902",
+          "surpassSota": 23.076923076923077
         },
         {
           "name": "Opus 4.6",
@@ -1577,6 +1659,10 @@ window.NATUREBENCH_DATA = {
         {
           "name": "Qwen 3.7 Max",
           "surpassSota": 0
+        },
+        {
+          "name": "Qwen 3.8 Max 0902",
+          "surpassSota": 0.0
         }
       ]
     },
@@ -1654,6 +1740,10 @@ window.NATUREBENCH_DATA = {
         },
         {
           "name": "Qwen 3.8 Max",
+          "surpassSota": 0.0
+        },
+        {
+          "name": "Qwen 3.8 Max 0902",
           "surpassSota": 0.0
         }
       ]
@@ -1736,6 +1826,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.068882
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.04009713464908107
         }
       }
     },
@@ -1745,8 +1839,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Clustering/Integration",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
-      "bestScore": 0.0949,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": 0.4555182246376811,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -1815,6 +1909,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.034208
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.4555182246376811
         }
       }
     },
@@ -1894,6 +1992,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.251414
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.02850996131556416
         }
       }
     },
@@ -1973,6 +2075,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.27354
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.1253309021304235
         }
       }
     },
@@ -2052,6 +2158,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.021576
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.016843195227308646
         }
       }
     },
@@ -2131,6 +2241,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.18286
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.19739324742257922
         }
       }
     },
@@ -2210,6 +2324,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.005434165609643871
         }
       }
     },
@@ -2289,6 +2407,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.108537
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.07570391953530282
         }
       }
     },
@@ -2368,6 +2490,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.030156
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.009922193877550995
         }
       }
     },
@@ -2447,6 +2573,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.287015
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.1032382983633039
         }
       }
     },
@@ -2526,6 +2656,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.4601159078336914
         }
       }
     },
@@ -2605,6 +2739,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 1.322436
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -2684,6 +2822,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.11494
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.1309602975650388
         }
       }
     },
@@ -2763,6 +2905,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.9920887262512312
         }
       }
     },
@@ -2842,6 +2988,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.715743
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -2920,6 +3070,10 @@ window.NATUREBENCH_DATA = {
         },
         "Qwen 3.8 Max": {
           "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "none",
           "value": null
         }
       }
@@ -3000,6 +3154,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.626186
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.10007363136317343
         }
       }
     },
@@ -3079,6 +3237,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.01185
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -3158,6 +3320,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.01861
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.11090597894661423
         }
       }
     },
@@ -3237,6 +3403,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.298495
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.09188016779544739
         }
       }
     },
@@ -3316,6 +3486,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.2901666858442017
         }
       }
     },
@@ -3395,6 +3569,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.252162
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.41259578391734053
         }
       }
     },
@@ -3474,6 +3652,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.030928
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.03092783505154642
         }
       }
     },
@@ -3553,6 +3735,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -1.701447
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -3632,6 +3818,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.0394
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.05841209854305532
         }
       }
     },
@@ -3711,6 +3901,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.269153
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.2442353940208416
         }
       }
     },
@@ -3790,6 +3984,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.044825
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.030733316504053792
         }
       }
     },
@@ -3869,6 +4067,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.033203
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.011234966175665917
         }
       }
     },
@@ -3948,6 +4150,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.11137
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.13848147064508634
         }
       }
     },
@@ -3957,8 +4163,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Protein Biology",
       "mlTaskType": "Structure Modeling",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
-      "bestScore": -0.415469,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": -0.27198468292682926,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4027,6 +4233,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.748405
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.27198468292682926
         }
       }
     },
@@ -4106,6 +4316,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.311622
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4115,8 +4329,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Opus 5",
-      "bestScore": -0.515039,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": -0.4119142516476708,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -4185,6 +4399,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.840333
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.4119142516476708
         }
       }
     },
@@ -4264,6 +4482,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.002213
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.10197959459459462
         }
       }
     },
@@ -4343,6 +4565,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -18.420079
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -16.279152168211226
         }
       }
     },
@@ -4352,8 +4578,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Biomedical Modeling",
       "mlTaskType": "Segmentation/Detection",
       "taskDir": "part2",
-      "bestModel": "Opus 5",
-      "bestScore": -125.74878,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": -120.67821316982592,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -4422,6 +4648,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -133.802214
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -120.67821316982592
         }
       }
     },
@@ -4501,6 +4731,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.088762
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.4651147983884419
         }
       }
     },
@@ -4580,6 +4814,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.603796
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.5087332787522444
         }
       }
     },
@@ -4659,6 +4897,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.11452
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4738,6 +4980,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.0735913597980194
         }
       }
     },
@@ -4817,6 +5063,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.015412
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.014960697271312743
         }
       }
     },
@@ -4896,6 +5146,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.398036
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -4975,6 +5229,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.061992
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.06474180235154957
         }
       }
     },
@@ -4984,8 +5242,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "part2",
-      "bestModel": "Opus 5",
-      "bestScore": -0.06032,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": -0.042962890269753105,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -5054,6 +5312,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.106984
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.042962890269753105
         }
       }
     },
@@ -5131,6 +5393,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Qwen 3.8 Max": {
+          "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
           "state": "invalid",
           "value": null
         }
@@ -5212,6 +5478,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.892676
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.6803964757709251
         }
       }
     },
@@ -5291,6 +5561,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.003258
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -5370,6 +5644,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.135288
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.11524633965187477
         }
       }
     },
@@ -5447,6 +5725,10 @@ window.NATUREBENCH_DATA = {
           "value": -0.725758
         },
         "Qwen 3.8 Max": {
+          "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
           "state": "invalid",
           "value": null
         }
@@ -5528,6 +5810,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.021364
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.020609263375760814
         }
       }
     },
@@ -5605,6 +5891,10 @@ window.NATUREBENCH_DATA = {
           "value": 0.015216
         },
         "Qwen 3.8 Max": {
+          "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
           "state": "invalid",
           "value": null
         }
@@ -5686,6 +5976,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.005352
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.11107820699348497
         }
       }
     },
@@ -5765,6 +6059,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.037028
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.04530705682278274
         }
       }
     },
@@ -5844,6 +6142,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.060064
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.25873905404478437
         }
       }
     },
@@ -5921,6 +6223,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Qwen 3.8 Max": {
+          "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
           "state": "invalid",
           "value": null
         }
@@ -6002,6 +6308,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.117316
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.09435170215277937
         }
       }
     },
@@ -6081,6 +6391,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.00276
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -6160,6 +6474,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.143127
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.13317508025011332
         }
       }
     },
@@ -6169,8 +6487,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Molecular Design",
       "mlTaskType": "Generation/Design",
       "taskDir": "part2",
-      "bestModel": "Claude Opus 5",
-      "bestScore": -0.025,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": 0.009705322737956403,
       "scores": {
         "Opus 4.6": {
           "state": "invalid",
@@ -6239,6 +6557,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.009705322737956403
         }
       }
     },
@@ -6318,6 +6640,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.071932
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.03488717939096352
         }
       }
     },
@@ -6397,6 +6723,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.013649
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.0052621585510307335
         }
       }
     },
@@ -6475,6 +6805,10 @@ window.NATUREBENCH_DATA = {
         },
         "Qwen 3.8 Max": {
           "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "none",
           "value": null
         }
       }
@@ -6555,6 +6889,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.01274
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.01253097839366121
         }
       }
     },
@@ -6634,6 +6972,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.076771
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -6713,6 +7055,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.055076
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.024290270169453065
         }
       }
     },
@@ -6792,6 +7138,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.016824
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.08164237668161438
         }
       }
     },
@@ -6871,6 +7221,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.083631
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.1603724986162816
         }
       }
     },
@@ -6950,6 +7304,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -4.428896
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.6395564877581722
         }
       }
     },
@@ -7027,6 +7385,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Qwen 3.8 Max": {
+          "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
           "state": "invalid",
           "value": null
         }
@@ -7108,6 +7470,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.076182
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -7187,6 +7553,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -1.329141
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -1.092365449443161
         }
       }
     },
@@ -7266,6 +7636,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.457654
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.40349680378310154
         }
       }
     },
@@ -7345,6 +7719,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.701018
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -7424,6 +7802,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.034848
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.13538879999999995
         }
       }
     },
@@ -7503,6 +7885,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.313233
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.3348543668298125
         }
       }
     },
@@ -7582,6 +7968,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.236795
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.13701030729805636
         }
       }
     },
@@ -7661,6 +8051,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.007999
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.0023444262460323236
         }
       }
     },
@@ -7740,6 +8134,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.618173
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.6284499299393294
         }
       }
     },
@@ -7819,6 +8217,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.075323
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -7898,6 +8300,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "none",
+          "value": null
         }
       }
     },
@@ -7907,8 +8313,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Physical Modeling",
       "mlTaskType": "Simulation/Operator Learning",
       "taskDir": "part1",
-      "bestModel": "Qwen 3.8 Max",
-      "bestScore": 0.901416,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": 0.9186441365183845,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -7977,6 +8383,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.901416
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.9186441365183845
         }
       }
     },
@@ -8056,6 +8466,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.020827
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.02045582569538278
         }
       }
     },
@@ -8133,6 +8547,10 @@ window.NATUREBENCH_DATA = {
           "value": null
         },
         "Qwen 3.8 Max": {
+          "state": "invalid",
+          "value": null
+        },
+        "Qwen 3.8 Max 0902": {
           "state": "invalid",
           "value": null
         }
@@ -8214,6 +8632,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.054565
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.0565380568799338
         }
       }
     },
@@ -8293,6 +8715,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.062256
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -8372,6 +8798,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.02009
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "invalid",
+          "value": null
         }
       }
     },
@@ -8451,6 +8881,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.116437
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "none",
+          "value": null
         }
       }
     },
@@ -8460,8 +8894,8 @@ window.NATUREBENCH_DATA = {
       "domain": "Cellular Omics",
       "mlTaskType": "Prediction/Regression",
       "taskDir": "buggy",
-      "bestModel": "GPT-5.5",
-      "bestScore": 0.164982,
+      "bestModel": "Qwen 3.8 Max 0902",
+      "bestScore": 0.17907023392094806,
       "scores": {
         "Opus 4.6": {
           "state": "valid",
@@ -8530,6 +8964,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "invalid",
           "value": null
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.17907023392094806
         }
       }
     },
@@ -8609,6 +9047,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": -0.079
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.22512182493513547
         }
       }
     },
@@ -8688,6 +9130,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.09474
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": 0.36311567581474935
         }
       }
     },
@@ -8767,6 +9213,10 @@ window.NATUREBENCH_DATA = {
         "Qwen 3.8 Max": {
           "state": "valid",
           "value": 0.064203
+        },
+        "Qwen 3.8 Max 0902": {
+          "state": "valid",
+          "value": -0.023294256274179036
         }
       }
     }
