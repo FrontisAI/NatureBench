@@ -64,6 +64,7 @@
   --agent-gemini-color: #315fa8;
   --agent-aibuildai-color: #7b4ba5;
   --agent-helix-color: #b02f6f;
+  --agent-luria-color: #a45a16;
   --rank-gold: #8a6411;
   --rank-silver: #5e6970;
   --rank-bronze: #8a4f30;
@@ -89,6 +90,7 @@
   --agent-gemini-color: #8eb5ff;
   --agent-aibuildai-color: #c9a0e8;
   --agent-helix-color: #f08cba;
+  --agent-luria-color: #f0ad63;
   --rank-gold: #f0ca62;
   --rank-silver: #c4ccd0;
   --rank-bronze: #e4a17c;
@@ -876,6 +878,10 @@ section {
 
 .agent-helix {
   --agent-color: var(--agent-helix-color);
+}
+
+.agent-luria {
+  --agent-color: var(--agent-luria-color);
 }
 
 .rank-dot {

@@ -8,6 +8,28 @@
     throw new Error("NATUREBENCH_TRACKS is missing");
   }
   const { TRACKS, buildTrackLeaderboard, rankDomainLeaderboard, rankLeaderboard } = trackApi;
+  const fullLeaderboardRows = data.leaderboard.filter(
+    (row) => !Array.isArray(row.tracks) || row.tracks.includes("full"),
+  );
+  data.cases.forEach((caseRow) => {
+    fullLeaderboardRows.forEach((leaderboardRow) => {
+      const submittedScore = leaderboardRow.scores?.[caseRow.caseId];
+      if (submittedScore) caseRow.scores[leaderboardRow.name] = submittedScore;
+    });
+    const validScores = fullLeaderboardRows
+      .map((leaderboardRow) => ({
+        name: leaderboardRow.name,
+        score: caseRow.scores[leaderboardRow.name],
+      }))
+      .filter(({ score }) => score?.state === "valid" && Number.isFinite(score.value));
+    if (validScores.length) {
+      const best = validScores.reduce((left, right) => (
+        Number(right.score.value) > Number(left.score.value) ? right : left
+      ));
+      caseRow.bestModel = best.name;
+      caseRow.bestScore = Number(best.score.value);
+    }
+  });
   const leaderboardByTrack = Object.fromEntries(
     Object.keys(TRACKS).map((trackKey) => [trackKey, buildTrackLeaderboard(data, trackKey)]),
   );
@@ -255,6 +277,7 @@
     if (/^gemini cli\b/i.test(agent)) return "agent-gemini";
     if (/^aibuildai\b/i.test(agent)) return "agent-aibuildai";
     if (/^helix\b/i.test(agent)) return "agent-helix";
+    if (/^luria\b/i.test(agent)) return "agent-luria";
     return "agent-other";
   }
 
