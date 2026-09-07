@@ -254,6 +254,7 @@
     if (/^codex\b/i.test(agent)) return "agent-codex";
     if (/^gemini cli\b/i.test(agent)) return "agent-gemini";
     if (/^aibuildai\b/i.test(agent)) return "agent-aibuildai";
+    if (/^helix\b/i.test(agent)) return "agent-helix";
     return "agent-other";
   }
 

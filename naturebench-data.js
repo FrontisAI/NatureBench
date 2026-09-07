@@ -237,7 +237,7 @@ window.NATUREBENCH_DATA = {
       },
       "solvingBudget": "4 h / task",
       "compute": "One NVIDIA H200 (141 GB) per GPU task; 64–512 GB host RAM; the CPU-track task on a 32-core CPU node",
-      "externalAccess": "Web search tools disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "Claude Opus 5"
     }
   ],
