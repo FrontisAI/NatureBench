@@ -184,7 +184,9 @@
     featuredCase: "cancer-gene",
   };
 
-  const modelOrder = data.leaderboard.map((item) => item.name);
+  const modelOrder = data.leaderboard
+    .filter((item) => !Array.isArray(item.tracks) || item.tracks.includes("full"))
+    .map((item) => item.name);
   const modelByName = Object.fromEntries(data.models.map((item) => [item.name, item]));
   const configurationById = Object.fromEntries(data.models.map((item) => [item.id, item]));
   let activeConfigurationTrigger = null;

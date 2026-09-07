@@ -81,10 +81,14 @@
     return cases;
   }
 
-  function metricsForModel(modelName, cases) {
+  function supportsTrack(row, trackKey) {
+    return !Array.isArray(row.tracks) || row.tracks.includes(trackKey);
+  }
+
+  function metricsForModel(row, cases) {
     const scores = cases.map((item) => {
-      const score = item.scores[modelName];
-      if (!score) throw new Error(`Missing ${modelName} score for ${item.caseId}`);
+      const score = row.scores?.[item.caseId] || item.scores[row.name];
+      if (!score) throw new Error(`Missing ${row.name} score for ${item.caseId}`);
       return score;
     });
     const validScores = scores
@@ -119,9 +123,9 @@
 
   function buildTrackLeaderboard(data, trackKey) {
     const cases = casesForTrack(data, trackKey);
-    return data.leaderboard.map((row) => ({
+    return data.leaderboard.filter((row) => supportsTrack(row, trackKey)).map((row) => ({
       ...row,
-      ...metricsForModel(row.name, cases),
+      ...metricsForModel(row, cases),
       track: trackKey,
     }));
   }
@@ -146,9 +150,9 @@
   function rankDomainLeaderboard(data, domainName) {
     const cases = data.cases.filter((item) => item.domain === domainName);
     if (!cases.length) throw new Error(`Unknown or empty domain: ${domainName}`);
-    const rows = data.leaderboard.map((row) => ({
+    const rows = data.leaderboard.filter((row) => supportsTrack(row, "full")).map((row) => ({
       ...row,
-      ...metricsForModel(row.name, cases),
+      ...metricsForModel(row, cases),
     }));
     return rankLeaderboard(rows);
   }

@@ -225,9 +225,66 @@ window.NATUREBENCH_DATA = {
       "compute": "4 × A100 80 GB visible during execution; 1 GPU allocated per candidate solution",
       "externalAccess": "General-purpose web search and webpage fetching disabled; restricted MCP access to Hugging Face model repositories and an internally hosted literature-retrieval service enabled; the literature service was not filtered by task",
       "validityJudge": "GPT-5.5"
+    },
+    {
+      "id": "claude-opus-5-helix",
+      "name": "Opus 5 (HELIX)",
+      "displayName": "Opus 5",
+      "agent": "HELIX",
+      "runSource": {
+        "label": "HELIX",
+        "url": "https://pgupdn.github.io/helix/"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One NVIDIA H200 (141 GB) per GPU task; 64–512 GB host RAM; the CPU-track task on a 32-core CPU node",
+      "externalAccess": "Web search tools disabled",
+      "validityJudge": "Claude Opus 5"
     }
   ],
   "leaderboard": [
+    {
+      "name": "Opus 5 (HELIX)",
+      "harness": "HELIX",
+      "configurationId": "claude-opus-5-helix",
+      "tracks": [
+        "naturebench-25"
+      ],
+      "invalid": 1,
+      "matchSota": 72.0,
+      "surpassSota": 28.0,
+      "meanAll": 0.030556,
+      "medianAll": 0.030928,
+      "medianValid": 0.032561,
+      "completionRate": 96.0,
+      "scoreRate": 100.0,
+      "scores": {
+        "s41467-025-63418-x": { "state": "valid", "value": 0.06934050724637686 },
+        "s41587-024-02414-w": { "state": "valid", "value": -0.014858994477731573 },
+        "s41587-024-02428-4": { "state": "valid", "value": 0.04289923469387758 },
+        "s41592-022-01709-7": { "state": "valid", "value": -0.0450700492010639 },
+        "s41592-023-02124-2": { "state": "valid", "value": 0.23195687147893942 },
+        "s41592-024-02316-4": { "state": "valid", "value": 0.03092783505154642 },
+        "s41592-025-02662-x": { "state": "valid", "value": 0.02401373114721761 },
+        "s41592-025-02665-8": { "state": "valid", "value": 0.034194899737069864 },
+        "s41592-025-02776-2": { "state": "valid", "value": 0.14002562531217702 },
+        "s41592-025-02924-8": { "state": "valid", "value": -0.0014421743807335673 },
+        "s41592-025-02983-x": { "state": "valid", "value": 0.027209193608526167 },
+        "s42256-022-00447-x": { "state": "valid", "value": 0.12950754263329284 },
+        "s42256-022-00541-0": { "state": "invalid", "value": -0.061082573951106646 },
+        "s42256-023-00627-3": { "state": "valid", "value": 0.33888221843291083 },
+        "s42256-023-00628-2": { "state": "valid", "value": -0.03605939636738538 },
+        "s42256-023-00630-8": { "state": "valid", "value": 0.13701177461084574 },
+        "s42256-023-00639-z": { "state": "valid", "value": 0.14878554977570826 },
+        "s42256-023-00654-0": { "state": "valid", "value": -0.05463338340219049 },
+        "s42256-024-00790-1": { "state": "valid", "value": 0.038349570764731215 },
+        "s42256-024-00892-w": { "state": "valid", "value": 0.09401569506726457 },
+        "s42256-025-01042-6": { "state": "valid", "value": -0.1940722900222141 },
+        "s43588-024-00698-1": { "state": "valid", "value": 0.009442115262847396 },
+        "s43588-024-00733-1": { "state": "valid", "value": 0.026699988122858898 },
+        "s43588-025-00903-9": { "state": "valid", "value": 0.02180117477586544 },
+        "s43588-025-00917-3": { "state": "valid", "value": 0.5649606873152433 }
+      }
+    },
     {
       "name": "Claude Opus 5",
       "harness": "Claude Code",
