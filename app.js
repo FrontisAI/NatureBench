@@ -939,7 +939,7 @@
           <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner${leaders.length > 1 ? "s" : ""}</div>
           <div class="domain-winner-list${leaders.length > 1 ? " is-tied" : ""}" data-winner-count="${leaders.length}">
             ${leaders.map((row) => `
-              <div class="domain-winner-entry" title="${escapeHtml(displayNameForRow(row))} · ${escapeHtml(row.harness)}">
+              <div class="domain-winner-entry" title="${escapeHtml(displayNameForRow(row))} · ${escapeHtml(row.harness)}" style="--model-color:${modelColor(row.name)}">
                 <div class="domain-winner">${escapeHtml(compactDomainModelName(row, leaders.length))}</div>
                 <div class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(compactDomainAgentName(row.harness, leaders.length))}</div>
               </div>
