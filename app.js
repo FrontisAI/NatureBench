@@ -435,8 +435,22 @@
   }
 
   function modelColor(modelName) {
-    if (/^aibuildai\b/i.test(agentForModel(modelName))) return "#147c72";
+    const agent = agentForModel(modelName);
+    if (/^luria\b/i.test(agent)) return "var(--agent-luria-color)";
+    if (/^aibuildai\b/i.test(agent)) return "#147c72";
     return modelColors.find((item) => item.match.test(modelName))?.color || "#147c72";
+  }
+
+  function compactDomainModelName(row, winnerCount) {
+    const displayName = displayNameForRow(row);
+    if (winnerCount > 1 && /^DeepSeek-V4-Pro$/i.test(displayName)) return "DS-V4-Pro";
+    return displayName;
+  }
+
+  function compactDomainAgentName(agent, winnerCount) {
+    if (winnerCount < 3) return agent;
+    if (/^aibuildai\b/i.test(agent)) return "AIBuildAI";
+    return agent;
   }
 
   function modelLogoMarkup(modelName) {
@@ -871,23 +885,43 @@
   }
 
   function alignDomainWinnerDividers() {
-    document.querySelectorAll(".domain-table-winner-list.is-tied").forEach((list) => {
-      const entries = list.querySelectorAll(".domain-table-winner-entry");
-      if (entries.length !== 2) return;
+    const alignAdjacentEntries = (listSelector, entrySelector, labelSelector, property) => {
+      document.querySelectorAll(listSelector).forEach((list) => {
+        const entries = Array.from(list.querySelectorAll(entrySelector));
+        const entryTextBounds = (entry) => {
+          const bounds = Array.from(entry.querySelectorAll(labelSelector)).map(textContentBounds);
+          if (!bounds.length) return null;
+          return {
+            left: Math.min(...bounds.map((rect) => rect.left)),
+            right: Math.max(...bounds.map((rect) => rect.right)),
+          };
+        };
+        entries.forEach((entry, index) => {
+          entry.style.removeProperty(property);
+          if (index === 0) return;
 
-      const firstHarness = entries[0].querySelector(".agent-subline");
-      const secondHarness = entries[1].querySelector(".agent-subline");
-      if (!firstHarness || !secondHarness) return;
+          const previousLabelRect = entryTextBounds(entries[index - 1]);
+          const currentLabelRect = entryTextBounds(entry);
+          if (!previousLabelRect || !currentLabelRect) return;
+          const entryRect = entry.getBoundingClientRect();
+          const dividerCenter = (previousLabelRect.right + currentLabelRect.left) / 2;
+          entry.style.setProperty(property, `${dividerCenter - entryRect.left}px`);
+        });
+      });
+    };
 
-      const firstHarnessRect = textContentBounds(firstHarness);
-      const secondHarnessRect = textContentBounds(secondHarness);
-      const secondEntryRect = entries[1].getBoundingClientRect();
-      const dividerCenter = (firstHarnessRect.right + secondHarnessRect.left) / 2;
-      entries[1].style.setProperty(
-        "--domain-table-divider-left",
-        `${dividerCenter - secondEntryRect.left}px`,
-      );
-    });
+    alignAdjacentEntries(
+      ".domain-winner-list.is-tied",
+      ".domain-winner-entry",
+      ".domain-winner, .domain-winner-agent",
+      "--domain-divider-left",
+    );
+    alignAdjacentEntries(
+      ".domain-table-winner-list.is-tied",
+      ".domain-table-winner-entry",
+      ".method-name, .agent-subline",
+      "--domain-table-divider-left",
+    );
   }
 
   function renderDomainGrid() {
@@ -896,15 +930,15 @@
       const leaders = rows.filter((row) => row.rank === 1);
       const leader = leaders[0];
       return `
-        <button class="domain-card" data-domain="${escapeHtml(domain.domain)}" data-tied-winners="${leaders.length > 1}" style="--model-color:${modelColor(leader.name)};--winner-count:${leaders.length}">
+        <button class="domain-card" data-domain="${escapeHtml(domain.domain)}" data-tied-winners="${leaders.length > 1}" data-winner-count="${leaders.length}" style="--model-color:${modelColor(leader.name)}">
           <div class="domain-name">${escapeHtml(domain.domain)}</div>
           <div class="domain-count">N=${domain.n}</div>
           <div class="domain-winner-label"><span class="winner-badge">#1</span> Domain winner${leaders.length > 1 ? "s" : ""}</div>
           <div class="domain-winner-list${leaders.length > 1 ? " is-tied" : ""}" data-winner-count="${leaders.length}">
             ${leaders.map((row) => `
               <div class="domain-winner-entry" title="${escapeHtml(displayNameForRow(row))} · ${escapeHtml(row.harness)}">
-                <div class="domain-winner">${escapeHtml(displayNameForRow(row))}</div>
-                <div class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</div>
+                <div class="domain-winner">${escapeHtml(compactDomainModelName(row, leaders.length))}</div>
+                <div class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(compactDomainAgentName(row.harness, leaders.length))}</div>
               </div>
             `).join("")}
           </div>
