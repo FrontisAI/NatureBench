@@ -24,7 +24,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Dict, Optional, Tuple
 
-from batch_target_utils import add_target_arguments, resolve_targets  # pyright: ignore[reportMissingImports]
+if __package__:
+    from .batch_target_utils import add_target_arguments, resolve_targets
+else:
+    from batch_target_utils import add_target_arguments, resolve_targets
 
 
 CLAUDE_CMD = "claude"
@@ -38,7 +41,7 @@ def get_timestamp() -> str:
     return datetime.now().strftime("%H:%M:%S")
 
 
-def run_task(target: str) -> Tuple[str, int, Optional[str]]:
+def run_task(target: str, agent: str = "claude") -> Tuple[str, int, Optional[str]]:
     try:
         log_dir = os.path.join(target, "logs")
         os.makedirs(log_dir, exist_ok=True)
@@ -61,6 +64,10 @@ Output directory: {abs_output}"""
         with open(log_file, "w", encoding="utf-8") as f, open(err_file, "w", encoding="utf-8") as ef:
             result = subprocess.run(
                 [
+                    "codex", "exec", "--yolo", "--skip-git-repo-check", "--json",
+                    "--cd", os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    prompt,
+                ] if agent == "codex" else [
                     CLAUDE_CMD,
                     "-p",
                     prompt,
@@ -97,6 +104,10 @@ def main():
         metavar="N",
         help="Number of parallel jobs (default: 1, sequential)",
     )
+    parser.add_argument(
+        "--agent", choices=("claude", "codex"), default="claude",
+        help="Agent CLI to invoke (default: claude)",
+    )
     add_target_arguments(parser)
 
     args = parser.parse_args()
@@ -132,7 +143,7 @@ def main():
 
     with ThreadPoolExecutor(max_workers=args.jobs) as executor:
         future_to_target = {
-            executor.submit(run_task, target): target for target in targets
+            executor.submit(run_task, target, args.agent): target for target in targets
         }
 
         for future in as_completed(future_to_target):

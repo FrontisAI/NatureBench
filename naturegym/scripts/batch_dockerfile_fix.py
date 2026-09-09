@@ -22,7 +22,10 @@ from datetime import datetime
 from functools import partial
 from typing import Dict, Optional, Tuple
 
-from batch_target_utils import add_target_arguments, resolve_targets  # pyright: ignore[reportMissingImports]
+if __package__:
+    from .batch_target_utils import add_target_arguments, resolve_targets
+else:
+    from batch_target_utils import add_target_arguments, resolve_targets
 
 
 CLAUDE_CMD = "claude"
@@ -36,7 +39,7 @@ def get_timestamp() -> str:
     return datetime.now().strftime("%H:%M:%S")
 
 
-def run_task(target: str, dockerfile_name: str) -> Tuple[str, int, Optional[str]]:
+def run_task(target: str, dockerfile_name: str, agent: str = "claude") -> Tuple[str, int, Optional[str]]:
     try:
         env_dir = os.path.join(target, "environment")
         verify_result = os.path.join(env_dir, "verify_result.txt")
@@ -71,6 +74,10 @@ Dockerfile Name: {dockerfile_name}"""
         with open(log_file, "w", encoding="utf-8") as f, open(err_file, "w", encoding="utf-8") as ef:
             result = subprocess.run(
                 [
+                    "codex", "exec", "--yolo", "--skip-git-repo-check", "--json",
+                    "--cd", os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    prompt,
+                ] if agent == "codex" else [
                     CLAUDE_CMD,
                     "-p",
                     prompt,
@@ -112,6 +119,10 @@ def main():
         default="Dockerfile.v3",
         help="Dockerfile name under each target's environment directory (default: Dockerfile.v3)",
     )
+    parser.add_argument(
+        "--agent", choices=("claude", "codex"), default="claude",
+        help="Agent CLI to invoke (default: claude)",
+    )
     add_target_arguments(parser)
 
     args = parser.parse_args()
@@ -146,7 +157,7 @@ def main():
 
     results: Dict[str, Tuple[int, Optional[str]]] = {}
 
-    run_target = partial(run_task, dockerfile_name=args.dockerfile_name)
+    run_target = partial(run_task, dockerfile_name=args.dockerfile_name, agent=args.agent)
     with ThreadPoolExecutor(max_workers=args.jobs) as executor:
         future_to_target = {
             executor.submit(run_target, target): target for target in targets

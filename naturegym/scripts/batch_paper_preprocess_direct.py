@@ -24,7 +24,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Dict, Optional, Tuple
 
-from batch_target_utils import add_target_arguments, resolve_targets  # pyright: ignore[reportMissingImports]
+if __package__:
+    from .batch_target_utils import add_target_arguments, resolve_targets
+else:
+    from batch_target_utils import add_target_arguments, resolve_targets
 def get_timestamp() -> str:
     return datetime.now().strftime("%H:%M:%S")
 
@@ -41,7 +44,7 @@ def run_task(target: str) -> Tuple[str, int, Optional[str]]:
         abs_output = os.path.abspath(abs_output).replace("\\", "/")
 
         script_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             ".claude", "skills", "paper-preprocess", "scripts", "preprocess.py"
         )
 
