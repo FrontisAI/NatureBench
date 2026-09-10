@@ -339,6 +339,7 @@
         <div><dt>Compute</dt><dd>${escapeHtml(configuration.compute)}${computeLink}</dd></div>
         <div><dt>External access</dt><dd>${escapeHtml(configuration.externalAccess)}</dd></div>
         <div><dt>Validity judge</dt><dd>${escapeHtml(configuration.validityJudge)}</dd></div>
+        ${configuration.notes ? `<div><dt>Notes</dt><dd>${escapeHtml(configuration.notes)}</dd></div>` : ""}
       </dl>
     `;
   }
@@ -436,6 +437,7 @@
 
   function modelColor(modelName) {
     const agent = agentForModel(modelName);
+    if (/^helix\b/i.test(agent)) return "var(--agent-helix-color)";
     if (/^luria\b/i.test(agent)) return "var(--agent-luria-color)";
     if (/^aibuildai\b/i.test(agent)) return "var(--agent-aibuildai-color)";
     return modelColors.find((item) => item.match.test(modelName))?.color || "#147c72";
@@ -916,13 +918,13 @@
     alignAdjacentEntries(
       ".domain-winner-list.is-tied",
       ".domain-winner-entry",
-      ".domain-winner, .domain-winner-agent",
+      ".domain-winner-agent",
       "--domain-divider-left",
     );
     alignAdjacentEntries(
       ".domain-table-winner-list.is-tied",
       ".domain-table-winner-entry",
-      ".method-name, .agent-subline",
+      ".agent-subline",
       "--domain-table-divider-left",
     );
   }
