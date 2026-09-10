@@ -2804,6 +2804,10 @@ td.board-value {
   max-width: 120px;
 }
 
+.case-table thead th:nth-child(n+5) {
+  text-align: left;
+}
+
 .case-table td,
 .case-table th {
   padding: 0.48rem 0.5rem;

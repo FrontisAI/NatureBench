@@ -918,13 +918,13 @@
     alignAdjacentEntries(
       ".domain-winner-list.is-tied",
       ".domain-winner-entry",
-      ".domain-winner-agent",
+      ".domain-winner, .domain-winner-agent",
       "--domain-divider-left",
     );
     alignAdjacentEntries(
       ".domain-table-winner-list.is-tied",
       ".domain-table-winner-entry",
-      ".agent-subline",
+      ".method-name, .agent-subline",
       "--domain-table-divider-left",
     );
   }

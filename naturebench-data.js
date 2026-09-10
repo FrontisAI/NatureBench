@@ -722,6 +722,46 @@ window.NATUREBENCH_DATA = {
   ],
   "distributions": [
     {
+      "name": "Opus 5 (HELIX)",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 0,
+          "percent": 0.0
+        },
+        {
+          "label": "Invalid",
+          "count": 2,
+          "percent": 2.2
+        },
+        {
+          "label": "g < -0.5",
+          "count": 12,
+          "percent": 13.3
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 20,
+          "percent": 22.2
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 32,
+          "percent": 35.6
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 20,
+          "percent": 22.2
+        },
+        {
+          "label": "g > 0.5",
+          "count": 4,
+          "percent": 4.4
+        }
+      ]
+    },
+    {
       "name": "DeepSeek-V4-Pro (Luria)",
       "bins": [
         {
