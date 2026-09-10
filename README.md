@@ -13,6 +13,7 @@
 
 ## 📰News
 
+- **🏆 [2026-09-10] We extend the externally submitted HELIX + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) to the Full 90-task leaderboard.**
 - **🏆 [2026-09-07] We add the externally submitted Luria 1.0 + DeepSeek-V4-Pro [results](https://frontisai.github.io/NatureBench/#leaderboard).**
 - **🏆 [2026-09-07] We update the [results](https://frontisai.github.io/NatureBench/) with Qwen 3.8 Max 0902.**
 - **🏆 [2026-09-07] We add the externally submitted HELIX + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/?track=naturebench-25#leaderboard) to the NatureBench-25 leaderboard.**
