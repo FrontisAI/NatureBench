@@ -281,21 +281,22 @@
     return "agent-other";
   }
 
-  function modelAgentMarkup(modelName, { logo = false } = {}) {
+  function modelAgentMarkup(modelName, { logo = false, infoButton = "" } = {}) {
     const agent = agentForModel(modelName);
     const displayName = displayNameForModel(modelName);
+    const modelLabel = `<span class="method-name">${escapeHtml(displayName)}</span>`;
     return `
       <span class="model-agent-identity">
         ${logo ? modelLogoMarkup(modelName) : ""}
         <span class="model-agent-copy">
-          <span class="method-name">${escapeHtml(displayName)}</span>
+          ${infoButton ? `<span class="domain-model-line">${modelLabel}${infoButton}</span>` : modelLabel}
           ${agent ? `<span class="agent-subline ${agentColorClass(agent)}">${escapeHtml(agent)}</span>` : ""}
         </span>
       </span>
     `;
   }
 
-  function configurationTriggerMarkup(row) {
+  function configurationTriggerMarkup(row, submissionScope = "") {
     const configuration = configurationFor(row);
     if (!configuration) return "";
     const displayName = configuration.displayName || row.name;
@@ -304,6 +305,7 @@
         class="configuration-trigger"
         type="button"
         data-configuration-trigger="${escapeHtml(configuration.id)}"
+        ${submissionScope ? `data-submission-scope="${escapeHtml(submissionScope)}"` : ""}
         aria-label="View configuration for ${escapeHtml(displayName)} and ${escapeHtml(row.harness)}"
         aria-expanded="false"
       >i</button>
@@ -319,7 +321,7 @@
     return `<span class="run-source-label">${escapeHtml(source.label)}</span>`;
   }
 
-  function configurationPopoverMarkup(configuration) {
+  function configurationPopoverMarkup(configuration, submissionScope = "") {
     const computeLink = configuration.computeUrl
       ? ` <a href="${escapeHtml(configuration.computeUrl)}" target="_blank" rel="noopener">Task lists by compute ↗</a>`
       : "";
@@ -335,6 +337,7 @@
         </div>
       </div>
       <dl class="configuration-popover-list">
+        ${submissionScope ? `<div><dt>Submission scope</dt><dd>${escapeHtml(submissionScope)}</dd></div>` : ""}
         <div><dt>Solving budget</dt><dd>${escapeHtml(configuration.solvingBudget)}</dd></div>
         <div><dt>Compute</dt><dd>${escapeHtml(configuration.compute)}${computeLink}</dd></div>
         <div><dt>External access</dt><dd>${escapeHtml(configuration.externalAccess)}</dd></div>
@@ -383,7 +386,7 @@
     configurationPopoverPinned = pinned;
     trigger.setAttribute("aria-expanded", "true");
     const popover = ensureConfigurationPopover();
-    popover.innerHTML = configurationPopoverMarkup(configuration);
+    popover.innerHTML = configurationPopoverMarkup(configuration, trigger.dataset.submissionScope);
     popover.hidden = false;
     positionConfigurationPopover(trigger, popover);
   }
@@ -976,6 +979,7 @@
   }
 
   function renderDomainDetail() {
+    hideConfigurationPopover();
     const domain = data.domains.find((item) => item.domain === state.selectedDomain) || data.domains[0];
     if (!domain) return;
     const rows = domainLeaderboardByName[domain.domain];
@@ -993,11 +997,18 @@
       </div>
       ${rows.map((row) => {
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
+        const domainOnly = Array.isArray(row.tracks) && !row.tracks.includes("full");
+        const submissionScope = domainOnly
+          ? `Domain submission: ${row.domains.join(", ")}`
+          : "Full submission: all 90 tasks";
         return `
           <div class="bar-row model-color-row" style="--model-color:${modelColor(row.name)}">
             <div class="bar-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
               <span class="rank-dot">${row.rank}</span>
-              <span class="bar-model-identity">${modelAgentMarkup(row.name, { logo: true })}</span>
+              <span class="bar-model-identity">
+                ${modelAgentMarkup(row.name, { logo: true, infoButton: configurationTriggerMarkup(row, submissionScope) })}
+                ${domainOnly ? '<span class="domain-submission-label">Domain submission</span>' : ""}
+              </span>
             </div>
             <div class="bar-track" aria-hidden="true">
               <div class="bar-fill" style="--w:${width}%"></div>
@@ -1008,6 +1019,7 @@
       }).join("")}
     `;
     bindLogoFallbacks(chart);
+    bindConfigurationTriggers(chart);
   }
 
   function renderCaseLegend() {

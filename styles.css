@@ -822,6 +822,41 @@ section {
   color: var(--model-color, var(--text-primary));
 }
 
+#domain-chart .bar-model-identity {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.domain-submission-label {
+  color: var(--text-secondary);
+  font-size: 0.6rem;
+}
+
+.domain-model-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.domain-model-line .configuration-trigger {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  font-size: 0.58rem;
+}
+
+.domain-model-line .configuration-trigger::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
 .model-agent-identity {
   min-width: 0;
   display: inline-flex;
@@ -1112,24 +1147,32 @@ tbody tr:hover {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.65rem 1.5rem;
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--accent-primary);
   border-radius: 8px;
   background: linear-gradient(105deg, var(--accent-soft), var(--panel) 64%);
 }
 
-.leaderboard-submit-copy h3 {
-  margin: 0.12rem 0 0.18rem;
+.leaderboard-submit-panel h3 {
+  margin: 0;
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
+.leaderboard-submit-copy {
+  grid-column: 1 / -1;
+}
+
 .leaderboard-submit-copy p {
-  max-width: 720px;
+  margin: 0;
   color: var(--text-secondary);
   font-size: 0.68rem;
   line-height: 1.55;
+}
+
+.leaderboard-submit-copy p + p {
+  margin-top: 0.45rem;
 }
 
 .leaderboard-submit-actions {

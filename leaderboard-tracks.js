@@ -150,7 +150,11 @@
   function rankDomainLeaderboard(data, domainName) {
     const cases = data.cases.filter((item) => item.domain === domainName);
     if (!cases.length) throw new Error(`Unknown or empty domain: ${domainName}`);
-    const rows = data.leaderboard.filter((row) => supportsTrack(row, "full")).map((row) => ({
+    const rows = data.leaderboard.filter((row) => (
+      supportsTrack(row, "full")
+      || (Array.isArray(row.tracks) && row.tracks.includes("domain")
+        && Array.isArray(row.domains) && row.domains.includes(domainName))
+    )).map((row) => ({
       ...row,
       ...metricsForModel(row, cases),
     }));
