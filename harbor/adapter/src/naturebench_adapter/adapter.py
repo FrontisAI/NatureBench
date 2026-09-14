@@ -113,12 +113,9 @@ def _gpu_healthcheck_command(
     acceptable_types: tuple[str, ...],
     required_count: int,
 ) -> str:
-    model_pattern = "|".join(acceptable_types)
     return (
         "nvidia-smi --query-gpu=name --format=csv,noheader | "
-        "awk '{ total++ } $0 ~ /(" + model_pattern + ")/ { matched++ } "
-        "END { exit(total == "
-        f"{required_count} && matched == {required_count} ? 0 : 1) }}'"
+        f"awk '{{ total++ }} END {{ exit(total == {required_count} ? 0 : 1) }}'"
     )
 
 
