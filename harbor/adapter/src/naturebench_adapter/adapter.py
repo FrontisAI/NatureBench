@@ -279,12 +279,14 @@ def convert_task(
         target / "environment" / "input",
         ignore=CACHE_IGNORE,
     )
+    sidecar_dir = target / "environment" / "sidecar"
+    sidecar_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(
         source_task / "evaluation",
-        target / "environment" / "sidecar" / "evaluation",
+        sidecar_dir / "evaluation",
         ignore=CACHE_IGNORE,
     )
-    shutil.copy2(source_task / "metadata.json", target / "environment" / "sidecar" / "metadata.json")
+    shutil.copy2(source_task / "metadata.json", sidecar_dir / "metadata.json")
     _write_agent_dockerfile(_source_dockerfile(source_task), target / "environment" / "Dockerfile")
     shutil.copytree(
         source_task / "licenses",
