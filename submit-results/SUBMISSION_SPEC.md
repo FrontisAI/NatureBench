@@ -8,7 +8,7 @@ NatureBench run for leaderboard review.
 A submission contains three parts:
 
 1. `submission.yaml`: submission and evaluation configuration.
-2. `results.csv`: one row for each official case in the submitted track (90 for Full or 25 for NatureBench-25).
+2. `results.csv`: one row for each official task in the [selected track](README.md#choose-a-track).
 3. `raw-results/`: per-case result records and trajectories used for review.
 
 ## 2. `submission.yaml`
@@ -43,7 +43,7 @@ evaluation:
 | `url` | Public link to the model, agent, paper, or project. |
 | `submission_date` | Date the result package is submitted, in `YYYY-MM-DD` format. |
 | `contact` | An email address, GitHub account, or another working contact method. |
-| `track` | Evaluation track: `full` for the 90-task track or `naturebench-25` for the 25-task track. Omitted values are interpreted as `full`. |
+| `track` | One of the eight [track IDs](README.md#choose-a-track), such as `full`, `naturebench-25`, or `protein-biology`. Omitted values are interpreted as `full`. |
 | `evaluation_pipeline` | Pipeline used to run and score the tasks: `naturebench`, `harbor`, or `custom`. This describes the evaluation pipeline and raw-result format. Omitted values are interpreted as `naturebench`. |
 | `timeout_seconds` | Per-task agent solve-time budget, excluding environment setup and evaluator execution. The reference setting is 14,400 seconds. |
 | `web_search` | Whether the agent uses web search tools or service during the evaluation. The reference setting is `false`. |
@@ -88,7 +88,7 @@ The required raw artifacts depend on `evaluation.evaluation_pipeline`. This
 field describes how the tasks were run and scored; it does not indicate whether
 the evaluated agent or harness was developed by the submitter.
 
-Every pipeline must provide one directory for each official case:
+Every pipeline must provide one directory for each official case in the selected track:
 
 ```text
 raw-results/

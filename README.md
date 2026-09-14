@@ -48,9 +48,16 @@ Across sixteen coding-agent configurations, the strongest reaches a 23.3% Surpas
 ## 🏅Submit Results
 
 We welcome results from researchers and developers who have evaluated models or
-agents on NatureBench. Submissions are currently accepted by email; see
+agents on NatureBench. Choose Full, NatureBench-25, or one of the six scientific
+domain tracks; all use the same submission format and review process.
+Submissions are currently accepted by email; see
 [`submit-results/`](submit-results/) for the result templates, validation and
 scoring scripts, required raw artifacts, and submission email.
+
+After review, accepted results are published on the NatureBench leaderboard page according to the submitted track. Full results appear in the main leaderboard,
+Domain Leaderboards, and Case-Level View; NatureBench-25 results appear only in
+the main leaderboard's NatureBench-25 tab; domain results appear only in their
+respective domain leaderboards.
 
 ## 🔧Setup
 

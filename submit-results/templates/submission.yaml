@@ -7,7 +7,7 @@ submission:
   contact: ""
 
 evaluation:
-  track: "full" # Use "naturebench-25" for the 25-task track.
+  track: "full" # Choose any track ID listed in submit-results/README.md, e.g. "naturebench-25" or "protein-biology".
   evaluation_pipeline: "naturebench" # Use "harbor" or "custom" when applicable.
   timeout_seconds: 14400
   web_search: false

@@ -43,7 +43,15 @@ EVALUATION_FIELDS = {
     "deviations_from_reference",
 }
 OPTIONAL_EVALUATION_FIELDS = {"track", "evaluation_pipeline"}
-SUPPORTED_TRACKS = ("full", "naturebench-25")
+DOMAIN_TRACKS = {
+    "cellular-omics": "Cellular Omics",
+    "protein-biology": "Protein Biology",
+    "biomedical-modeling": "Biomedical Modeling",
+    "physical-modeling": "Physical Modeling",
+    "molecular-design": "Molecular Design",
+    "relational-reasoning": "Relational Reasoning",
+}
+SUPPORTED_TRACKS = ("full", "naturebench-25", *DOMAIN_TRACKS)
 SUPPORTED_EVALUATION_PIPELINES = ("naturebench", "harbor", "custom")
 SCORE_TOLERANCE = 1e-9
 
@@ -108,9 +116,19 @@ def load_case_metadata(path: Path) -> dict[str, str]:
 
 
 def load_track_case_metadata(path: Path, track: str) -> dict[str, str]:
-    """Load full case metadata, optionally filtered to an official track."""
+    """Load the official case-to-domain mapping for one evaluation track."""
 
+    if track not in SUPPORTED_TRACKS:
+        raise ValueError(f"unsupported evaluation track: {track}")
     cases = load_case_metadata(path)
+    if track in DOMAIN_TRACKS:
+        selected = {
+            case_id: domain for case_id, domain in cases.items()
+            if domain == DOMAIN_TRACKS[track]
+        }
+        if not selected:
+            raise ValueError(f"case metadata has no tasks for track {track}")
+        return selected
     task_file = default_track_task_file(track)
     if task_file is None:
         return cases
@@ -214,7 +232,7 @@ def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | 
         )
         track = evaluation.get("track", "full")
         if track not in SUPPORTED_TRACKS:
-            report.error("evaluation.track must be full or naturebench-25")
+            report.error("evaluation.track must be one of: " + ", ".join(SUPPORTED_TRACKS))
         evaluation_pipeline = evaluation.get("evaluation_pipeline", "naturebench")
         if evaluation_pipeline not in SUPPORTED_EVALUATION_PIPELINES:
             report.error(
@@ -753,6 +771,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     metadata = validate_metadata(args.metadata, report)
     track = evaluation_track(metadata)
     pipeline = evaluation_pipeline(metadata)
+    if not report.ok:
+        print(format_report(report))
+        return 1
     try:
         case_metadata = load_track_case_metadata(args.case_metadata, track)
     except ValueError as error:
