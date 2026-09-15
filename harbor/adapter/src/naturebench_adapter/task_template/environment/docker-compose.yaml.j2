@@ -13,14 +13,19 @@ services:
 __GPU_RESERVATION__
 
   naturebench-eval:
-    build:
-      context: ./sidecar
+    image: naturebench-eval:main
+    command:
+      - --evaluation-dir=/evaluation
+      - --metadata=/metadata.json
     environment:
       NATUREBENCH_TASK_ID: "__TASK_ID__"
     expose:
       - "8000"
     volumes:
       - naturebench-workspace:/workspace:ro
+      - ./sidecar/evaluation:/evaluation:ro
+      - ./sidecar/metadata.json:/metadata.json:ro
+      - ./input:/problem:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
       interval: 2s
