@@ -13,6 +13,7 @@
 
 ## 📰News
 
+- **🏆 [2026-09-23] We add three externally submitted HELIX [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard)—with DeepSeek-V4-Pro, Gemini 3.5 Flash, and GLM-5.3 Flash—to the Full 90-task leaderboard.**
 - **🏆 [2026-09-10] We extend the externally submitted HELIX + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) to the Full 90-task leaderboard.**
 - **🏆 [2026-09-07] We add the externally submitted Luria 1.0 + DeepSeek-V4-Pro [results](https://frontisai.github.io/NatureBench/#leaderboard).**
 - **🏆 [2026-09-07] We update the [results](https://frontisai.github.io/NatureBench/) with Qwen 3.8 Max 0902.**
