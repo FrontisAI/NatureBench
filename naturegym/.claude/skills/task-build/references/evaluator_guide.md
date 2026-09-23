@@ -234,21 +234,36 @@ The evaluator MUST be verified before delivery:
 
 ## Dependencies
 
-The evaluator's dependencies are managed by `environment/Dockerfile.v3` (Phase 5). When writing the evaluator, follow these rules to avoid downstream compatibility issues:
+**Important**: The evaluator runs in a **separate environment** from the agent container:
+- **Agent container**: Built from `environment/Dockerfile.v3` (inherits `naturebench-base:v3`). The agent can only use packages installed here.
+- **Evaluator environment**: Runs in `conda_env_eval.yml` (host conda env in original NatureBench, or sidecar container in harbor). The evaluator can only use packages installed here.
+
+These are **different environments**. A package in the agent container MAY NOT be available to the evaluator, and vice versa.
+
+When writing the evaluator, follow these rules to avoid downstream compatibility issues:
 
 ### Library Selection Rules
 
-1. **Prefer base image libraries**: Before importing any library, check [references/Dockerfile.base.v3](Dockerfile.base.v3) for what is already pre-installed. The base image includes a comprehensive scientific Python stack (numpy, scipy, pandas, scikit-learn, torch, transformers, rdkit, biopython, etc.). **If the base already provides equivalent functionality, use the base library — do NOT add a new dependency.**
+1. **Prefer eval environment libraries**: Before importing any library, check [conda_env_eval.yml](../../../conda_env_eval.yml) for what is already pre-installed in the evaluator environment. This conda environment includes a comprehensive scientific Python stack (numpy, scipy, pandas, scikit-learn, torch, transformers, rdkit, biopython, etc.). **If the eval environment already provides equivalent functionality, use it — do NOT add a new dependency.**
 
-2. **Check API compatibility**: When using any library, verify that the API calls you use are compatible with the specific version in the base image:
+   Note: The eval environment is different from the agent's `naturebench-base:v3`. Some packages may be in one but not the other.
+
+2. **Check API compatibility**: When using any library, verify that the API calls you use are compatible with the specific version in `conda_env_eval.yml`:
    - numpy 2.x: `np.bool`, `np.int`, `np.float`, `np.complex`, `np.object`, `np.str` are removed — use Python builtins (`bool`, `int`, `float`)
    - pandas 2.x: `DataFrame.append()` is removed — use `pd.concat()`
    - scikit-learn 1.6.x: check for renamed parameters or deprecated functions
    - When adapting author code from repositories/, these old API patterns are common and must be updated
 
-3. **Minimize non-base dependencies**: The evaluator is Tier 1 — its imports are non-negotiable hard requirements. Every non-base library you import becomes a package that must be installed, version-checked, and maintained. If you can implement the same functionality using base libraries (even if it takes a few more lines of code), **do that instead of adding a dependency**.
+3. **Minimize non-eval-environment dependencies**: The evaluator is Tier 1 — its imports are non-negotiable hard requirements. Every non-eval-environment library you import becomes a package that must be added to `conda_env_eval.yml`, version-checked, and maintained. If you can implement the same functionality using libraries already in `conda_env_eval.yml` (even if it takes a few more lines of code), **do that instead of adding a dependency**.
 
-4. **Note non-base imports explicitly**: If the evaluator genuinely needs a library not in the base image (e.g., a domain-specific metric library), add a comment in the evaluator noting the dependency, so Phase 5 (Environment) can include it in the Dockerfile.v3 with a compatible version.
+4. **Note non-eval-environment imports explicitly**: If the evaluator genuinely needs a library not in `conda_env_eval.yml` (e.g., a domain-specific metric library), add a comment in the evaluator noting the dependency:
+
+   ```python
+   # Non-eval-environment dependency (Tier 1): must be added to conda_env_eval.yml.
+   from lifelines.utils import concordance_index
+   ```
+
+   This ensures the dependency is tracked and can be added to the eval environment. **Do NOT add evaluator dependencies to `environment/Dockerfile.v3`** — that file is for the agent container only.
 
 ### Common Patterns
 
