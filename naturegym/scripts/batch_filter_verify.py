@@ -22,8 +22,10 @@ from datetime import datetime
 from typing import Dict, Optional, Tuple
 
 if __package__:
+    from .batch_history import archive_outputs
     from .batch_target_utils import add_target_arguments, resolve_targets
 else:
+    from batch_history import archive_outputs
     from batch_target_utils import add_target_arguments, resolve_targets
 
 
@@ -55,6 +57,9 @@ Paper Folder Path: {abs_target}
 Output directory: {abs_target}"""
 
         print(f"[{get_timestamp()}] Starting: {target}")
+
+        report_file = os.path.join(target, "verification_result.json")
+        archive_outputs(report_file, log_file, err_file)
 
         with open(log_file, "w", encoding="utf-8") as f, open(err_file, "w", encoding="utf-8") as ef:
             result = subprocess.run(

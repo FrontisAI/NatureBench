@@ -159,6 +159,10 @@ for case_dir in "${case_dirs[@]}"; do
     packages_json="$case_dir/environment/packages.json"
     result_file="$case_dir/environment/verify_result.txt"
 
+    PYTHON_CMD="python3"
+    if ! command -v python3 >/dev/null 2>&1; then PYTHON_CMD="python"; fi
+    "$PYTHON_CMD" "$SCRIPT_DIR/batch_history.py" "$result_file" || exit 1
+
     if [ ! -f "$dockerfile" ]; then
         echo "[$case_name] Skipped — no $DOCKERFILE_NAME"
         SKIP_NO_DOCKERFILE+=("$case_name")

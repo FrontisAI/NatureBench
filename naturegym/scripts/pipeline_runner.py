@@ -253,9 +253,7 @@ class PaperRunner:
         report = self.paper / relative
         before = self.stamp(report)
         self.event("call_started", action=action)
-        # Remove stale verifier reports so only newly generated results can pass.
-        if action in FIXES and report.exists():
-            report.unlink()
+        # Batch drivers archive previous outputs before generating current reports.
         print(f"[{self.paper.name}] {action}", flush=True)
         code = self.execute(action)
         self.event("call_finished", action=action, returncode=code)
@@ -263,7 +261,7 @@ class PaperRunner:
             raise RuntimeError(f"{action} exited {code}; see terminal output and {self.paper / 'logs'}")
         if not report.is_file():
             raise ValueError(f"{action} did not produce {report}")
-        if action != "preprocess" and action not in FIXES and self.stamp(report) == before:
+        if action != "preprocess" and self.stamp(report) == before:
             raise ValueError(f"{action} did not update its output: {report}")
 
     def business(self, stage: str) -> str:

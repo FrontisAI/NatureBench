@@ -22,8 +22,10 @@ from datetime import datetime
 from typing import Dict, Optional, Tuple
 
 if __package__:
+    from .batch_history import archive_outputs
     from .batch_target_utils import add_target_arguments, resolve_targets
 else:
+    from batch_history import archive_outputs
     from batch_target_utils import add_target_arguments, resolve_targets
 
 
@@ -54,6 +56,9 @@ def run_task(target: str, agent: str = "claude") -> Tuple[str, int, Optional[str
 Task package path: {abs_target}"""
 
         print(f"[{get_timestamp()}] Starting: {target}")
+
+        report_file = os.path.join(target, "task_verify_result.json")
+        archive_outputs(report_file, log_file, err_file)
 
         with open(log_file, "w", encoding="utf-8") as f, open(err_file, "w", encoding="utf-8") as ef:
             result = subprocess.run(
