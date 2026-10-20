@@ -313,9 +313,66 @@ window.NATUREBENCH_DATA = {
       "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "GPT-5.5",
       "notes": "Execution used plain host processes for 81 tasks and Apptainer containers for 9 tasks rather than the official Docker images."
+    },
+    {
+      "id": "gpt-6-1-sol-evora",
+      "name": "gpt-6.1-sol (EvoRA)",
+      "displayName": "gpt-6.1-sol",
+      "agent": "EvoRA",
+      "runSource": {
+        "label": "EvoRA",
+        "url": "https://www.a-star.edu.sg/iaic"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "One NVIDIA RTX 6000 Ada (48 GB) per task",
+      "externalAccess": "Web search tools disabled",
+      "validityJudge": "gpt-6.1-sol"
     }
   ],
   "leaderboard": [
+    {
+      "name": "gpt-6.1-sol (EvoRA)",
+      "harness": "EvoRA",
+      "configurationId": "gpt-6-1-sol-evora",
+      "tracks": [
+        "naturebench-25"
+      ],
+      "invalid": 0,
+      "matchSota": 76.0,
+      "surpassSota": 36.0,
+      "meanAll": 0.087684,
+      "medianAll": 0.033386,
+      "medianValid": 0.033386,
+      "completionRate": 100.0,
+      "scoreRate": 100.0,
+      "scores": {
+        "s41467-025-63418-x": { "state": "valid", "value": 0.31856920289855073 },
+        "s41587-024-02414-w": { "state": "valid", "value": -0.051676537745049586 },
+        "s41587-024-02428-4": { "state": "valid", "value": 0.03338647959183667 },
+        "s41592-022-01709-7": { "state": "valid", "value": -0.025936645124177288 },
+        "s41592-023-02124-2": { "state": "valid", "value": 0.1787320306319359 },
+        "s41592-024-02316-4": { "state": "valid", "value": 0.03092783505154642 },
+        "s41592-025-02662-x": { "state": "valid", "value": 0.03328525623425343 },
+        "s41592-025-02665-8": { "state": "valid", "value": 0.031208368154514585 },
+        "s41592-025-02776-2": { "state": "valid", "value": 0.1508634452545132 },
+        "s41592-025-02924-8": { "state": "valid", "value": 0.031209327471501225 },
+        "s41592-025-02983-x": { "state": "valid", "value": 0.04268157656401695 },
+        "s42256-022-00447-x": { "state": "valid", "value": 0.15967577265738003 },
+        "s42256-022-00541-0": { "state": "valid", "value": -0.15058003411574175 },
+        "s42256-023-00627-3": { "state": "valid", "value": 0.2295244047788428 },
+        "s42256-023-00628-2": { "state": "valid", "value": -0.010988726517795346 },
+        "s42256-023-00630-8": { "state": "valid", "value": 0.13680860740554748 },
+        "s42256-023-00639-z": { "state": "valid", "value": 0.15261625177365115 },
+        "s42256-023-00654-0": { "state": "valid", "value": -0.006599862317889506 },
+        "s42256-024-00790-1": { "state": "valid", "value": 0.029102302053710127 },
+        "s42256-024-00892-w": { "state": "valid", "value": 0.07245067264573987 },
+        "s42256-025-01042-6": { "state": "valid", "value": -0.1401690052531021 },
+        "s43588-024-00698-1": { "state": "valid", "value": 0.04934079470143924 },
+        "s43588-024-00733-1": { "state": "valid", "value": 0.030505433434631923 },
+        "s43588-025-00903-9": { "state": "valid", "value": 0.197025335000187 },
+        "s43588-025-00917-3": { "state": "valid", "value": 0.6701255043762697 }
+      }
+    },
     {
       "name": "Opus 5 (HELIX)",
       "harness": "HELIX",
