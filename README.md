@@ -7,7 +7,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-b31b1b?style=for-the-badge&logo=arxiv&logoColor=ffffff)](https://arxiv.org/abs/2606.24530) &nbsp; [![Hugging Face Dataset](https://img.shields.io/badge/HUGGINGFACE-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/FrontisAI/NatureBench) &nbsp; [![Leaderboard](https://img.shields.io/badge/Leaderboard-steelblue?style=for-the-badge&logo=googlechrome&logoColor=ffffff)](https://frontisai.github.io/NatureBench/)
 
 [📰 News](#news) • [📖 Overview](#overview) • [🏅 Submit Results](#submit-results) • [🔧 Setup](#setup) • [🚀 Quick Start](#quick-start)<br>
-[⚓ Harbor Support](#harbor-support) • [⚡ NatureBench-25](#naturebench-25) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
+[⚓ Harbor Support](#harbor-support) • [⚡ NatureBench-25](#naturebench-25) • [🍃 NatureBench Lite](#naturebench-lite) • [🌱 NatureGym](#naturegym) • [📚 Documentation](#documentation) • [⚖️ License](#license) • [🎈 Citation](#citation)
 
 </div>
 
@@ -182,6 +182,25 @@ The NatureBench-25 task lists are available in `task-set/naturebench-25/` and gr
 | [`naturebench-25/gpu_low.txt`](task-set/naturebench-25/gpu_low.txt) | 22 | Lower-GPU tasks |
 | [`naturebench-25/gpu_high.txt`](task-set/naturebench-25/gpu_high.txt) | 2 | Higher-GPU tasks |
 
+## 🍃NatureBench Lite
+
+**NatureBench Lite** is a lightweight subset of 10 tasks spanning all six scientific domains, designed for quick experimentation under limited overall compute budgets.
+
+| Task | Domain |
+|---|---|
+| Spatial RNA Velocity Inference | Cellular Omics |
+| Disease-Specific Variant Effect Prediction | Cellular Omics |
+| Metabolomic Profile Prediction from Microbial Composition | Cellular Omics |
+| Protein Variant Effect Prediction | Protein Biology |
+| Lasso Peptide Property Prediction | Protein Biology |
+| Anomalous Diffusion Out-of-Distribution Dynamics Detection | Physical Modeling |
+| Zeolite-Molecule Binding Affinity Prediction | Physical Modeling |
+| Spatial Clustering of Single-Molecule Localization Point Clouds | Biomedical Modeling |
+| Molecular Property Prediction | Molecular Design |
+| Categorical Counterfactual Outcome Estimation | Relational Reasoning |
+
+The task list is available in [`task-set/naturebench-lite/all.txt`](task-set/naturebench-lite/all.txt).
+
 ## 🌱NatureGym
 
 The task packages are built by **NatureGym**, an automated, Skills-based pipeline that turns a published Nature-family paper into a containerized, runnable task. It filters papers, acquires and verifies the data, and assembles the task package (brief, data, evaluator, environment, metadata), while an information firewall removes the source method so that agents must *discover* solutions rather than reproduce them.
@@ -201,7 +220,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 - `scripts/` — helper scripts
   - `ensure_naturebench_base.sh` — build the NatureBench base image if it is missing
   - `start_eval_services.sh` — start evaluation service from the mapping file
-- `task-set/` — Full and NatureBench-25 task lists grouped by resource demand
+- `task-set/` — task lists for Full, NatureBench-25, and NatureBench Lite
 - `submit-results/` — leaderboard submission guide, templates, and validation/scoring tools
 - `docs/` — detailed configuration, usage, task-packages, and custom-agents references
 - `naturegym/` — NatureGym construction pipeline: skills + batch drivers that build task packages from papers
