@@ -279,6 +279,7 @@
     if (/^helix\b/i.test(agent)) return "agent-helix";
     if (/^luria\b/i.test(agent)) return "agent-luria";
     if (/^evora\b/i.test(agent)) return "agent-evora";
+    if (/^optimus\b/i.test(agent)) return "agent-optimus";
     return "agent-other";
   }
 
@@ -445,6 +446,7 @@
     if (/^luria\b/i.test(agent)) return "var(--agent-luria-color)";
     if (/^aibuildai\b/i.test(agent)) return "var(--agent-aibuildai-color)";
     if (/^evora\b/i.test(agent)) return "var(--agent-evora-color)";
+    if (/^optimus\b/i.test(agent)) return "var(--agent-optimus-color)";
     return modelColors.find((item) => item.match.test(modelName))?.color || "#147c72";
   }
 

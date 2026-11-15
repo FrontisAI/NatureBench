@@ -327,6 +327,20 @@ window.NATUREBENCH_DATA = {
       "compute": "One NVIDIA RTX 6000 Ada (48 GB) per task",
       "externalAccess": "Web search tools disabled",
       "validityJudge": "gpt-6.1-sol"
+    },
+    {
+      "id": "claude-opus-5-5-optimus-1-1",
+      "name": "Claude Opus 5.5 (OPTIMUS)",
+      "displayName": "Claude Opus 5.5",
+      "agent": "OPTIMUS 1.1",
+      "runSource": {
+        "label": "OPTIMUS",
+        "url": "https://github.com/anotherfruit1981-cmyk/optimus-naturebench"
+      },
+      "solvingBudget": "4 h / task",
+      "compute": "Per task: One NVIDIA RTX 4090 (24 GB) for gpu_low tasks; one NVIDIA A100 (80 GB) for gpu_high tasks; no GPU for CPU tasks. Up to four tasks shared a host's CPU cores, memory and disk.",
+      "externalAccess": "Web search and web fetch tools disabled",
+      "validityJudge": "GPT-5.5"
     }
   ],
   "leaderboard": [
@@ -371,6 +385,115 @@ window.NATUREBENCH_DATA = {
         "s43588-024-00733-1": { "state": "valid", "value": 0.030505433434631923 },
         "s43588-025-00903-9": { "state": "valid", "value": 0.197025335000187 },
         "s43588-025-00917-3": { "state": "valid", "value": 0.6701255043762697 }
+      }
+    },
+    {
+      "name": "Claude Opus 5.5 (OPTIMUS)",
+      "harness": "OPTIMUS 1.1",
+      "configurationId": "claude-opus-5-5-optimus-1-1",
+      "tracks": [
+        "full",
+        "naturebench-25"
+      ],
+      "invalid": 4,
+      "matchSota": 61.111111,
+      "surpassSota": 33.333333,
+      "meanAll": -0.982264,
+      "medianAll": 0.025869,
+      "medianValid": 0.033538,
+      "completionRate": 91.111111,
+      "scoreRate": 95.555556,
+      "scores": {
+        "s41467-025-63412-3": { "state": "valid", "value": 0.1027850918895424 },
+        "s41467-025-63418-x": { "state": "valid", "value": 0.25206894927536233 },
+        "s41467-025-64512-w": { "state": "valid", "value": 0.10319725297426095 },
+        "s41467-025-65557-7": { "state": "invalid", "value": 0.23338195602131181 },
+        "s41551-024-01257-9": { "state": "valid", "value": 0.027166302305571616 },
+        "s41551-024-01312-5": { "state": "valid", "value": 0.21731691829322008 },
+        "s41551-025-01528-z": { "state": "valid", "value": 0.014597999288680764 },
+        "s41587-024-02414-w": { "state": "valid", "value": -0.022850323206812677 },
+        "s41587-024-02428-4": { "state": "valid", "value": 0.05482142857142859 },
+        "s41587-025-02585-0": { "state": "valid", "value": -0.004392660619748354 },
+        "s41587-025-02654-4": { "state": "invalid", "value": -0.3747696609905604 },
+        "s41587-025-02688-8": { "state": "valid", "value": 1.412950769197659 },
+        "s41592-022-01709-7": { "state": "valid", "value": -0.051485619686217496 },
+        "s41592-023-01878-z": { "state": "valid", "value": 0.10701142297865207 },
+        "s41592-023-01940-w": { "state": "valid", "value": 0.19177680000000005 },
+        "s41592-023-01955-3": { "state": "valid", "value": 2.6351856179307807 },
+        "s41592-023-02032-5": { "state": "valid", "value": 0.15796640067558126 },
+        "s41592-023-02035-2": { "state": "valid", "value": 0.015830581463891758 },
+        "s41592-023-02124-2": { "state": "valid", "value": 0.1687418214591691 },
+        "s41592-023-02148-8": { "state": "valid", "value": 0.23263742886672442 },
+        "s41592-024-02191-z": { "state": "valid", "value": 0.07597393923282408 },
+        "s41592-024-02257-y": { "state": "valid", "value": -0.031363258760107884 },
+        "s41592-024-02316-4": { "state": "valid", "value": 0.03092783505154642 },
+        "s41592-024-02372-w": { "state": "invalid", "value": -0.8794053751466852 },
+        "s41592-024-02523-z": { "state": "valid", "value": -0.008482674278344765 },
+        "s41592-024-02580-4": { "state": "valid", "value": -0.05364695691090371 },
+        "s41592-025-02662-x": { "state": "valid", "value": 0.027106991477967697 },
+        "s41592-025-02665-8": { "state": "valid", "value": 0.026571545233833344 },
+        "s41592-025-02776-2": { "state": "valid", "value": 0.15187391941280473 },
+        "s41592-025-02820-1": { "state": "valid", "value": -0.8844694959349594 },
+        "s41592-025-02826-9": { "state": "valid", "value": -0.1044755949656751 },
+        "s41592-025-02854-5": { "state": "valid", "value": -0.1934729308301589 },
+        "s41592-025-02870-5": { "state": "valid", "value": 0.19095220190779014 },
+        "s41592-025-02886-x": { "state": "valid", "value": -2.479701215247421 },
+        "s41592-025-02893-y": { "state": "valid", "value": -83.07923190430358 },
+        "s41592-025-02924-8": { "state": "valid", "value": -0.02101927476378511 },
+        "s41592-025-02926-6": { "state": "valid", "value": 0.047262301251517896 },
+        "s41592-025-02983-x": { "state": "valid", "value": 0.03861904960043148 },
+        "s42256-022-00447-x": { "state": "valid", "value": 0.15123353472293208 },
+        "s42256-022-00459-7": { "state": "valid", "value": 0.01668122938417806 },
+        "s42256-022-00464-w": { "state": "valid", "value": 0.20977121121289108 },
+        "s42256-022-00468-6": { "state": "valid", "value": 0.07008968008556808 },
+        "s42256-022-00501-8": { "state": "none", "value": null },
+        "s42256-022-00518-z": { "state": "valid", "value": 0.27909619291374205 },
+        "s42256-022-00526-z": { "state": "valid", "value": -0.09275881057268721 },
+        "s42256-022-00534-z": { "state": "valid", "value": -0.03765075757575756 },
+        "s42256-022-00541-0": { "state": "valid", "value": -0.11409742494489801 },
+        "s42256-022-00556-7": { "state": "valid", "value": -0.674272409591002 },
+        "s42256-023-00611-x": { "state": "valid", "value": 0.022789986267327055 },
+        "s42256-023-00619-3": { "state": "valid", "value": 0.1891894732244862 },
+        "s42256-023-00627-3": { "state": "valid", "value": 0.1092258472312464 },
+        "s42256-023-00628-2": { "state": "valid", "value": -0.02143785095014343 },
+        "s42256-023-00630-8": { "state": "valid", "value": 0.13359713681845425 },
+        "s42256-023-00636-2": { "state": "valid", "value": 0.020453498871766784 },
+        "s42256-023-00639-z": { "state": "valid", "value": 0.18667909544163533 },
+        "s42256-023-00640-6": { "state": "none", "value": null },
+        "s42256-023-00654-0": { "state": "valid", "value": -0.03287139833843873 },
+        "s42256-023-00712-7": { "state": "valid", "value": -1.0 },
+        "s42256-024-00790-1": { "state": "valid", "value": 0.036147245871513446 },
+        "s42256-024-00795-w": { "state": "valid", "value": 0.023830472600308177 },
+        "s42256-024-00815-9": { "state": "invalid", "value": 0.06655942706748334 },
+        "s42256-024-00833-7": { "state": "valid", "value": 0.012810220252015777 },
+        "s42256-024-00836-4": { "state": "valid", "value": -0.045990970532885 },
+        "s42256-024-00838-2": { "state": "valid", "value": -0.032072857827225576 },
+        "s42256-024-00892-w": { "state": "valid", "value": 0.07913565022421526 },
+        "s42256-024-00916-5": { "state": "none", "value": null },
+        "s42256-024-00956-x": { "state": "valid", "value": 0.0016354307509475474 },
+        "s42256-025-01002-0": { "state": "valid", "value": 0.04039856965252891 },
+        "s42256-025-01003-z": { "state": "valid", "value": 0.27296452657487763 },
+        "s42256-025-01010-0": { "state": "valid", "value": -0.9296482948861957 },
+        "s42256-025-01016-8": { "state": "valid", "value": 0.7625238731107169 },
+        "s42256-025-01019-5": { "state": "valid", "value": -0.27525554330849966 },
+        "s42256-025-01026-6": { "state": "valid", "value": 0.17870559999999996 },
+        "s42256-025-01042-6": { "state": "valid", "value": -0.27568133427777863 },
+        "s43588-024-00689-2": { "state": "valid", "value": 0.24751038109875292 },
+        "s43588-024-00698-1": { "state": "valid", "value": 0.025166494149167735 },
+        "s43588-024-00703-7": { "state": "valid", "value": 0.3143232732598666 },
+        "s43588-024-00716-2": { "state": "valid", "value": -0.07224592491354061 },
+        "s43588-024-00730-4": { "state": "valid", "value": -1.7211822094564422 },
+        "s43588-024-00732-2": { "state": "valid", "value": 0.9149580739884943 },
+        "s43588-024-00733-1": { "state": "valid", "value": 0.04481671312101251 },
+        "s43588-024-00757-7": { "state": "valid", "value": 0.3401829436038513 },
+        "s43588-024-00765-7": { "state": "valid", "value": 0.11505537815902526 },
+        "s43588-025-00798-6": { "state": "valid", "value": 0.09417413853116302 },
+        "s43588-025-00842-5": { "state": "valid", "value": 0.07169966539863279 },
+        "s43588-025-00872-z": { "state": "valid", "value": 0.0006676720077897167 },
+        "s43588-025-00878-7": { "state": "valid", "value": 0.17438005681058794 },
+        "s43588-025-00903-9": { "state": "none", "value": null },
+        "s43588-025-00917-3": { "state": "valid", "value": 0.7127457246408011 },
+        "s43588-025-00920-8": { "state": "valid", "value": -0.2799851553697128 }
       }
     },
     {
@@ -1150,6 +1273,46 @@ window.NATUREBENCH_DATA = {
     }
   ],
   "distributions": [
+    {
+      "name": "Claude Opus 5.5 (OPTIMUS)",
+      "bins": [
+        {
+          "label": "No score",
+          "count": 4,
+          "percent": 4.4
+        },
+        {
+          "label": "Invalid",
+          "count": 4,
+          "percent": 4.4
+        },
+        {
+          "label": "g < -0.5",
+          "count": 7,
+          "percent": 7.8
+        },
+        {
+          "label": "-0.5 <= g < 0",
+          "count": 20,
+          "percent": 22.2
+        },
+        {
+          "label": "0 <= g <= 0.1",
+          "count": 25,
+          "percent": 27.8
+        },
+        {
+          "label": "0.1 < g <= 0.5",
+          "count": 25,
+          "percent": 27.8
+        },
+        {
+          "label": "g > 0.5",
+          "count": 5,
+          "percent": 5.6
+        }
+      ]
+    },
     {
       "name": "Opus 5 (HELIX)",
       "bins": [
