@@ -13,21 +13,21 @@
 
 ## 📰News
 
-- **🏆 [2026-11-20] We update the [results](https://frontisai.github.io/NatureBench/) with Qwen 4 Max.**
-- **🏆 [2026-11-15] We add the externally submitted OPTIMUS 1.1 + Claude Opus 5.5 [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) to the Full 90-task leaderboard.**
-- **🏆 [2026-10-20] We add the externally submitted EvoRA + gpt-6.1-sol [results](https://frontisai.github.io/NatureBench/?track=naturebench-25#leaderboard) to the NatureBench-25 leaderboard.**
-- **🏆 [2026-09-23] We add three externally submitted HELIX [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard)—with DeepSeek-V4-Pro, Gemini 3.5 Flash, and GLM-5.3 Flash—to the Full 90-task leaderboard.**
-- **🏆 [2026-09-10] We extend the externally submitted HELIX + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) to the Full 90-task leaderboard.**
-- **🏆 [2026-09-07] We add the externally submitted Luria 1.0 + DeepSeek-V4-Pro [results](https://frontisai.github.io/NatureBench/#leaderboard).**
-- **🏆 [2026-09-07] We update the [results](https://frontisai.github.io/NatureBench/) with Qwen 3.8 Max 0902.**
-- **🏆 [2026-09-07] We add the externally submitted HELIX + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/?track=naturebench-25#leaderboard) to the NatureBench-25 leaderboard.**
+- **🏆 [2026-11-20] We published [results](https://frontisai.github.io/NatureBench/) for Qwen 4 Max on the Full 90-task leaderboard.**
+- **🏆 [2026-11-15] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) for OPTIMUS 1.1 + Claude Opus 5.5 on the Full 90-task leaderboard.**
+- **🏆 [2026-10-20] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=naturebench-25&setup=all#leaderboard) for EvoRA + gpt-6.1-sol on the NatureBench-25 leaderboard.**
+- **🏆 [2026-09-23] We published externally submitted [results](https://frontisai.github.io/NatureBench/?setup=all#leaderboard) for three HELIX configurations (DeepSeek-V4-Pro, Gemini 3.5 Flash, and GLM-5.3 Flash) on the Full 90-task leaderboard.**
+- **🏆 [2026-09-10] We published externally submitted [results](https://frontisai.github.io/NatureBench/?setup=all#leaderboard) for HELIX + Claude Opus 5 on the Full 90-task leaderboard.**
+- **🏆 [2026-09-07] We published externally submitted [results](https://frontisai.github.io/NatureBench/?setup=all#leaderboard) for Luria 1.0 + DeepSeek-V4-Pro on the Full 90-task leaderboard.**
+- **🏆 [2026-09-07] We published [results](https://frontisai.github.io/NatureBench/) for Qwen 3.8 Max 0902 on the Full 90-task leaderboard.**
+- **🏆 [2026-09-07] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=naturebench-25&setup=all#leaderboard) for HELIX + Claude Opus 5 on the NatureBench-25 leaderboard.**
 - **⚓ [2026-08-31] We release the [NatureBench Harbor integration](#harbor-support), including task conversion code, evaluation extensions, and [converted Harbor tasks](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor).**
-- **🏆 [2026-08-30] We update the [results](https://frontisai.github.io/NatureBench/) with GLM-5.3.**
+- **🏆 [2026-08-30] We published [results](https://frontisai.github.io/NatureBench/) for GLM-5.3 on the Full 90-task leaderboard.**
 - **⚡ [2026-08-28] We introduce [NatureBench-25](#naturebench-25), a 25-task track for faster, lower-cost evaluation.**
-- **🏆 [2026-08-23] We update the [results](https://frontisai.github.io/NatureBench/) with three new coding-agent configurations: Opus 5, Kimi K3, and Qwen 3.8 Max.**
-- **🏆 [2026-08-07] We add the externally submitted AIBuildAI 2.5 + Claude Opus 5 [results](https://frontisai.github.io/NatureBench/).**
+- **🏆 [2026-08-23] We published [results](https://frontisai.github.io/NatureBench/) for three new coding-agent configurations (Opus 5, Kimi K3, and Qwen 3.8 Max) on the Full 90-task leaderboard.**
+- **🏆 [2026-08-07] We published externally submitted [results](https://frontisai.github.io/NatureBench/?setup=all#leaderboard) for AIBuildAI 2.5 + Claude Opus 5 on the Full 90-task leaderboard.**
 - **⚖️ [2026-07-30] We update the validity judge and use GPT-5.5 to reassess all runs; the [results](https://frontisai.github.io/NatureBench/) have been comprehensively updated.**
-- **🏆 [2026-07-07] We update the [results](https://frontisai.github.io/NatureBench/) with 12 coding-agent configurations, adding GLM-5.2 and MiniMax-M3.**
+- **🏆 [2026-07-07] We published [results](https://frontisai.github.io/NatureBench/) for 12 coding-agent configurations on the Full 90-task leaderboard, adding GLM-5.2 and MiniMax-M3.**
 - **📦 [2026-07-03] We release the full [NatureBench agent traces](https://huggingface.co/datasets/FrontisAI/NatureBench-traces) on Hugging Face.**
 - **🚀 [2026-06-24] We introduce [NatureBench](https://arxiv.org/abs/2606.24530), a benchmark for scientific ML coding agents on Nature-family tasks.**
 
@@ -58,10 +58,22 @@ Submissions are currently accepted by email; see
 [`submit-results/`](submit-results/) for the result templates, validation and
 scoring scripts, required raw artifacts, and submission email.
 
-After review, accepted results are published on the NatureBench leaderboard page according to the submitted track. Full results appear in the main leaderboard,
-Domain Leaderboards, and Case-Level View; NatureBench-25 results appear only in
-the main leaderboard's NatureBench-25 tab; domain results appear only in their
-respective domain leaderboards.
+We publish results that meet our submission and review requirements on the
+NatureBench leaderboard. The main leaderboard offers two views for each track.
+
+- **[Reference Setup](https://frontisai.github.io/NatureBench/#leaderboard)**
+  is the default view. It ranks only accepted results
+  that match the [official reference setup](submit-results/SUBMISSION_SPEC.md#ranking-views).
+- **[All Setups](https://frontisai.github.io/NatureBench/?setup=all#leaderboard)**
+  ranks every accepted result, regardless of whether its evaluation setup
+  matches the reference. When an evaluation setup differs from the reference,
+  the leaderboard indicates the differences and provides the full evaluation
+  setup.
+
+Full results feed the main leaderboard, Score Distribution, Domain Leaderboards,
+and Case-Level View. NatureBench-25-only results appear in the NatureBench-25
+tab, and domain-only results appear in their respective domain leaderboards.
+The breakdowns show all accepted setups within their scope.
 
 ## 🔧Setup
 

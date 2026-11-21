@@ -47,7 +47,7 @@ evaluation:
 | `evaluation_pipeline` | Pipeline used to run and score the tasks: `naturebench`, `harbor`, or `custom`. This describes the evaluation pipeline and raw-result format. Omitted values are interpreted as `naturebench`. |
 | `timeout_seconds` | Per-task agent solve-time budget, excluding environment setup and evaluator execution. The reference setting is 14,400 seconds. |
 | `web_search` | Whether the agent uses web search tools or service during the evaluation. The reference setting is `false`. |
-| `compute` | Short free-text description of the hardware assigned to tasks. The reference setup uses one NVIDIA RTX 3090/4090 (24 GB) for each `gpu_low` task, one NVIDIA A800 (80 GB) for each `gpu_high` task, and no GPU for `cpu` tasks. |
+| `compute` | Short free-text description of the hardware assigned to tasks. The reference setup uses one NVIDIA RTX 3090 or RTX 4090 (24 GB) for each `gpu_low` task, one NVIDIA A800 or A100 (80 GB) for each `gpu_high` task, and no GPU for `cpu` tasks. |
 | `judge_model` | Submitter-side validity judge, if used. Leave empty if no judge was run. |
 | `human_intervention` | Use `none` for autonomous runs; otherwise disclose the scope of human actions that could affect results. |
 | `deviations_from_reference` | Use `none` or briefly describe changes to task coverage, evaluator, or other result-relevant settings. |
@@ -198,3 +198,22 @@ add the result to the public leaderboard. The published entry may include the
 model, agent, submitted URL, reviewed metrics, evaluation
 configuration, and any disclosed deviations or audit limitations. Contact
 information is used for review coordination and is not published.
+
+### Ranking views
+
+The main leaderboard ranks by Surpass-SOTA, then Match-SOTA. Exact ties share
+a rank. Ranks are calculated separately for each track and view.
+
+- **Reference Setup** is the default view. It ranks accepted results that match
+  all three reference settings:
+  - A solving budget of 4 hours per task.
+  - One RTX 3090 or RTX 4090 (24 GB) per `gpu_low` task, one A800 or A100
+    (80 GB) per `gpu_high` task, and no GPU for `cpu` tasks.
+  - Web search and web fetch tools disabled, with no additional external
+    retrieval service.
+- **All Setups** ranks every accepted result for the selected track, regardless
+  of whether its evaluation setup matches the reference. The leaderboard
+  indicates setup differences and provides the full evaluation setup.
+
+Score Distribution, Domain Leaderboards, and Case-Level View show all accepted
+Full results and indicate any differences from the reference setup.
