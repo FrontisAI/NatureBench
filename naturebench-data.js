@@ -370,7 +370,7 @@ window.NATUREBENCH_DATA = {
       "id": "claude-opus-5-5-optimus-1-1",
       "setupDifferences": [],
       "name": "Claude Opus 5.5 (OPTIMUS)",
-      "displayName": "Claude Opus 5.5",
+      "displayName": "Opus 5.5",
       "agent": "OPTIMUS 1.1",
       "runSource": {
         "label": "OPTIMUS",

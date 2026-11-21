@@ -263,7 +263,7 @@
   function setupBadgeMarkup(key) {
     const badge = setupBadges[key];
     return badge
-      ? `<span class="setup-label" title="Differs from the reference in ${badge.setting}">${badge.label}</span>`
+      ? `<span class="setup-label" title="Differs from the reference in ${badge.setting}"><span>${badge.label}</span></span>`
       : '<span class="setup-reference-label" title="Reference setup has not been confirmed">Unverified</span>';
   }
 
