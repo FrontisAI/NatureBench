@@ -101,19 +101,33 @@
 
         <div class="panel table-panel numeric-board-panel leaderboard-main-panel" id="numeric-main-board" aria-labelledby="numeric-leaderboard-title">
           <div class="panel-head leaderboard-main-head">
-            <div>
+            <div class="leaderboard-title-row">
               <h3 id="numeric-leaderboard-title">Main Leaderboard</h3>
-              <p>Ranked by <span class="rank-metric-label">Surpass-SOTA</span>, then <span class="rank-secondary-label">Match-SOTA</span>; equal values share a rank.</p>
-              <p class="leaderboard-setup-note">Click the <span class="inline-info" aria-hidden="true">i</span> beside a model to view its evaluation setup.</p>
+              <div class="leaderboard-setup-switch" role="group" aria-label="Ranking view">
+                <button type="button" data-leaderboard-setup="reference" aria-pressed="true" aria-controls="leaderboard-reference-setup leaderboard-all-setups-note leaderboard-track-panel">Reference Setup</button>
+                <button type="button" data-leaderboard-setup="all" aria-pressed="false" aria-controls="leaderboard-reference-setup leaderboard-all-setups-note leaderboard-track-panel">All Setups</button>
+              </div>
             </div>
+            <p>Ranked by <span class="rank-metric-label">Surpass-SOTA</span>, then <span class="rank-secondary-label">Match-SOTA</span>; equal values share a rank.</p>
           </div>
-          <div class="leaderboard-track-switch" id="leaderboard-track-switch" role="tablist" aria-label="Leaderboard track">
-            <button class="leaderboard-track-button is-active" id="leaderboard-tab-full" type="button" role="tab" data-leaderboard-track="full" aria-selected="true" aria-controls="leaderboard-track-panel" tabindex="0">
-              <span>Full</span>
-            </button>
-            <button class="leaderboard-track-button" id="leaderboard-tab-naturebench-25" type="button" role="tab" data-leaderboard-track="naturebench-25" aria-selected="false" aria-controls="leaderboard-track-panel" tabindex="-1">
-              <span>NatureBench-25</span>
-            </button>
+          <div id="leaderboard-reference-setup" class="leaderboard-setup-note leaderboard-reference-setup">
+            <p class="setup-emphasis" id="reference-setup-caption">Only configurations matching the reference setup below are ranked here.</p>
+            <dl class="metric-definition-list" aria-labelledby="reference-setup-caption">
+              <div><dt>Solving budget</dt><dd>4 h per task</dd></div>
+              <div><dt>Compute</dt><dd>One RTX 3090/4090 (24 GB) per gpu_low task, one A800/A100 (80 GB) per gpu_high task, and no GPU for CPU tasks.</dd></div>
+              <div><dt>External access</dt><dd>Web search and web fetch tools disabled. No additional external retrieval service.</dd></div>
+            </dl>
+          </div>
+          <div class="leaderboard-setup-note setup-guide" id="leaderboard-all-setups-note" data-setup-guide="main" hidden></div>
+          <div class="leaderboard-controls">
+            <div class="leaderboard-track-switch" id="leaderboard-track-switch" role="tablist" aria-label="Leaderboard track">
+              <button class="leaderboard-track-button is-active" id="leaderboard-tab-full" type="button" role="tab" data-leaderboard-track="full" aria-selected="true" aria-controls="leaderboard-track-panel" tabindex="0">
+                <span>Full</span>
+              </button>
+              <button class="leaderboard-track-button" id="leaderboard-tab-naturebench-25" type="button" role="tab" data-leaderboard-track="naturebench-25" aria-selected="false" aria-controls="leaderboard-track-panel" tabindex="-1">
+                <span>NatureBench-25</span>
+              </button>
+            </div>
           </div>
           <div id="leaderboard-track-panel" role="tabpanel" aria-labelledby="leaderboard-tab-full">
             <p class="leaderboard-track-description" id="leaderboard-track-description" aria-live="polite">All 90 NatureBench tasks for full-benchmark performance reporting.</p>
@@ -191,9 +205,10 @@
             <div>
               <h3>Score Distribution</h3>
               <p class="track-scope-note">Full track · 90 tasks</p>
-              <p>Task-level <em>g</em> bins per configuration</p>
+              <p>Task-level <em>g</em> bins per configuration.</p>
             </div>
           </div>
+          <div class="setup-guide section-setup-guide" data-setup-guide="distribution"></div>
           <div class="distribution-chart" id="distribution-chart"></div>
           <div class="legend" id="distribution-legend"></div>
         </div>
@@ -226,7 +241,8 @@
       <div class="container">
         <h2 class="section-title">Domain Leaderboards</h2>
         <p class="track-scope-note section-track-scope-note">Full and domain tracks</p>
-        <p class="section-description">Full submissions and reviewed domain submissions are compared on the same complete task set within each of the six scientific domains. Configurations are ranked by Surpass-SOTA, then Match-SOTA, as on the main leaderboard. Click the i beside a model to view its submission scope and evaluation setup.</p>
+        <p class="section-description">Full and domain submissions are compared on the same complete task set within each domain. Configurations are ranked by Surpass-SOTA, then Match-SOTA, as on the main leaderboard.</p>
+        <div class="setup-guide section-setup-guide" data-setup-guide="domain"></div>
 
         <div class="domain-grid" id="domain-grid"></div>
 
@@ -275,6 +291,7 @@
         <h2 class="section-title">Case-Level View</h2>
         <p class="track-scope-note section-track-scope-note">Full track · 90 tasks</p>
         <p class="section-description">Each cell shows task-level normalized relative gap <em>g</em>. Values above 0.1 count as Surpass-SOTA; nonnegative values match the paper's reported SOTA.</p>
+        <div class="setup-guide section-setup-guide" data-setup-guide="cases"></div>
         <div class="case-matrix-legend legend" id="case-matrix-legend" aria-label="Case matrix legend">
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-surpass" aria-hidden="true"></span>Surpass-SOTA, <code>g &gt; 0.1</code></span>
           <span class="legend-item case-legend-item"><span class="legend-swatch case-legend-swatch case-legend-swatch-match" aria-hidden="true"></span>Match-SOTA, <code>0 &lt;= g &lt;= 0.1</code></span>
@@ -354,7 +371,7 @@
           </div>
           <div class="leaderboard-submit-copy">
             <p>Submit results for Full, NatureBench-25, or one or more scientific domains. Results are submitted by email and reviewed before publication.</p>
-            <p>Full results appear in the main leaderboard, Domain Leaderboards, and Case-Level View; NatureBench-25 results only in the main leaderboard's NatureBench-25 tab; domain results only in their respective domain leaderboards.</p>
+            <p>The main leaderboard offers a Reference Setup view and an All Setups view. Full results also feed Score Distribution, Domain Leaderboards, and Case-Level View. NatureBench-25-only and domain-only results appear in their respective leaderboards.</p>
           </div>
         </aside>
       </div>

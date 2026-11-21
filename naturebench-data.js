@@ -7,6 +7,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Opus 4.6",
       "id": "opus-4-6-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -20,6 +21,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "GPT-5.4",
       "id": "gpt-5-4-codex",
+      "setupDifferences": [],
       "agent": "Codex",
       "runSource": {
         "label": "NatureBench run"
@@ -33,6 +35,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Kimi K2.6",
       "id": "kimi-k2-6-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -46,6 +49,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "MiniMax-M2.7",
       "id": "minimax-m2-7-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -59,6 +63,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "DeepSeek-V4-Pro",
       "id": "deepseek-v4-pro-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -72,6 +77,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "GLM-5.1",
       "id": "glm-5-1-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -85,6 +91,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Gemini 3.5 Flash",
       "id": "gemini-3-5-flash-gemini-cli",
+      "setupDifferences": [],
       "agent": "Gemini CLI",
       "runSource": {
         "label": "NatureBench run"
@@ -98,6 +105,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Qwen 3.7 Max",
       "id": "qwen-3-7-max-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -111,6 +119,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "GPT-5.5",
       "id": "gpt-5-5-codex",
+      "setupDifferences": [],
       "agent": "Codex",
       "runSource": {
         "label": "NatureBench run"
@@ -124,6 +133,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Opus 4.7",
       "id": "opus-4-7-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -137,6 +147,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "MiniMax-M3",
       "id": "minimax-m3-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -150,6 +161,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "GLM-5.2",
       "id": "glm-5-2-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -163,6 +175,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "GLM-5.3",
       "id": "glm-5-3-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -177,6 +190,7 @@ window.NATUREBENCH_DATA = {
       "name": "Claude Opus 5",
       "displayName": "Opus 5",
       "id": "claude-opus-5-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -190,6 +204,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Kimi K3",
       "id": "kimi-k3-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -203,6 +218,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Qwen 3.8 Max",
       "id": "qwen-3-8-max-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -216,6 +232,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Qwen 3.8 Max 0902",
       "id": "qwen-3-8-max-0902-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -229,6 +246,7 @@ window.NATUREBENCH_DATA = {
     {
       "name": "Qwen 4 Max",
       "id": "qwen-4-max-claude-code",
+      "setupDifferences": [],
       "agent": "Claude Code",
       "runSource": {
         "label": "NatureBench run"
@@ -241,6 +259,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "claude-opus-5-aibuildai-2-5",
+      "setupDifferences": ["gpu", "access"],
       "name": "Opus 5",
       "agent": "AIBuildAI 2.5",
       "runSource": {
@@ -254,6 +273,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "claude-opus-5-helix",
+      "setupDifferences": ["gpu"],
       "name": "Opus 5 (HELIX)",
       "displayName": "Opus 5",
       "agent": "HELIX",
@@ -269,6 +289,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "deepseek-v4-pro-helix",
+      "setupDifferences": ["gpu"],
       "name": "DeepSeek-V4-Pro (HELIX)",
       "displayName": "DeepSeek-V4-Pro",
       "agent": "HELIX",
@@ -284,6 +305,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "gemini-3-5-flash-helix",
+      "setupDifferences": ["gpu"],
       "name": "Gemini 3.5 Flash (HELIX)",
       "displayName": "Gemini 3.5 Flash",
       "agent": "HELIX",
@@ -299,6 +321,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "glm-5-3-flash-helix",
+      "setupDifferences": ["gpu"],
       "name": "GLM-5.3 Flash (HELIX)",
       "displayName": "GLM-5.3 Flash",
       "agent": "HELIX",
@@ -314,6 +337,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "deepseek-v4-pro-luria-1-0",
+      "setupDifferences": ["time", "gpu"],
       "name": "DeepSeek-V4-Pro (Luria)",
       "displayName": "DeepSeek-V4-Pro",
       "agent": "Luria 1.0",
@@ -329,6 +353,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "gpt-6-1-sol-evora",
+      "setupDifferences": ["gpu"],
       "name": "gpt-6.1-sol (EvoRA)",
       "displayName": "gpt-6.1-sol",
       "agent": "EvoRA",
@@ -343,6 +368,7 @@ window.NATUREBENCH_DATA = {
     },
     {
       "id": "claude-opus-5-5-optimus-1-1",
+      "setupDifferences": [],
       "name": "Claude Opus 5.5 (OPTIMUS)",
       "displayName": "Claude Opus 5.5",
       "agent": "OPTIMUS 1.1",

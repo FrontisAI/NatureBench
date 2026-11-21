@@ -37,16 +37,14 @@
     data.domains.map((domain) => [domain.domain, rankDomainLeaderboard(data, domain.domain)]),
   );
 
-  function initialLeaderboardTrack() {
-    try {
-      const requestedTrack = new URLSearchParams(window.location.search).get("track");
-      return TRACKS[requestedTrack] ? requestedTrack : "full";
-    } catch {
-      return "full";
-    }
-  }
-
   const $ = (id) => document.getElementById(id);
+  const leaderboardParams = new URLSearchParams(window.location.search);
+  const requestedTrack = leaderboardParams.get("track");
+  const setupBadges = {
+    time: { label: "Time", setting: "per-task solving budget" },
+    gpu: { label: "GPU", setting: "GPU type or allocation" },
+    access: { label: "Retrieval", setting: "web search or other external retrieval" },
+  };
 
   const metricConfig = {
     surpassSota: { label: "Surpass-SOTA", type: "percent", higher: true, minZero: true },
@@ -196,7 +194,8 @@
   ];
 
   const state = {
-    leaderboardTrack: initialLeaderboardTrack(),
+    leaderboardTrack: Object.hasOwn(TRACKS, requestedTrack) ? requestedTrack : "full",
+    leaderboardSetup: leaderboardParams.get("setup") === "all" ? "all" : "reference",
     rankMetric: "surpassSota",
     selectedDomain: data.domains[0]?.domain || "",
     caseDomain: "all",
@@ -206,9 +205,7 @@
     featuredCase: "cancer-gene",
   };
 
-  const modelOrder = data.leaderboard
-    .filter((item) => !Array.isArray(item.tracks) || item.tracks.includes("full"))
-    .map((item) => item.name);
+  const modelOrder = fullLeaderboardRows.map((item) => item.name);
   const modelByName = Object.fromEntries(data.models.map((item) => [item.name, item]));
   const configurationById = Object.fromEntries(data.models.map((item) => [item.id, item]));
   let activeConfigurationTrigger = null;
@@ -259,6 +256,45 @@
     return configurationById[row.configurationId] || modelByName[row.name] || null;
   }
 
+  function setupDifferences(row) {
+    return configurationFor(row)?.setupDifferences ?? ["unverified"];
+  }
+
+  function setupBadgeMarkup(key) {
+    const badge = setupBadges[key];
+    return badge
+      ? `<span class="setup-label" title="Differs from the reference in ${badge.setting}">${badge.label}</span>`
+      : '<span class="setup-reference-label" title="Reference setup has not been confirmed">Unverified</span>';
+  }
+
+  function setupDifferenceLabelsMarkup(row, showReference = false) {
+    const differences = setupDifferences(row);
+    if (!differences.length) {
+      return showReference ? '<span class="setup-reference-label">Reference</span>' : "";
+    }
+    return `<span class="setup-labels">${differences.map(setupBadgeMarkup).join("")}</span>`;
+  }
+
+  function renderSetupGuides() {
+    const keyMarkup = Object.entries(setupBadges).map(([key, badge]) => (
+      `<span>${setupBadgeMarkup(key)} ${badge.setting}</span>`
+    )).join("");
+    const detailsAction = {
+      domain: "In Domain Ranking, click",
+      cases: "In the Selected Task card, click",
+    };
+    document.querySelectorAll("[data-setup-guide]").forEach((guide) => {
+      const section = guide.dataset.setupGuide;
+      const ranking = section === "main" ? '<p class="setup-emphasis">All accepted configurations are ranked together.</p>' : "";
+      guide.innerHTML = `
+        ${ranking}
+        <p class="setup-emphasis">Badges mark differences from the reference setup.</p>
+        <div class="setup-legend">${keyMarkup}</div>
+        <p class="setup-detail-instruction">${detailsAction[section] || "Click"} the <span class="inline-info">i</span> to view its full evaluation setup.</p>
+      `;
+    });
+  }
+
   function displayNameForModel(modelName) {
     return modelByName[modelName]?.displayName || modelName;
   }
@@ -283,16 +319,18 @@
     return "agent-other";
   }
 
-  function modelAgentMarkup(modelName, { logo = false, infoButton = "" } = {}) {
-    const agent = agentForModel(modelName);
-    const displayName = displayNameForModel(modelName);
-    const modelLabel = `<span class="method-name">${escapeHtml(displayName)}</span>`;
+  function modelAgentMarkup(row, { logo = false, infoScope = null, colorModel = false } = {}) {
+    const modelName = row.name;
+    const agent = row.harness || agentForModel(modelName);
+    const setup = setupDifferenceLabelsMarkup(row);
+    const info = infoScope === null ? "" : configurationTriggerMarkup(row, infoScope);
+    const modelStyle = colorModel ? ` style="color:${modelColor(modelName)}"` : "";
     return `
       <span class="model-agent-identity">
         ${logo ? modelLogoMarkup(modelName) : ""}
         <span class="model-agent-copy">
-          ${infoButton ? `<span class="domain-model-line">${modelLabel}${infoButton}</span>` : modelLabel}
-          ${agent ? `<span class="agent-subline ${agentColorClass(agent)}">${escapeHtml(agent)}</span>` : ""}
+          <span class="method-name"${modelStyle}>${escapeHtml(displayNameForRow(row))}</span>
+          ${agent || setup || info ? `<span class="model-agent-subline"><span class="agent-subline ${agentColorClass(agent)}">${escapeHtml(agent)}</span>${setup}${info}</span>` : ""}
         </span>
       </span>
     `;
@@ -302,13 +340,14 @@
     const configuration = configurationFor(row);
     if (!configuration) return "";
     const displayName = configuration.displayName || row.name;
+    const agent = row.harness || configuration.agent;
     return `
       <button
         class="configuration-trigger"
         type="button"
         data-configuration-trigger="${escapeHtml(configuration.id)}"
         ${submissionScope ? `data-submission-scope="${escapeHtml(submissionScope)}"` : ""}
-        aria-label="View configuration for ${escapeHtml(displayName)} and ${escapeHtml(row.harness)}"
+        aria-label="View configuration for ${escapeHtml(displayName)} and ${escapeHtml(agent)}"
         aria-expanded="false"
       >i</button>
     `;
@@ -611,7 +650,8 @@
   }
 
   function activeLeaderboardRows() {
-    return leaderboardByTrack[state.leaderboardTrack];
+    const rows = leaderboardByTrack[state.leaderboardTrack];
+    return state.leaderboardSetup === "all" ? rows : rows.filter((row) => setupDifferences(row).length === 0);
   }
 
   function renderLeaderboardTrack() {
@@ -627,13 +667,21 @@
     if (panel && activeTab) panel.setAttribute("aria-labelledby", activeTab.id);
     const description = $("leaderboard-track-description");
     if (description) description.textContent = track.description;
+    document.querySelectorAll("[data-leaderboard-setup]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.leaderboardSetup === state.leaderboardSetup));
+    });
+    const showAll = state.leaderboardSetup === "all";
+    $("leaderboard-reference-setup").hidden = showAll;
+    $("leaderboard-all-setups-note").hidden = !showAll;
   }
 
-  function updateLeaderboardTrackUrl(trackKey) {
+  function updateLeaderboardUrl() {
     try {
       const url = new URL(window.location.href);
-      if (trackKey === "full") url.searchParams.delete("track");
-      else url.searchParams.set("track", trackKey);
+      if (state.leaderboardTrack === "full") url.searchParams.delete("track");
+      else url.searchParams.set("track", state.leaderboardTrack);
+      if (state.leaderboardSetup === "reference") url.searchParams.delete("setup");
+      else url.searchParams.set("setup", state.leaderboardSetup);
       window.history.replaceState(null, "", url);
     } catch {
       // Keep track switching functional when URL state cannot be updated.
@@ -670,12 +718,15 @@
     const top = rows[0];
     const topMatch = [...activeRows].sort((a, b) => b.matchCount - a.matchCount || b.surpassCount - a.surpassCount)[0];
     const topCompletion = [...activeRows].sort((a, b) => b.validCount - a.validCount || b.surpassCount - a.surpassCount)[0];
+    const leaderCard = (row, metric, label) => row
+      ? [formatPercent(row[metric]), label, displayNameForRow(row), row.harness]
+      : ["—", label, "No matching entries", ""];
     const cards = [
       [String(activeTrack().taskCount), "Tasks", activeTrack().label, ""],
       [String(data.benchmark.domainCount), "Scientific domains", "Nature-family task groups", ""],
-      [formatPercent(top.surpassSota), "Best Surpass-SOTA", displayNameForRow(top), top.harness],
-      [formatPercent(topMatch.matchSota), "Best Match-SOTA", displayNameForRow(topMatch), topMatch.harness],
-      [formatPercent(topCompletion.completionRate), "Top completion", displayNameForRow(topCompletion), topCompletion.harness],
+      leaderCard(top, "surpassSota", "Best Surpass-SOTA"),
+      leaderCard(topMatch, "matchSota", "Best Match-SOTA"),
+      leaderCard(topCompletion, "completionRate", "Top completion"),
     ];
 
     summary.innerHTML = cards.map(([value, label, note, agent]) => `
@@ -696,8 +747,9 @@
     if (!board || !boardWrap) return;
 
     const track = activeTrack();
+    const showSetup = state.leaderboardSetup === "all";
     const rows = rankLeaderboard(activeLeaderboardRows());
-    boardWrap.setAttribute("aria-label", `Scrollable ${track.label} Leaderboard`);
+    boardWrap.setAttribute("aria-label", `Scrollable ${track.label} Leaderboard · ${showSetup ? "All Setups" : "Reference Setup"}`);
     boardWrap.innerHTML = `
         <table class="numeric-board-table" id="numeric-leaderboard">
           <thead>
@@ -706,6 +758,7 @@
               <th>Model</th>
               <th>Agent</th>
               <th>Run source</th>
+              ${showSetup ? "<th>Setup Differences</th>" : ""}
               <th><span class="rank-metric-label">Surpass-SOTA</span></th>
               <th>Match-SOTA</th>
               <th>Median g (all)</th>
@@ -726,11 +779,11 @@
                   <div class="model-cell">
                     ${modelLogoMarkup(row.name)}
                     <span class="method-name">${escapeHtml(displayNameForRow(row))}</span>
-                    ${configurationTriggerMarkup(row)}
                   </div>
                 </td>
                 <td><span class="agent-name ${agentColorClass(row.harness)}">${escapeHtml(row.harness)}</span></td>
                 <td>${runSourceMarkup(row)}</td>
+                ${showSetup ? `<td><span class="setup-cell">${setupDifferenceLabelsMarkup(row, true)}${configurationTriggerMarkup(row)}</span></td>` : ""}
                 <td><span class="pill good numeric-primary ${topRank ? `rank-metric-${row.rank}` : ""}">${formatPercent(row.surpassSota)}</span></td>
                 <td>${formatPercent(row.matchSota)}</td>
                 <td>${formatScore(row.medianAll)}</td>
@@ -739,7 +792,7 @@
                 <td><span class="pill ${invalidClass}">${row.invalid}</span></td>
               </tr>
             `;
-            }).join("")}
+            }).join("") || `<tr><td colspan="${showSetup ? 11 : 10}">No accepted results match this view.</td></tr>`}
           </tbody>
         </table>
     `;
@@ -801,6 +854,13 @@
     }
   }
 
+  function renderMainLeaderboard() {
+    hideConfigurationPopover();
+    renderLeaderboardTrack();
+    renderSummary();
+    renderLeaderboard();
+  }
+
   function renderDistribution() {
     const rows = data.distributions;
     const chart = $("distribution-chart");
@@ -815,7 +875,7 @@
       return `
         <div class="distribution-row">
           <div class="distribution-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
-            ${modelAgentMarkup(row.name, { logo: true })}
+            ${modelAgentMarkup(row, { logo: true, infoScope: "Full submission: all 90 tasks" })}
           </div>
           <div class="stacked-bar" aria-label="${escapeHtml(displayNameForModel(row.name))} score distribution">
             ${row.bins.map((bin, index) => ({ bin, index })).filter(({ bin }) => Number(bin.count) > 0 && Number(bin.percent) > 0).map(({ bin, index }) => `
@@ -843,6 +903,7 @@
     `).join("");
     bindLogoFallbacks(chart);
     bindDistributionTooltips(chart);
+    bindConfigurationTriggers(chart);
   }
 
   function ensureDistributionTooltip() {
@@ -901,7 +962,9 @@
       document.querySelectorAll(listSelector).forEach((list) => {
         const entries = Array.from(list.querySelectorAll(entrySelector));
         const entryTextBounds = (entry) => {
-          const bounds = Array.from(entry.querySelectorAll(labelSelector)).map(textContentBounds);
+          const bounds = Array.from(entry.querySelectorAll(labelSelector)).map((label) => (
+            label.classList.contains("setup-labels") ? label.getBoundingClientRect() : textContentBounds(label)
+          ));
           if (!bounds.length) return null;
           return {
             left: Math.min(...bounds.map((rect) => rect.left)),
@@ -912,10 +975,15 @@
           entry.style.removeProperty(property);
           if (index === 0) return;
 
-          const previousLabelRect = entryTextBounds(entries[index - 1]);
+          const previousEntry = entries[index - 1];
+          const entryRect = entry.getBoundingClientRect();
+          const wrapped = entryRect.top > previousEntry.getBoundingClientRect().top + 1;
+          entry.toggleAttribute("data-wrapped-winner", wrapped);
+          if (wrapped) return;
+
+          const previousLabelRect = entryTextBounds(previousEntry);
           const currentLabelRect = entryTextBounds(entry);
           if (!previousLabelRect || !currentLabelRect) return;
-          const entryRect = entry.getBoundingClientRect();
           const dividerCenter = (previousLabelRect.right + currentLabelRect.left) / 2;
           entry.style.setProperty(property, `${dividerCenter - entryRect.left}px`);
         });
@@ -925,13 +993,13 @@
     alignAdjacentEntries(
       ".domain-winner-list.is-tied",
       ".domain-winner-entry",
-      ".domain-winner, .domain-winner-agent",
+      ".domain-winner, .domain-winner-agent, .setup-labels",
       "--domain-divider-left",
     );
     alignAdjacentEntries(
       ".domain-table-winner-list.is-tied",
       ".domain-table-winner-entry",
-      ".method-name, .agent-subline",
+      ".method-name, .agent-subline, .setup-labels",
       "--domain-table-divider-left",
     );
   }
@@ -950,7 +1018,10 @@
             ${leaders.map((row) => `
               <div class="domain-winner-entry" title="${escapeHtml(displayNameForRow(row))} · ${escapeHtml(row.harness)}" style="--model-color:${modelColor(row.name)}">
                 <div class="domain-winner">${escapeHtml(compactDomainModelName(row, leaders.length))}</div>
-                <div class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(compactDomainAgentName(row.harness, leaders.length))}</div>
+                <div class="domain-winner-subline model-agent-subline">
+                  <span class="domain-winner-agent ${agentColorClass(row.harness)}">${escapeHtml(compactDomainAgentName(row.harness, leaders.length))}</span>
+                  ${setupDifferenceLabelsMarkup(row)}
+                </div>
               </div>
             `).join("")}
           </div>
@@ -1010,7 +1081,7 @@
             <div class="bar-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
               <span class="rank-dot">${row.rank}</span>
               <span class="bar-model-identity">
-                ${modelAgentMarkup(row.name, { logo: true, infoButton: configurationTriggerMarkup(row, submissionScope) })}
+                ${modelAgentMarkup(row, { logo: true, infoScope: submissionScope })}
                 ${domainOnly ? '<span class="domain-submission-label">Domain submission</span>' : ""}
               </span>
             </div>
@@ -1073,7 +1144,7 @@
           <td>
             <div class="domain-table-winner-list${leaders.length > 1 ? " is-tied" : ""}">
               ${leaders.map((row) => `
-                <div class="domain-table-winner-entry">${modelAgentMarkup(row.name)}</div>
+                <div class="domain-table-winner-entry">${modelAgentMarkup(row, { colorModel: true })}</div>
               `).join("")}
             </div>
           </td>
@@ -1140,6 +1211,7 @@
     const exactMatch = rows.length === 1 ? rows[0] : null;
     const row = selected && rows.some((item) => item.caseId === selected.caseId) ? selected : exactMatch;
     const card = $("case-lookup-card");
+    if (card.contains(activeConfigurationTrigger)) hideConfigurationPopover();
 
     if (!row || state.caseLookupDismissed) {
       card.hidden = true;
@@ -1161,9 +1233,13 @@
         </div>
         ${row.bestModel ? `
           <strong class="case-lookup-best-configuration configuration-popover-title">
-            <span class="configuration-popover-model">${escapeHtml(displayNameForModel(row.bestModel))}</span>
+            <span class="configuration-popover-model" style="color:${modelColor(row.bestModel)}">${escapeHtml(displayNameForModel(row.bestModel))}</span>
             <span class="configuration-popover-separator">+</span>
-            <span class="configuration-popover-agent agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span>
+            <span class="model-agent-subline">
+              <span class="configuration-popover-agent agent-name ${agentColorClass(agentForModel(row.bestModel))}">${escapeHtml(agentForModel(row.bestModel))}</span>
+              ${setupDifferenceLabelsMarkup({ name: row.bestModel })}
+              ${configurationTriggerMarkup({ name: row.bestModel })}
+            </span>
           </strong>
           <small class="case-lookup-best-score">g ${formatScore(row.bestScore)}</small>
         ` : ""}
@@ -1174,6 +1250,7 @@
       state.caseLookupDismissed = true;
       renderCaseTable();
     });
+    bindConfigurationTriggers(card);
   }
 
   function renderCaseTable() {
@@ -1183,7 +1260,7 @@
         <th>Domain</th>
         <th>ML task type</th>
         <th>Best</th>
-        ${modelOrder.map((model) => `<th>${modelAgentMarkup(model)}</th>`).join("")}
+        ${fullLeaderboardRows.map((row) => `<th>${modelAgentMarkup(row)}</th>`).join("")}
       </tr>
     `;
 
@@ -1213,7 +1290,7 @@
         </td>
         <td>${escapeHtml(row.domain)}</td>
         <td>${escapeHtml(row.mlTaskType)}</td>
-        <td class="case-best-cell">${row.bestModel ? `<div class="case-best-identity">${modelAgentMarkup(row.bestModel)}</div><div class="case-meta">g ${formatScore(row.bestScore)}</div>` : ""}</td>
+        <td class="case-best-cell">${row.bestModel ? `<div class="case-best-identity">${modelAgentMarkup({ name: row.bestModel }, { colorModel: true })}</div><div class="case-meta">g ${formatScore(row.bestScore)}</div>` : ""}</td>
         ${modelOrder.map((model) => {
           const score = row.scores[model];
           const classes = [
@@ -1511,12 +1588,10 @@
     leaderboardTrackButtons.forEach((button, index) => {
       button.addEventListener("click", () => {
         const nextTrack = button.dataset.leaderboardTrack;
-        if (!TRACKS[nextTrack] || nextTrack === state.leaderboardTrack) return;
+        if (!Object.hasOwn(TRACKS, nextTrack) || nextTrack === state.leaderboardTrack) return;
         state.leaderboardTrack = nextTrack;
-        updateLeaderboardTrackUrl(nextTrack);
-        renderLeaderboardTrack();
-        renderSummary();
-        renderLeaderboard();
+        updateLeaderboardUrl();
+        renderMainLeaderboard();
       });
 
       button.addEventListener("keydown", (event) => {
@@ -1530,6 +1605,16 @@
         event.preventDefault();
         leaderboardTrackButtons[nextIndex].focus();
         leaderboardTrackButtons[nextIndex].click();
+      });
+    });
+
+    document.querySelectorAll("[data-leaderboard-setup]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const setup = button.dataset.leaderboardSetup;
+        if (setup === state.leaderboardSetup) return;
+        state.leaderboardSetup = setup;
+        updateLeaderboardUrl();
+        renderMainLeaderboard();
       });
     });
 
@@ -1620,10 +1705,9 @@
     ensureLeaderboardContainers();
     ensureCaseLegend();
     updateStaticLabels();
-    renderLeaderboardTrack();
-    renderSummary();
-    renderLeaderboard();
+    renderMainLeaderboard();
     renderFeaturedCases();
+    renderSetupGuides();
     renderDistribution();
     renderDomainGrid();
     renderDomainSelect();
