@@ -1,0 +1,17 @@
+name: Dispatch leaderboard site deployment
+
+on:
+  push:
+    branches: [page]
+
+permissions:
+  actions: write
+
+jobs:
+  dispatch:
+    if: github.repository == 'FrontisAI/NatureBench'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - run: gh workflow run publish-submissions.yml --repo "$GITHUB_REPOSITORY" --ref main -f deploy_page=true
