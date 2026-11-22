@@ -1,0 +1,57 @@
+name: Check leaderboard submission
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate leaderboard submission
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect leaderboard submissions
+        id: changes
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "refs/pull/${PR_NUMBER}/head"
+          test "$(git rev-parse FETCH_HEAD)" = "$HEAD_SHA"
+          if git diff --quiet --no-renames "$BASE_SHA...$HEAD_SHA" -- submissions/ ':(exclude)submissions/README.md'; then
+            echo 'submission=false' >> "$GITHUB_OUTPUT"
+            echo 'No leaderboard submission files changed.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            test "$?" -eq 1
+            echo 'submission=true' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v6
+        if: steps.changes.outputs.submission == 'true'
+        with:
+          python-version: '3.12'
+      - run: python -m pip install PyYAML==6.0.3
+        if: steps.changes.outputs.submission == 'true'
+      - name: Validate public files and preview scores
+        if: steps.changes.outputs.submission == 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          python submit-results/publish_submission.py check-pr --base "$BASE_SHA" --head "$HEAD_SHA" > "$RUNNER_TEMP/score-preview.txt"
+          cat "$RUNNER_TEMP/score-preview.txt"
+          {
+            echo '### Official score preview'
+            echo '~~~text'
+            cat "$RUNNER_TEMP/score-preview.txt"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

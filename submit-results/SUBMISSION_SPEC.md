@@ -11,6 +11,10 @@ A submission contains three parts:
 2. `results.csv`: one row for each official task in the [selected track](README.md#choose-a-track).
 3. `raw-results/`: per-case result records and trajectories used for review.
 
+Commit the two public files under `submissions/<track>/<submission-id>/` in a PR
+targeting `main`. Put a public archive link in the PR description
+or send it privately by email with the PR URL and corresponding commit.
+
 ## 2. `submission.yaml`
 
 Use [`templates/submission.yaml`](templates/submission.yaml):
@@ -33,6 +37,7 @@ evaluation:
   judge_model: ""
   human_intervention: "none"
   deviations_from_reference: "none"
+  setup_differences: []
 ```
 
 | Field | Requirement |
@@ -42,8 +47,8 @@ evaluation:
 | `organization` | Organization that ran and submitted the evaluation; independent submitters may use `Independent`. |
 | `url` | Public link to the model, agent, paper, or project. |
 | `submission_date` | Date the result package is submitted, in `YYYY-MM-DD` format. |
-| `contact` | An email address, GitHub account, or another working contact method. |
-| `track` | One of the eight [track IDs](README.md#choose-a-track), such as `full`, `naturebench-25`, or `protein-biology`. Omitted values are interpreted as `full`. |
+| `contact` | A public contact method for review questions, preferably a GitHub username. |
+| `track` | One of the eight [track IDs](README.md#choose-a-track), such as `full`, `naturebench-25`, or `protein-biology`. |
 | `evaluation_pipeline` | Pipeline used to run and score the tasks: `naturebench`, `harbor`, or `custom`. This describes the evaluation pipeline and raw-result format. Omitted values are interpreted as `naturebench`. |
 | `timeout_seconds` | Per-task agent solve-time budget, excluding environment setup and evaluator execution. The reference setting is 14,400 seconds. |
 | `web_search` | Whether the agent uses web search tools or service during the evaluation. The reference setting is `false`. |
@@ -51,6 +56,7 @@ evaluation:
 | `judge_model` | Submitter-side validity judge, if used. Leave empty if no judge was run. |
 | `human_intervention` | Use `none` for autonomous runs; otherwise disclose the scope of human actions that could affect results. |
 | `deviations_from_reference` | Use `none` or briefly describe changes to task coverage, evaluator, or other result-relevant settings. |
+| `setup_differences` | List differences in the per-task solving budget (`time`), GPU setup (`gpu`), or external retrieval (`retrieval`, including web search and web fetch). Use `[]` if all three match the reference setup. |
 
 ## 3. `results.csv`
 
@@ -196,8 +202,7 @@ For submissions that pass review, maintainers calculate the public metrics from
 the reviewed per-case results using [`compute_scores.py`](compute_scores.py) and
 add the result to the public leaderboard. The published entry may include the
 model, agent, submitted URL, reviewed metrics, evaluation
-configuration, and any disclosed deviations or audit limitations. Contact
-information is used for review coordination and is not published.
+configuration, and any disclosed deviations or audit limitations.
 
 ### Ranking views
 

@@ -24,18 +24,17 @@ domain task sets.
 
 ## Prepare the submission
 
-A submission directory contains:
+Prepare three items for the selected track.
 
-```text
-<submission-name>/
-├── submission.yaml
-├── results.csv
-└── raw-results/
-    ├── <case_id>/
-    └── README.md              # when format or review notes are needed
-```
+- `submission.yaml` describes the evaluation setup, including any differences
+  from the reference setup. Commit it in the PR.
+- `results.csv` records one result per official task, including failed, invalid,
+  and unscored runs. Commit it in the PR.
+- `raw-results/` contains the per-case records and trajectories. Include
+  `raw-results/README.md` when the format or results need explanation. Package
+  this directory separately and share its download link as described below.
 
-From the repository root, generate the metadata template, result rows, and task list:
+From the repository root, generate the starter YAML, CSV, and task list.
 
 ```bash
 python submit-results/prepare_submission.py \
@@ -75,17 +74,28 @@ pipelines, it only checks case coverage and non-empty raw artifacts.
 The second command computes a preview of the public metrics and optionally
 writes a standalone JSON report.
 
-## Send the submission
+To check just the two public files, replace `--raw-results <path>` with `--public-only`.
 
-Remove credentials and private endpoints, archive the directory, and send it
-or a stable download link to **wangyuru@frontis.cn, zhangkaiyan@frontis.cn** with the subject:
+## Open a submission PR
 
-```text
-[NatureBench Result Submission] <agent> + <model>
-```
+1. Fork `FrontisAI/NatureBench` or sync your existing fork with the upstream
+   `main` branch. Create a branch for your submission from `main`.
+2. Add `submission.yaml` and `results.csv` under
+   `submissions/<track>/<submission-id>/`. Use a unique lowercase,
+   hyphen-separated submission ID. Commit the two files, push your branch to
+   your fork, and open a PR targeting `FrontisAI/NatureBench:main`.
+3. In the PR description, list the agent, model, track, and submission directory.
+   Share the raw-results archive using one of these options.
+   - **Public download.** Put the download link in the PR description.
+   - **Private download.** Write “Shared privately by email” in the PR
+     description. Grant the maintainers access and email the download link,
+     PR URL, and corresponding commit to
+     **wangyuru@frontis.cn, zhangkaiyan@frontis.cn**.
+4. To address feedback, push changes to the same branch in your fork. If the
+   archive changes, update the PR description or reply to the original email
+   with the new link and the corresponding commit.
 
-Please include a short introduction and links to the model, agent, paper, or
-project when available. Maintainers will review the artifacts, rerun the
-validity judge when needed, and contact the submitter if more
-information is required. Submissions that pass review are scored with
-[`compute_scores.py`](compute_scores.py) and then added to the leaderboard.
+## Review and publication
+
+We review the raw results and explain any issues in the PR. For accepted
+submissions, we confirm the final results and add them to the leaderboard.

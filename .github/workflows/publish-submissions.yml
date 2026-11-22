@@ -1,0 +1,142 @@
+name: Publish leaderboard and News
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'submissions/*/*/submission.yaml'
+      - 'submissions/*/*/results.csv'
+  workflow_dispatch:
+    inputs:
+      deploy_page:
+        description: Deploy the current page branch even without new submissions
+        type: boolean
+        default: false
+
+concurrency:
+  group: naturebench-submission-publication
+  queue: max
+
+jobs:
+  publish:
+    if: github.repository == 'FrontisAI/NatureBench' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: github-pages
+    permissions:
+      actions: write
+      contents: write
+      pages: write
+      id-token: write
+    env:
+      LIVE_DATA_URL: https://frontisai.github.io/NatureBench/naturebench-data.js
+    steps:
+      # Keep the reviewed records and scripts stable while the News checkout is refreshed.
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          path: review
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          ref: page
+          path: site
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          path: project
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install PyYAML==6.0.3
+      - name: Prepare both outputs
+        id: plan
+        env:
+          FORCE_DEPLOY: ${{ inputs.deploy_page }}
+        run: |
+          set -euo pipefail
+          python review/submit-results/publish_submission.py prepare \
+            --submissions review/submissions --page site/naturebench-data.js \
+            --news project/README.md --plan "$RUNNER_TEMP/release.json"
+          python - "$RUNNER_TEMP/release.json" "$GITHUB_OUTPUT" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          plan = json.loads(Path(sys.argv[1]).read_text())
+          with open(sys.argv[2], "a") as out:
+              for key in ("pending", "page_changed", "news_changed", "remaining"):
+                  print(f"{key}={str(bool(plan[key])).lower()}", file=out)
+          PY
+          if [ "$FORCE_DEPLOY" = "true" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          elif python review/submit-results/publish_submission.py verify-page \
+            --plan "$RUNNER_TEMP/release.json" --url "$LIVE_DATA_URL"; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Save the prepared leaderboard
+        if: steps.plan.outputs.page_changed == 'true'
+        working-directory: site
+        run: |
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m 'data(leaderboard): publish reviewed submissions' -- naturebench-data.js
+          git push origin HEAD:refs/heads/page
+      - name: Prepare Pages artifact
+        if: steps.plan.outputs.deploy == 'true'
+        run: |
+          mkdir "$RUNNER_TEMP/site"
+          git -C site archive HEAD | tar -xf - -C "$RUNNER_TEMP/site"
+      - name: Upload Pages artifact
+        if: steps.plan.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/site
+      - name: Deploy the leaderboard
+        if: steps.plan.outputs.deploy == 'true'
+        uses: actions/deploy-pages@v4
+      - name: Verify the live leaderboard before updating News
+        if: steps.plan.outputs.pending == 'true'
+        run: |
+          python review/submit-results/publish_submission.py verify-page \
+            --plan "$RUNNER_TEMP/release.json" --url "$LIVE_DATA_URL" --attempts 12
+      - name: Publish News for the verified leaderboard
+        if: steps.plan.outputs.news_changed == 'true'
+        working-directory: project
+        run: |
+          set -euo pipefail
+          git restore -- README.md
+          for attempt in 1 2 3; do
+            git fetch --no-tags origin refs/heads/main
+            git switch --detach FETCH_HEAD
+            python ../review/submit-results/publish_submission.py update-news \
+              --plan "$RUNNER_TEMP/release.json" --news README.md
+            if git diff --quiet -- README.md; then
+              exit 0
+            fi
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m 'docs(news): announce reviewed leaderboard results' -- README.md
+            if git push origin HEAD:refs/heads/main; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1
+      - name: Continue after recovering an earlier release
+        if: steps.plan.outputs.remaining == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish-submissions.yml --repo "$GITHUB_REPOSITORY" --ref main
+      - name: Report outcome
+        if: always()
+        env:
+          OUTCOME: ${{ job.status }}
+          PENDING: ${{ steps.plan.outputs.pending }}
+        run: |
+          if [ "$OUTCOME" != "success" ]; then
+            echo "Publication incomplete. Rerun the entire workflow to finish the same release." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$PENDING" = "true" ]; then
+            echo "Publication complete. Leaderboard and News are both updated." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No reviewed results need publication." >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -15,3 +15,4 @@ evaluation:
   judge_model: ""
   human_intervention: "none"
   deviations_from_reference: "none"
+  setup_differences: []

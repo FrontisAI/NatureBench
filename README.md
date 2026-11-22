@@ -54,9 +54,11 @@ Across sixteen coding-agent configurations, the strongest reaches a 23.3% Surpas
 We welcome results from researchers and developers who have evaluated models or
 agents on NatureBench. Choose Full, NatureBench-25, or one of the six scientific
 domain tracks; all use the same submission format and review process.
-Submissions are currently accepted by email; see
-[`submit-results/`](submit-results/) for the result templates, validation and
-scoring scripts, required raw artifacts, and submission email.
+Submit `submission.yaml` and `results.csv` under [`submissions/`](submissions/)
+in a pull request targeting `main`.
+Share the raw-results download link in the PR description or email it to the
+maintainers for private review. See the [submission guide](submit-results/)
+for templates and checks.
 
 We publish results that meet our submission and review requirements on the
 NatureBench leaderboard. The main leaderboard offers two views for each track.
@@ -253,7 +255,7 @@ The pipeline runs as a chain of Claude Code skills driven by batch scripts, all 
 | [`docs/task-packages.md`](docs/task-packages.md) | Task package structure and the resource-grouped task lists. |
 | [`docs/custom-agents.md`](docs/custom-agents.md) | Plugging in a custom agent: How to run your own agent on NatureBench. |
 | [Harbor guide](harbor/README.md) | Converting and running NatureBench tasks with Harbor. |
-| [`submit-results/`](submit-results/) | Email-submission guide, result templates, validation and scoring tools, and the publication process. |
+| [`submit-results/`](submit-results/) | PR submission guide, result templates, validation and scoring tools, and the publication process. |
 
 ## ⚖️License
 

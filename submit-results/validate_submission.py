@@ -41,8 +41,15 @@ EVALUATION_FIELDS = {
     "judge_model",
     "human_intervention",
     "deviations_from_reference",
+    "setup_differences",
+    "solving_budget",
+    "external_access",
 }
-OPTIONAL_EVALUATION_FIELDS = {"track", "evaluation_pipeline"}
+OPTIONAL_EVALUATION_FIELDS = {
+    "track", "evaluation_pipeline", "setup_differences", "solving_budget", "external_access",
+}
+# The site uses "access" as the internal key for its Retrieval badge.
+SETUP_BADGE_KEYS = {"time": "time", "gpu": "gpu", "retrieval": "access"}
 DOMAIN_TRACKS = {
     "cellular-omics": "Cellular Omics",
     "protein-biology": "Protein Biology",
@@ -181,7 +188,9 @@ def _check_exact_keys(
         report.error(f"{location} has unsupported fields: {', '.join(extra)}")
 
 
-def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | None:
+def validate_metadata(
+    path: Path, report: ValidationReport, *, public_only: bool = False
+) -> dict[str, Any] | None:
     """Validate submission.yaml and return its parsed mapping."""
 
     try:
@@ -228,7 +237,10 @@ def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | 
             EVALUATION_FIELDS,
             "evaluation",
             report,
-            optional=OPTIONAL_EVALUATION_FIELDS,
+            optional=(
+                OPTIONAL_EVALUATION_FIELDS - {"track", "setup_differences"}
+                if public_only else OPTIONAL_EVALUATION_FIELDS
+            ),
         )
         track = evaluation.get("track", "full")
         if track not in SUPPORTED_TRACKS:
@@ -245,6 +257,19 @@ def validate_metadata(path: Path, report: ValidationReport) -> dict[str, Any] | 
             report.error("evaluation.web_search must be true or false")
         for key in ("compute", "human_intervention", "deviations_from_reference"):
             _nonempty_string(evaluation, key, "evaluation", report)
+        for key in ("solving_budget", "external_access"):
+            if key in evaluation:
+                _nonempty_string(evaluation, key, "evaluation", report)
+        if "setup_differences" in evaluation:
+            differences = evaluation["setup_differences"]
+            if not isinstance(differences, list) or any(
+                not isinstance(value, str) or value not in SETUP_BADGE_KEYS for value in differences
+            ):
+                report.error("evaluation.setup_differences must list values from time, gpu, retrieval")
+            elif len(differences) != len(set(differences)):
+                report.error("evaluation.setup_differences must not include duplicate differences")
+            elif public_only:
+                evaluation["setup_differences"] = [SETUP_BADGE_KEYS[value] for value in differences]
         judge_model = evaluation.get("judge_model")
         if not isinstance(judge_model, str):
             report.error("evaluation.judge_model must be a string; use an empty string if unused")
@@ -750,12 +775,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--metadata", type=Path, required=True, help="submission.yaml")
     parser.add_argument("--results", type=Path, required=True, help="results.csv")
-    parser.add_argument(
-        "--raw-results",
-        type=Path,
-        required=True,
-        help="raw-results directory",
-    )
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--raw-results", type=Path, help="raw-results directory for the full audit")
+    mode.add_argument("--public-only", action="store_true", help="check public PR files only")
     parser.add_argument(
         "--case-metadata",
         type=Path,
@@ -768,7 +790,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Iterable[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     report = ValidationReport()
-    metadata = validate_metadata(args.metadata, report)
+    metadata = validate_metadata(args.metadata, report, public_only=args.public_only)
     track = evaluation_track(metadata)
     pipeline = evaluation_pipeline(metadata)
     if not report.ok:
@@ -782,13 +804,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         return 1
 
     records = load_results_csv(args.results, case_metadata, report)
-    validate_raw_results(
-        args.raw_results,
-        records,
-        case_metadata,
-        report,
-        pipeline=pipeline,
-    )
+    if args.raw_results is not None:
+        validate_raw_results(args.raw_results, records, case_metadata, report, pipeline=pipeline)
     print(format_report(report))
     return 0 if report.ok else 1
 
