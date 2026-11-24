@@ -175,7 +175,8 @@ python scripts/download_tasks.py \
 
 The Harbor tasks on Hugging Face are distributed as compressed archives. The
 download script automatically downloads the selected tasks and extracts them
-into `tasks/`.
+into `tasks/`. On rerun, the script deletes the existing directories for
+the selected tasks before extracting the archives again.
 
 ### Execute
 

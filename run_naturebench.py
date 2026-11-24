@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -53,8 +54,17 @@ def _download_dataset(
     allow_patterns = [f"tasks/{task_id}/**" for task_id in task_ids]
 
     if dry_run:
-        print(f"[dry-run] would download {len(task_ids)} task(s) from {dataset_id} to {data_dir}")
+        print(f"[dry-run] would reinstall {len(task_ids)} task(s) from {dataset_id} in {data_dir}")
         return
+    if not task_ids:
+        return
+    invalid = [
+        task_id for task_id in task_ids
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", task_id)
+    ]
+    if invalid:
+        raise ValueError(f"Invalid task ID(s): {', '.join(invalid)}")
+
     try:
         from huggingface_hub import snapshot_download
     except ImportError as exc:
@@ -64,12 +74,22 @@ def _download_dataset(
             "conda env create -f conda_env.yml && conda activate naturebench"
         ) from exc
 
+    tasks_dir = data_dir / "tasks"
+    if tasks_dir.is_symlink():
+        raise ValueError(f"Expected a regular tasks directory: {tasks_dir}")
+    task_dirs = [tasks_dir / task_id for task_id in task_ids]
+    for task_dir in task_dirs:
+        if task_dir.is_symlink() or (task_dir.exists() and not task_dir.is_dir()):
+            raise ValueError(f"Expected a regular task directory: {task_dir}")
+    for task_dir in task_dirs:
+        if task_dir.is_dir():
+            shutil.rmtree(task_dir)
+
     snapshot_download(
         repo_id=dataset_id,
         repo_type="dataset",
         revision=revision,
         local_dir=str(data_dir),
-        local_dir_use_symlinks=False,
         allow_patterns=allow_patterns,
     )
 

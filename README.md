@@ -13,6 +13,7 @@
 
 ## 📰News
 
+- **🔧 [2026-11-24] NatureBench environment update.** To account for changes in upstream package requirements and unreliable download links, we updated the Dockerfiles for 23 tasks in the [native](https://huggingface.co/datasets/FrontisAI/NatureBench/tree/f17c0d2b87c6df56f1deb5ed87a0de556e1ca6bb) and [Harbor](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor/tree/f942d6baa044c33988d1a3e968bf9d7cabeaa5b8) packages on Hugging Face and the Conda recipes for the evaluation service environment. The tasks themselves remain the same.
 - **🏆 [2026-11-20] We published [results](https://frontisai.github.io/NatureBench/) for Qwen 4 Max on the Full 90-task leaderboard.**
 - **🏆 [2026-11-15] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) for OPTIMUS 1.1 + Claude Opus 5.5 on the Full 90-task leaderboard.**
 - **🏆 [2026-10-20] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=naturebench-25&setup=all#leaderboard) for EvoRA + gpt-6.1-sol on the NatureBench-25 leaderboard.**
@@ -127,7 +128,8 @@ line. For example, use `--tasks task-set/naturebench-25/all.txt` to download
 the complete NatureBench-25 track. By default, tasks are saved under
 `./data/naturebench_data/`; use `--data-dir <path>` to choose a different
 location. The command also extracts any compressed task data into the
-runtime-ready layout.
+runtime-ready layout. Rerunning the command deletes any existing directories
+for the selected tasks and downloads those tasks again.
 
 ## 🚀Quick Start
 

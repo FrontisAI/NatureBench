@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import re
+import shutil
 import tarfile
 from pathlib import Path
 from typing import Iterable
@@ -70,28 +71,47 @@ def task_ids_for_compute_groups(
 def extract_task_archives(
     archives: Iterable[Path], output_dir: Path, task_id: str
 ) -> None:
-    """Extract one or more archives into one Harbor task directory."""
+    """Remove any existing task directory and extract the selected archives."""
 
+    if not TASK_ID_PATTERN.fullmatch(task_id):
+        raise ReleaseError(f"invalid task ID: {task_id}")
     archives = list(archives)
     if not archives:
         raise ReleaseError(f"no archives provided for task: {task_id}")
+    output_dir = output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     target_task = output_dir / task_id
-    if target_task.exists():
-        raise ReleaseError(
-            f"task already exists: {target_task}; remove it explicitly before reinstalling"
-        )
-    current_archive = archives[0]
-    try:
-        for current_archive in archives:
-            with tarfile.open(current_archive, "r:gz") as handle:
-                handle.extractall(output_dir, filter="data")
-        if not (target_task / "task.toml").is_file():
-            raise ReleaseError(
-                f"archives for {task_id} do not contain {task_id}/task.toml"
-            )
-    except (OSError, tarfile.TarError) as error:
-        raise ReleaseError(f"failed to extract {current_archive}: {error}") from error
+    if target_task.is_symlink() or (target_task.exists() and not target_task.is_dir()):
+        raise ReleaseError(f"expected a regular task directory: {target_task}")
+    if any(path.resolve().is_relative_to(target_task) for path in archives):
+        raise ReleaseError(f"source archive is inside the task directory: {target_task}")
+    if target_task.is_dir():
+        shutil.rmtree(target_task)
+
+    def task_filter(member: tarfile.TarInfo, destination: str) -> tarfile.TarInfo | None:
+        member = tarfile.data_filter(member, destination)
+        if member is None:
+            return None
+        path = output_dir / member.name
+        resolved = path.resolve()
+        if not resolved.is_relative_to(target_task):
+            raise tarfile.FilterError(f"archive member outside {task_id}/: {member.name}")
+        if resolved == target_task and not member.isdir():
+            raise tarfile.FilterError(f"expected a task directory: {member.name}")
+        if member.issym() or member.islnk():
+            link_root = path.parent if member.issym() else output_dir
+            if not (link_root / member.linkname).resolve().is_relative_to(target_task):
+                raise tarfile.FilterError(f"archive link outside {task_id}/: {member.name}")
+        return member
+
+    for archive in archives:
+        try:
+            with tarfile.open(archive, "r:gz") as handle:
+                handle.extractall(output_dir, filter=task_filter)
+        except (OSError, EOFError, tarfile.TarError) as error:
+            raise ReleaseError(f"failed to extract {archive}: {error}") from error
+    if not (target_task / "task.toml").is_file():
+        raise ReleaseError(f"archives for {task_id} do not contain {task_id}/task.toml")
 
 
 def _selected_archives(
