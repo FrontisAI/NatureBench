@@ -93,7 +93,16 @@ jobs:
         with:
           path: ${{ runner.temp }}/site
       - name: Deploy the leaderboard
+        id: deploy
         if: steps.plan.outputs.deploy == 'true'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      # Artifact lookup can lag behind a successful upload.
+      - name: Wait before retrying deployment
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 15
+      - name: Retry deployment with the uploaded artifact
+        if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
       - name: Verify the live leaderboard before updating News
         if: steps.plan.outputs.pending == 'true'
