@@ -128,8 +128,8 @@ line. For example, use `--tasks task-set/naturebench-25/all.txt` to download
 the complete NatureBench-25 track. By default, tasks are saved under
 `./data/naturebench_data/`; use `--data-dir <path>` to choose a different
 location. The command also extracts any compressed task data into the
-runtime-ready layout. Rerunning the command deletes any existing directories
-for the selected tasks and downloads those tasks again.
+runtime-ready layout. Reruns replace tasks individually. If a task's download or extraction
+fails, its existing directory stays in place.
 
 ## 🚀Quick Start
 

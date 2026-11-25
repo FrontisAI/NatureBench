@@ -16,10 +16,14 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 
 from config_loader import load_yaml_config, merge_args_with_config
+from task_install import list_dataset_files, publish_replacement
 
 
 DEFAULT_DATASET_ID = "FrontisAI/NatureBench"
@@ -48,11 +52,7 @@ def _download_dataset(
     task_ids: list[str],
     dry_run: bool,
 ) -> None:
-    # Download only the selected task packages (each tasks/<id>/** subtree, which
-    # includes that task's licenses/ attribution). Repo-level README/LICENSE/manifest
-    # are dataset-card files and are not fetched.
-    allow_patterns = [f"tasks/{task_id}/**" for task_id in task_ids]
-
+    task_ids = list(dict.fromkeys(task_ids))
     if dry_run:
         print(f"[dry-run] would reinstall {len(task_ids)} task(s) from {dataset_id} in {data_dir}")
         return
@@ -66,7 +66,7 @@ def _download_dataset(
         raise ValueError(f"Invalid task ID(s): {', '.join(invalid)}")
 
     try:
-        from huggingface_hub import snapshot_download
+        from huggingface_hub import hf_hub_download
     except ImportError as exc:
         raise SystemExit(
             "huggingface_hub is required for dataset download. "
@@ -77,21 +77,43 @@ def _download_dataset(
     tasks_dir = data_dir / "tasks"
     if tasks_dir.is_symlink():
         raise ValueError(f"Expected a regular tasks directory: {tasks_dir}")
-    task_dirs = [tasks_dir / task_id for task_id in task_ids]
-    for task_dir in task_dirs:
-        if task_dir.is_symlink() or (task_dir.exists() and not task_dir.is_dir()):
-            raise ValueError(f"Expected a regular task directory: {task_dir}")
-    for task_dir in task_dirs:
-        if task_dir.is_dir():
-            shutil.rmtree(task_dir)
+    tasks_dir.mkdir(parents=True, exist_ok=True)
+    commit, filenames = list_dataset_files(dataset_id, revision)
+    task_files: dict[str, list[str]] = {task_id: [] for task_id in task_ids}
+    for filename in filenames:
+        parts = filename.split("/", 2)
+        if len(parts) == 3 and parts[0] == "tasks" and parts[1] in task_files:
+            task_files[parts[1]].append(filename)
 
-    snapshot_download(
-        repo_id=dataset_id,
-        repo_type="dataset",
-        revision=revision,
-        local_dir=str(data_dir),
-        allow_patterns=allow_patterns,
-    )
+    failed = []
+    for index, (task_id, files) in enumerate(task_files.items(), 1):
+        target = tasks_dir / task_id
+        try:
+            if target.is_symlink() or (target.exists() and not target.is_dir()):
+                raise ValueError(f"Expected a regular task directory: {target}")
+            if not files:
+                raise ValueError(f"No files found for task {task_id}")
+            with tempfile.TemporaryDirectory(prefix=".naturebench-stage-", dir=tasks_dir) as stage:
+                fetch = partial(
+                    hf_hub_download, repo_id=dataset_id, repo_type="dataset",
+                    revision=commit, local_dir=stage,
+                )
+                with ThreadPoolExecutor(max_workers=8) as pool:
+                    list(pool.map(lambda filename: fetch(filename=filename), files))
+                staged_tasks = Path(stage) / "tasks"
+                task = staged_tasks / task_id
+                problem = task / "problem"
+                if staged_tasks.is_symlink() or task.is_symlink() or problem.is_symlink() or not problem.is_dir():
+                    raise ValueError(f"Downloaded task {task_id} is missing a regular problem directory")
+                _materialize_archived_task_data(staged_tasks, [task_id], dry_run=False)
+                publish_replacement(task, target)
+        except Exception as error:
+            failed.append(task_id)
+            print(f"ERROR: {task_id}: {error}", file=sys.stderr, flush=True)
+        else:
+            print(f"[{index}/{len(task_files)}] installed {task_id}", flush=True)
+    if failed:
+        raise RuntimeError("Failed to install tasks: " + ", ".join(failed))
 
 
 def _extract_tar_gz(archive_path: Path, destination: Path) -> None:
@@ -312,8 +334,8 @@ def main() -> None:
     if not args.skip_download:
         _download_dataset(args.dataset_id, data_root, args.dataset_revision, selected_tasks, args.dry_run)
     tasks_dir = _resolve_tasks_dir(data_root)
-    if not args.skip_download:
-        _materialize_archived_task_data(tasks_dir, selected_tasks, args.dry_run)
+    if not args.skip_download and args.dry_run:
+        _materialize_archived_task_data(tasks_dir, selected_tasks, dry_run=True)
     if args.download_only:
         print(f"Dataset root: {data_root}")
         print(f"Task packages: {tasks_dir}")

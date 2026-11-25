@@ -5,10 +5,17 @@ from __future__ import annotations
 
 import argparse
 import re
-import shutil
+import sys
 import tarfile
-from pathlib import Path
-from typing import Iterable
+import tempfile
+from functools import partial
+from pathlib import Path, PurePosixPath
+from typing import Callable, Iterable
+
+# The documented CLI runs this file directly from the harbor/ subdirectory.
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from task_install import list_dataset_files, publish_replacement
 
 
 DEFAULT_REPO_ID = "FrontisAI/NatureBench-Harbor"
@@ -71,22 +78,33 @@ def task_ids_for_compute_groups(
 def extract_task_archives(
     archives: Iterable[Path], output_dir: Path, task_id: str
 ) -> None:
-    """Remove any existing task directory and extract the selected archives."""
+    """Install one task, retaining the old copy until extraction succeeds."""
+    output_dir = output_dir.resolve()
+    archives = _validate_task_destination(archives, output_dir, task_id)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".naturebench-stage-", dir=output_dir) as stage:
+        staged = _extract_task_archives(archives, Path(stage), task_id)
+        publish_replacement(staged, output_dir / task_id)
 
+
+def _validate_task_destination(
+    archives: Iterable[Path], output_dir: Path, task_id: str
+) -> list[Path]:
     if not TASK_ID_PATTERN.fullmatch(task_id):
         raise ReleaseError(f"invalid task ID: {task_id}")
     archives = list(archives)
     if not archives:
         raise ReleaseError(f"no archives provided for task: {task_id}")
-    output_dir = output_dir.resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
     target_task = output_dir / task_id
     if target_task.is_symlink() or (target_task.exists() and not target_task.is_dir()):
         raise ReleaseError(f"expected a regular task directory: {target_task}")
     if any(path.resolve().is_relative_to(target_task) for path in archives):
         raise ReleaseError(f"source archive is inside the task directory: {target_task}")
-    if target_task.is_dir():
-        shutil.rmtree(target_task)
+    return archives
+
+
+def _extract_task_archives(archives: list[Path], output_dir: Path, task_id: str) -> Path:
+    target_task = output_dir / task_id
 
     def task_filter(member: tarfile.TarInfo, destination: str) -> tarfile.TarInfo | None:
         member = tarfile.data_filter(member, destination)
@@ -112,52 +130,67 @@ def extract_task_archives(
             raise ReleaseError(f"failed to extract {archive}: {error}") from error
     if not (target_task / "task.toml").is_file():
         raise ReleaseError(f"archives for {task_id} do not contain {task_id}/task.toml")
+    return target_task
 
 
 def _selected_archives(
-    release_dir: Path,
+    filenames: Iterable[str],
     task_ids: Iterable[str] | None,
-) -> list[tuple[str, list[Path]]]:
+) -> list[tuple[str, list[str]]]:
     requested = set(task_ids or ())
-    invalid = sorted(
-        task_id for task_id in requested if not TASK_ID_PATTERN.fullmatch(task_id)
-    )
+    invalid = sorted(task_id for task_id in requested if not TASK_ID_PATTERN.fullmatch(task_id))
     if invalid:
         raise ReleaseError("invalid task IDs: " + ", ".join(invalid))
-    archive_root = release_dir / "task_archives"
-    if not archive_root.is_dir():
-        raise ReleaseError(f"missing task archive directory: {archive_root}")
 
-    available: dict[str, list[Path]] = {}
-    for archive in sorted(archive_root.glob("*.tar.gz")):
-        task_id = archive.name[: -len(".tar.gz")]
+    available: dict[str, list[str]] = {}
+    for filename in filenames:
+        path = PurePosixPath(filename)
+        if len(path.parts) not in (2, 3) or path.parts[0] != "task_archives":
+            continue
+        if not path.name.endswith(".tar.gz"):
+            continue
+        task_id = path.name.removesuffix(".tar.gz") if len(path.parts) == 2 else path.parts[1]
         if TASK_ID_PATTERN.fullmatch(task_id):
-            available[task_id] = [archive]
+            available.setdefault(task_id, []).append(filename)
 
-    for part_dir in sorted(archive_root.iterdir()):
-        if not part_dir.is_dir() or not TASK_ID_PATTERN.fullmatch(part_dir.name):
-            continue
-        archives = sorted(part_dir.glob("*.tar.gz"))
-        if not archives:
-            continue
-        task_id = part_dir.name
-        if task_id in available:
-            raise ReleaseError(
-                f"task has both a single archive and archive parts: {task_id}"
-            )
-        available[task_id] = archives
-
-    missing = sorted(requested - available.keys())
-    if missing:
-        raise ReleaseError("unknown task IDs: " + ", ".join(missing))
-    selected = {
-        task_id: archives
-        for task_id, archives in available.items()
-        if not requested or task_id in requested
-    }
+    selected = requested or available.keys()
     if not selected:
         raise ReleaseError("no task archives selected")
-    return sorted(selected.items())
+    return [(task_id, sorted(available.get(task_id, []))) for task_id in sorted(selected)]
+
+
+def _install_release_tasks(
+    selected: list[tuple[str, list[str]]],
+    fetch_archive: Callable[[str], Path],
+    dataset_toml: bytes,
+    output_dir: Path,
+) -> None:
+    output_dir = output_dir.resolve()
+    target_manifest = output_dir / "dataset.toml"
+    if target_manifest.is_symlink() or (target_manifest.exists() and not target_manifest.is_file()):
+        raise ReleaseError(f"expected a regular manifest file: {target_manifest}")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".naturebench-stage-", dir=output_dir) as stage:
+        staged_manifest = Path(stage) / "dataset.toml"
+        staged_manifest.write_bytes(dataset_toml)
+        staged_manifest.replace(target_manifest)
+
+    failed = []
+    for index, (task_id, filenames) in enumerate(selected, 1):
+        try:
+            if not filenames:
+                raise ReleaseError(f"no archives found for task {task_id}")
+            if len(filenames) > 1 and f"task_archives/{task_id}.tar.gz" in filenames:
+                raise ReleaseError(f"task has both a single archive and archive parts: {task_id}")
+            extract_task_archives((fetch_archive(filename) for filename in filenames), output_dir, task_id)
+        except Exception as error:
+            failed.append(task_id)
+            print(f"ERROR: {task_id}: {error}", flush=True)
+        else:
+            print(f"[{index}/{len(selected)}] installed {task_id}", flush=True)
+    if failed:
+        raise ReleaseError("failed to install tasks: " + ", ".join(failed))
 
 
 def materialize_release(
@@ -167,59 +200,47 @@ def materialize_release(
     task_ids: Iterable[str] | None,
 ) -> None:
     release_dir = release_dir.resolve()
-    output_dir = output_dir.resolve()
     dataset_toml = release_dir / "dataset.toml"
     if not dataset_toml.is_file():
         raise ReleaseError(f"missing dataset.toml: {dataset_toml}")
-    selected = _selected_archives(release_dir, task_ids)
+    if not (release_dir / "task_archives").is_dir():
+        raise ReleaseError(f"missing task archive directory: {release_dir / 'task_archives'}")
+    archives = (
+        path.relative_to(release_dir).as_posix()
+        for pattern in ("task_archives/*.tar.gz", "task_archives/*/*.tar.gz")
+        for path in release_dir.glob(pattern)
+    )
+    selected = _selected_archives(archives, task_ids)
+    _install_release_tasks(selected, release_dir.joinpath, dataset_toml.read_bytes(), output_dir)
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "dataset.toml").write_bytes(dataset_toml.read_bytes())
 
-    for index, (task_id, archive_parts) in enumerate(selected, 1):
-        extract_task_archives(archive_parts, output_dir, task_id)
-        print(f"[{index}/{len(selected)}] installed {task_id}", flush=True)
-
-
-def download_snapshot(
+def download_release(
     repo_id: str,
     revision: str | None,
     cache_dir: Path | None,
+    output_dir: Path,
     task_ids: Iterable[str] | None,
-) -> Path:
+) -> None:
     try:
-        from huggingface_hub import snapshot_download
+        from huggingface_hub import hf_hub_download
     except ImportError as error:
         raise ReleaseError(
             "huggingface_hub is required for download; install it with "
             "`python -m pip install huggingface_hub`"
         ) from error
-    requested = list(task_ids or ())
-    invalid = sorted(
-        task_id for task_id in requested if not TASK_ID_PATTERN.fullmatch(task_id)
+    try:
+        commit, filenames = list_dataset_files(repo_id, revision)
+        fetch = partial(
+            hf_hub_download, repo_id=repo_id, repo_type="dataset",
+            revision=commit, cache_dir=cache_dir,
+        )
+        dataset_toml = Path(fetch(filename="dataset.toml")).read_bytes()
+    except Exception as error:
+        raise ReleaseError(f"failed to open dataset {repo_id}: {error}") from error
+    selected = _selected_archives(filenames, task_ids)
+    _install_release_tasks(
+        selected, lambda filename: Path(fetch(filename=filename)), dataset_toml, output_dir
     )
-    if invalid:
-        raise ReleaseError("invalid task IDs: " + ", ".join(invalid))
-    archive_patterns = (
-        [
-            pattern
-            for task_id in requested
-            for pattern in (
-                f"task_archives/{task_id}.tar.gz",
-                f"task_archives/{task_id}/*.tar.gz",
-            )
-        ]
-        if requested
-        else ["task_archives/*.tar.gz", "task_archives/*/*.tar.gz"]
-    )
-    snapshot = snapshot_download(
-        repo_id=repo_id,
-        repo_type="dataset",
-        revision=revision,
-        cache_dir=str(cache_dir) if cache_dir else None,
-        allow_patterns=["dataset.toml", *archive_patterns],
-    )
-    return Path(snapshot)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -249,10 +270,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.compute
             else args.task_ids
         )
-        release_dir = args.release_dir or download_snapshot(
-            args.repo_id, args.revision, args.cache_dir, task_ids
-        )
-        materialize_release(release_dir, args.output_dir, task_ids=task_ids)
+        if args.release_dir:
+            materialize_release(args.release_dir, args.output_dir, task_ids=task_ids)
+        else:
+            download_release(args.repo_id, args.revision, args.cache_dir, args.output_dir, task_ids)
     except (ReleaseError, OSError) as error:
         print(f"ERROR: {error}")
         return 1
