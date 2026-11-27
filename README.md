@@ -13,6 +13,7 @@
 
 ## 📰News
 
+- **🏆 [2026-11-27] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=full&setup=all#leaderboard) for Megatron + Gemini 4 Carbon on the Full 90-task leaderboard.** <!-- naturebench-release:full/gemini-4-carbon-megatron@1-a2ceb9c9d4ca4ef0c7cf82da38f7fa0b76cd5ae91fe9097f75037e24b4abed91 -->
 - **🔧 [2026-11-24] NatureBench environment update.** To account for changes in upstream package requirements and unreliable download links, we updated the Dockerfiles for 23 tasks in the [native](https://huggingface.co/datasets/FrontisAI/NatureBench/tree/f17c0d2b87c6df56f1deb5ed87a0de556e1ca6bb) and [Harbor](https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor/tree/f942d6baa044c33988d1a3e968bf9d7cabeaa5b8) packages on Hugging Face and the Conda recipes for the evaluation service environment. The tasks themselves remain the same.
 - **🏆 [2026-11-20] We published [results](https://frontisai.github.io/NatureBench/) for Qwen 4 Max on the Full 90-task leaderboard.**
 - **🏆 [2026-11-15] We published externally submitted [results](https://frontisai.github.io/NatureBench/?track=full#leaderboard) for OPTIMUS 1.1 + Claude Opus 5.5 on the Full 90-task leaderboard.**
