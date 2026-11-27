@@ -67,6 +67,7 @@
   --agent-luria-color: #557a18;
   --agent-evora-color: #bd642f;
   --agent-optimus-color: #126984;
+  --agent-megatron-color: #a51b35;
   --model-kimi-color: #59636f;
   --rank-gold: #8a6411;
   --rank-silver: #5e6970;
@@ -96,6 +97,7 @@
   --agent-luria-color: #b8d85f;
   --agent-evora-color: #f0a16e;
   --agent-optimus-color: #78d3ec;
+  --agent-megatron-color: #ff8798;
   --model-kimi-color: #aeb9c6;
   --rank-gold: #f0ca62;
   --rank-silver: #c4ccd0;
@@ -1113,6 +1115,10 @@ section {
 
 .agent-optimus {
   --agent-color: var(--agent-optimus-color);
+}
+
+.agent-megatron {
+  --agent-color: var(--agent-megatron-color);
 }
 
 .rank-dot {

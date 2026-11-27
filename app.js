@@ -316,6 +316,7 @@
     if (/^luria\b/i.test(agent)) return "agent-luria";
     if (/^evora\b/i.test(agent)) return "agent-evora";
     if (/^optimus\b/i.test(agent)) return "agent-optimus";
+    if (/^megatron\b/i.test(agent)) return "agent-megatron";
     return "agent-other";
   }
 
@@ -479,14 +480,20 @@
     return { provider: "Unknown provider", monogram, src: "" };
   }
 
-  function modelColor(modelName) {
-    const agent = agentForModel(modelName);
+  function externalAgentColor(agent) {
     if (/^helix\b/i.test(agent)) return "var(--agent-helix-color)";
     if (/^luria\b/i.test(agent)) return "var(--agent-luria-color)";
     if (/^aibuildai\b/i.test(agent)) return "var(--agent-aibuildai-color)";
     if (/^evora\b/i.test(agent)) return "var(--agent-evora-color)";
     if (/^optimus\b/i.test(agent)) return "var(--agent-optimus-color)";
-    return modelColors.find((item) => item.match.test(modelName))?.color || "#147c72";
+    if (/^megatron\b/i.test(agent)) return "var(--agent-megatron-color)";
+    return null;
+  }
+
+  function modelColor(modelName) {
+    return externalAgentColor(agentForModel(modelName))
+      || modelColors.find((item) => item.match.test(modelName))?.color
+      || "#147c72";
   }
 
   function compactDomainModelName(row, winnerCount) {
@@ -862,7 +869,8 @@
   }
 
   function renderDistribution() {
-    const rows = data.distributions;
+    const binsByName = new Map(data.distributions.map(({ name, bins }) => [name, bins]));
+    const rows = rankLeaderboard(leaderboardByTrack.full).filter((row) => binsByName.has(row.name));
     const chart = $("distribution-chart");
     chart.innerHTML = `
       <div class="distribution-header" aria-hidden="true">
@@ -871,14 +879,14 @@
         <span>Surpass-SOTA</span>
       </div>
       ${rows.map((row) => {
-      const surpass = data.leaderboard.find((item) => item.name === row.name)?.surpassSota ?? 0;
+      const bins = binsByName.get(row.name);
       return `
         <div class="distribution-row">
           <div class="distribution-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
             ${modelAgentMarkup(row, { logo: true, infoScope: "Full submission: all 90 tasks" })}
           </div>
           <div class="stacked-bar" aria-label="${escapeHtml(displayNameForModel(row.name))} score distribution">
-            ${row.bins.map((bin, index) => ({ bin, index })).filter(({ bin }) => Number(bin.count) > 0 && Number(bin.percent) > 0).map(({ bin, index }) => `
+            ${bins.map((bin, index) => ({ bin, index })).filter(({ bin }) => Number(bin.count) > 0 && Number(bin.percent) > 0).map(({ bin, index }) => `
               <div
                 class="segment ${binClasses[index]}"
                 style="--bin-count:${bin.count}"
@@ -890,12 +898,12 @@
               ></div>
             `).join("")}
           </div>
-          <div class="bar-value distribution-metric-value"><span class="mobile-metric-label">Surpass-SOTA: </span>${formatPercent(surpass)}</div>
+          <div class="bar-value distribution-metric-value"><span class="mobile-metric-label">Surpass-SOTA: </span>${formatPercent(row.surpassSota)}</div>
         </div>
       `;
     }).join("")}`;
 
-    const labels = rows[0]?.bins || [];
+    const labels = binsByName.get(rows[0]?.name) || [];
     $("distribution-legend").innerHTML = labels.map((bin, index) => `
       <span class="legend-item">
         <span class="legend-swatch ${binClasses[index]}"></span>${escapeHtml(bin.label)}
@@ -1072,6 +1080,7 @@
       </div>
       ${rows.map((row) => {
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
+        const colorModel = Boolean(externalAgentColor(row.harness));
         const domainOnly = Array.isArray(row.tracks) && !row.tracks.includes("full");
         const submissionScope = domainOnly
           ? `Domain submission: ${row.domains.join(", ")}`
@@ -1081,7 +1090,7 @@
             <div class="bar-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
               <span class="rank-dot">${row.rank}</span>
               <span class="bar-model-identity">
-                ${modelAgentMarkup(row, { logo: true, infoScope: submissionScope })}
+                ${modelAgentMarkup(row, { logo: true, infoScope: submissionScope, colorModel })}
                 ${domainOnly ? '<span class="domain-submission-label">Domain submission</span>' : ""}
               </span>
             </div>

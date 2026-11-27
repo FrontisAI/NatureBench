@@ -403,7 +403,7 @@ window.NATUREBENCH_DATA = {
       "displayName": "Gemini 4 Carbon",
       "agent": "Megatron",
       "runSource": {
-        "label": "Independent",
+        "label": "Megatron",
         "url": "https://github.com/anotherfruit1981-cmyk/megatron-naturebench"
       },
       "setupDifferences": [
@@ -411,7 +411,7 @@ window.NATUREBENCH_DATA = {
       ],
       "solvingBudget": "4 h / task",
       "compute": "gpu_low: 1x RTX 4090/5090/PRO 5000; gpu_high: 1x RTX PRO 6000 (96 GB); cpu: no GPU.",
-      "externalAccess": "Web search tools disabled",
+      "externalAccess": "Web search and web fetch tools disabled",
       "validityJudge": "gemini-4-carbon",
       "notes": "Single-GPU cards included 32-96 GB VRAM."
     }
