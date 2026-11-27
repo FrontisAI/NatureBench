@@ -910,7 +910,7 @@
       return `
         <div class="distribution-row">
           <div class="distribution-name" title="${escapeHtml(displayNameForModel(row.name))} · ${escapeHtml(agentForModel(row.name))}">
-            ${modelAgentMarkup(row, { logo: true, infoScope: "Full submission: all 90 tasks" })}
+            ${modelAgentMarkup(row, { logo: true, infoScope: "" })}
           </div>
           <div class="stacked-bar" aria-label="${escapeHtml(displayNameForModel(row.name))} score distribution">
             ${bins.map((bin, index) => ({ bin, index })).filter(({ bin }) => Number(bin.count) > 0 && Number(bin.percent) > 0).map(({ bin, index }) => `
