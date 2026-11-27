@@ -208,6 +208,7 @@
 
   const modelByName = Object.fromEntries(data.models.map((item) => [item.name, item]));
   const configurationById = Object.fromEntries(data.models.map((item) => [item.id, item]));
+  const submittedAgentClasses = new Map();
   let activeConfigurationTrigger = null;
   let configurationPopoverPinned = false;
   let configurationHideTimer = null;
@@ -317,7 +318,35 @@
     if (/^evora\b/i.test(agent)) return "agent-evora";
     if (/^optimus\b/i.test(agent)) return "agent-optimus";
     if (/^megatron\b/i.test(agent)) return "agent-megatron";
-    return "agent-other";
+    return submittedAgentClasses.get(String(agent ?? "").trim().toLowerCase()) || "agent-other";
+  }
+
+  function initSubmittedAgentColors() {
+    const hues = [44, 140, 257, 17, 318, 187, 224];
+    const classesBySource = new Map();
+    const rules = [];
+    for (const { id, agent, runSource } of data.models) {
+      if (!id?.startsWith("submission:") || agentColorClass(agent) !== "agent-other") continue;
+      const source = (runSource?.label || agent).trim().toLowerCase();
+      if (!classesBySource.has(source)) {
+        const index = classesBySource.size;
+        const className = `agent-submitted-${index + 1}`;
+        const hue = hues[index] ?? ((44 + index * 137.508) % 360);
+        const variable = `--${className}-color`;
+        classesBySource.set(source, className);
+        rules.push(
+          `:root { ${variable}: hsl(${hue} 72% 28%); }`,
+          `:root[data-theme="dark"] { ${variable}: hsl(${hue} 74% 73%); }`,
+          `.${className} { --agent-color: var(${variable}); }`,
+        );
+      }
+      submittedAgentClasses.set(agent.trim().toLowerCase(), classesBySource.get(source));
+    }
+    if (rules.length) {
+      const style = document.createElement("style");
+      style.textContent = rules.join("\n");
+      document.head.appendChild(style);
+    }
   }
 
   function modelAgentMarkup(row, { logo = false, infoScope = null, colorModel = false } = {}) {
@@ -480,18 +509,16 @@
     return { provider: "Unknown provider", monogram, src: "" };
   }
 
-  function externalAgentColor(agent) {
-    if (/^helix\b/i.test(agent)) return "var(--agent-helix-color)";
-    if (/^luria\b/i.test(agent)) return "var(--agent-luria-color)";
-    if (/^aibuildai\b/i.test(agent)) return "var(--agent-aibuildai-color)";
-    if (/^evora\b/i.test(agent)) return "var(--agent-evora-color)";
-    if (/^optimus\b/i.test(agent)) return "var(--agent-optimus-color)";
-    if (/^megatron\b/i.test(agent)) return "var(--agent-megatron-color)";
-    return null;
+  function externalAgentColor(modelName) {
+    const agentClass = agentColorClass(agentForModel(modelName));
+    if (agentClass === "agent-other") return null;
+    const builtin = ["agent-claude", "agent-codex", "agent-gemini"].includes(agentClass);
+    if (builtin && !modelByName[modelName]?.id?.startsWith("submission:")) return null;
+    return `var(--${agentClass}-color)`;
   }
 
   function modelColor(modelName) {
-    return externalAgentColor(agentForModel(modelName))
+    return externalAgentColor(modelName)
       || modelColors.find((item) => item.match.test(modelName))?.color
       || "#147c72";
   }
@@ -1080,7 +1107,7 @@
       </div>
       ${rows.map((row) => {
         const width = row.surpassSota <= 0 ? 0 : clamp(row.surpassSota / domainBarScaleMax * 100, 3, 100);
-        const colorModel = Boolean(externalAgentColor(row.harness));
+        const colorModel = Boolean(externalAgentColor(row.name));
         const domainOnly = Array.isArray(row.tracks) && !row.tracks.includes("full");
         const submissionScope = domainOnly
           ? `Domain submission: ${row.domains.join(", ")}`
@@ -1711,6 +1738,7 @@
 
   function init() {
     initTheme();
+    initSubmittedAgentColors();
     ensureLeaderboardContainers();
     ensureCaseLegend();
     updateStaticLabels();
