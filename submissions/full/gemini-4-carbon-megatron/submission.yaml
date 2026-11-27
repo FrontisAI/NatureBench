@@ -1,0 +1,18 @@
+submission:
+  model: "Gemini 4 Carbon"
+  agent: "Megatron"
+  organization: "Independent"
+  url: "https://github.com/anotherfruit1981-cmyk/megatron-naturebench"
+  submission_date: "2026-11-26"
+  contact: "https://github.com/anotherfruit1981-cmyk"
+evaluation:
+  track: "full"
+  evaluation_pipeline: "naturebench"
+  timeout_seconds: 14400
+  web_search: false
+  compute: "gpu_low: 1x RTX 4090/5090/PRO 5000; gpu_high: 1x RTX PRO 6000 (96 GB); cpu: no GPU."
+  judge_model: "gemini-4-carbon"
+  human_intervention: "none"
+  deviations_from_reference: "Single-GPU cards included 32-96 GB VRAM."
+  setup_differences:
+    - "gpu"
