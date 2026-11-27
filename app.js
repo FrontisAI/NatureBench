@@ -33,6 +33,7 @@
   const leaderboardByTrack = Object.fromEntries(
     Object.keys(TRACKS).map((trackKey) => [trackKey, buildTrackLeaderboard(data, trackKey)]),
   );
+  const rankedFullRows = rankLeaderboard(leaderboardByTrack.full);
   const domainLeaderboardByName = Object.fromEntries(
     data.domains.map((domain) => [domain.domain, rankDomainLeaderboard(data, domain.domain)]),
   );
@@ -205,7 +206,6 @@
     featuredCase: "cancer-gene",
   };
 
-  const modelOrder = fullLeaderboardRows.map((item) => item.name);
   const modelByName = Object.fromEntries(data.models.map((item) => [item.name, item]));
   const configurationById = Object.fromEntries(data.models.map((item) => [item.id, item]));
   let activeConfigurationTrigger = null;
@@ -870,7 +870,7 @@
 
   function renderDistribution() {
     const binsByName = new Map(data.distributions.map(({ name, bins }) => [name, bins]));
-    const rows = rankLeaderboard(leaderboardByTrack.full).filter((row) => binsByName.has(row.name));
+    const rows = rankedFullRows.filter((row) => binsByName.has(row.name));
     const chart = $("distribution-chart");
     chart.innerHTML = `
       <div class="distribution-header" aria-hidden="true">
@@ -1269,7 +1269,7 @@
         <th>Domain</th>
         <th>ML task type</th>
         <th>Best</th>
-        ${fullLeaderboardRows.map((row) => `<th>${modelAgentMarkup(row)}</th>`).join("")}
+        ${rankedFullRows.map((row) => `<th>${modelAgentMarkup(row)}</th>`).join("")}
       </tr>
     `;
 
@@ -1282,7 +1282,7 @@
     if (!rows.length) {
       $("case-table-body").innerHTML = `
         <tr>
-          <td class="case-empty" colspan="${modelOrder.length + 4}">No matching tasks.</td>
+          <td class="case-empty" colspan="${rankedFullRows.length + 4}">No matching tasks.</td>
         </tr>
       `;
       return;
@@ -1300,7 +1300,7 @@
         <td>${escapeHtml(row.domain)}</td>
         <td>${escapeHtml(row.mlTaskType)}</td>
         <td class="case-best-cell">${row.bestModel ? `<div class="case-best-identity">${modelAgentMarkup({ name: row.bestModel }, { colorModel: true })}</div><div class="case-meta">g ${formatScore(row.bestScore)}</div>` : ""}</td>
-        ${modelOrder.map((model) => {
+        ${rankedFullRows.map(({ name: model }) => {
           const score = row.scores[model];
           const classes = [
             "score-cell",
