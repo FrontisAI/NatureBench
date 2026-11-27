@@ -35,6 +35,11 @@ SITE_URL = "https://frontisai.github.io/NatureBench/"
 NEWS_HEADING = "## 📰News\n"
 SUBMISSION_FILES = ("submission.yaml", "results.csv")
 SUBMISSION_PATH = re.compile(r"submissions/([a-z0-9-]+)/([a-z0-9][a-z0-9-]{0,99})/(submission\.yaml|results\.csv)")
+AGENT_VERSION_SUFFIX = re.compile(
+    r"[\s_-]+(?:v(?:ersion)?\s*\d+(?:\.\d+)*|\d+(?:\.\d+)+)"
+    r"(?:-[a-z0-9.-]+)?(?:\+[a-z0-9.-]+)?$",
+    re.IGNORECASE,
+)
 DISTRIBUTION_LABELS = {
     "no_score": "No score",
     "invalid": "Invalid",
@@ -144,23 +149,24 @@ def replace_item(items: list[dict], field: str, item: dict, previous: str | None
 def render_entry(page: dict, entry: Entry) -> str:
     submission, evaluation = (entry.metadata[name] for name in ("submission", "evaluation"))
     model, agent = (submission[name].strip() for name in ("model", "agent"))
+    run_source = AGENT_VERSION_SUFFIX.sub("", agent).strip() or agent
     config_id = f"submission:{entry.key}"
     # The page uses name as the per-case score key, independently of the display name.
     name = f"{model} ({agent}) [{entry.key}]"
     previous = next((row["name"] for row in page["models"] if row["id"] == config_id), None)
     timeout = evaluation["timeout_seconds"]
-    fallback_budget = f"{timeout // 3600} h / task" if timeout % 3600 == 0 else f"{timeout} s / task"
-    fallback_access = "Web search enabled" if evaluation["web_search"] else "Web search tools disabled"
+    solving_budget = f"{timeout // 3600} h / task" if timeout % 3600 == 0 else f"{timeout} s / task"
+    web_search_state = "enabled" if evaluation["web_search"] else "disabled"
     configuration = {
         "id": config_id,
         "name": name,
         "displayName": model.removeprefix("Claude ") if model.startswith("Claude Opus ") else model,
         "agent": agent,
-        "runSource": {"label": submission["organization"].strip(), "url": submission["url"].strip()},
+        "runSource": {"label": run_source, "url": submission["url"].strip()},
         "setupDifferences": evaluation["setup_differences"],
-        "solvingBudget": evaluation.get("solving_budget", fallback_budget),
+        "solvingBudget": solving_budget,
         "compute": evaluation["compute"],
-        "externalAccess": evaluation.get("external_access", fallback_access),
+        "externalAccess": f"Web search tools {web_search_state}",
         "validityJudge": evaluation["judge_model"],
     }
     if evaluation["deviations_from_reference"].strip().lower() != "none":
