@@ -153,7 +153,7 @@ def render_entry(page: dict, entry: Entry) -> str:
     config_id = f"submission:{entry.key}"
     # The page uses name as the per-case score key, independently of the display name.
     name = f"{model} ({agent}) [{entry.key}]"
-    previous = next((row["name"] for row in page["models"] if row["id"] == config_id), None)
+    previous = next((row for row in page["models"] if row["id"] == config_id), None)
     timeout = evaluation["timeout_seconds"]
     solving_budget = f"{timeout // 3600} h / task" if timeout % 3600 == 0 else f"{timeout} s / task"
     web_search_state = "enabled" if evaluation["web_search"] else "disabled"
@@ -169,8 +169,9 @@ def render_entry(page: dict, entry: Entry) -> str:
         "externalAccess": f"Web search tools {web_search_state}",
         "validityJudge": evaluation["judge_model"],
     }
-    if evaluation["deviations_from_reference"].strip().lower() != "none":
-        configuration["notes"] = evaluation["deviations_from_reference"]
+    # Keep notes written by maintainers when an existing entry is regenerated.
+    if previous is not None and "notes" in previous:
+        configuration["notes"] = previous["notes"]
     replace_item(page["models"], "id", configuration)
     metrics = entry.report["overall"]
     row = {
@@ -192,7 +193,8 @@ def render_entry(page: dict, entry: Entry) -> str:
              "percent": round(100 * metrics["distribution"][key] / metrics["task_count"], 1)}
             for key, label in DISTRIBUTION_LABELS.items()
         ]
-        replace_item(page["distributions"], "name", {"name": name, "bins": bins}, previous)
+        previous_name = previous["name"] if previous is not None else None
+        replace_item(page["distributions"], "name", {"name": name, "bins": bins}, previous_name)
     return config_id
 
 
